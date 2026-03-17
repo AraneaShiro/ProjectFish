@@ -1,9 +1,13 @@
 
 package fish.poisson;
+
 import fish.poisson.*;
+
 /**
  * Classe representant un ensemble de poisson
+ * 
  * @author Jules Grenesche
+ * @version 0.1
  * @see Individu
  */
 public class Population {
@@ -12,11 +16,11 @@ public class Population {
 	 * Nombre d'individu dans la population
 	 */
 	private int effectif;
-	
+
 	/**
 	 * Espece de la population
 	 */
-	private Espece espece;
+	private String espece;
 	/**
 	 * Tableau des differents poissons si possible
 	 */
@@ -29,13 +33,12 @@ public class Population {
 	 * Partie du corps étudiée
 	 */
 	private String partieDuCorps;
-	
-	
+
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		//
 
 	}
 

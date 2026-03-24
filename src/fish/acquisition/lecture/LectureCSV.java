@@ -5,6 +5,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Pattern;
 
 import fish.exceptions.*;
@@ -157,51 +158,47 @@ public class LectureCSV {
      * @param cheminFichier le chemin vers le fichier CSV
      */
     public void lireCSV(String cheminFichier) throws FileEmpty {
+
         List<String[]> lignesBrutes = new ArrayList<>();
 
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(new FileInputStream(cheminFichier)))) { // On essaye de lire le fichier
+        try (Scanner scanner = new Scanner(new File(cheminFichier))) { // On essaye de lire le fichier
 
-            String ligne;
             boolean premiereLigne = true;
 
-            while ((ligne = br.readLine()) != null) { // tant que la ligne lue existe
-                if (ligne.trim().isEmpty()) // Si la ligne est vide
+            while (scanner.hasNextLine()) {
+                String ligne = scanner.nextLine();
+
+                if (ligne.trim().isEmpty())
                     continue;
 
-                String[] valeurs = ligne.split(Pattern.quote(this.separateur), -1); // On découpe la ligne pour chaque
-                                                                                    // séparateur
+                String[] valeurs = ligne.split(Pattern.quote(this.separateur), -1);
 
-                if (premiereLigne) { // On prend la 1er ligne pour les entetes
+                if (premiereLigne) {
                     this.entetes = valeurs;
                     premiereLigne = false;
                 } else {
-                    lignesBrutes.add(valeurs); // Sinon on l'ajoute dans une ligne brute qui sera traité apres
+                    lignesBrutes.add(valeurs);
                 }
             }
 
-        } catch (FileNotFoundException e) { // Si on ne trouve pas le fichier, c est une erreur de base de Java
+        } catch (FileNotFoundException e) {
             System.out.println("Fichier introuvable : " + cheminFichier);
-            return; // On arrête la méthode, entetes est null
-        } catch (IOException e) { // Erreur sur la lecture, IO est lié au flux
-            System.out.println("Erreur de lecture : " + e.getMessage());
-            return; // Idem
+            return;
         }
 
-        // Si on n'a pas d'entete c est que le fichier est null, c est juste par
-        // sécurité
         if (this.entetes == null) {
             throw new FileEmpty(cheminFichier);
         }
 
-        this.nbLignes = lignesBrutes.size(); // On prend le nombre d'élements de Lignes brutes
-        this.nbCol = this.entetes.length; // Le nombre de col est le nombre d'entete
-        this.tableau = new Object[this.nbLignes][this.nbCol]; // On créé un nouveau tableau a 2 dimensions
+        this.nbLignes = lignesBrutes.size();
+        this.nbCol = this.entetes.length;
+        this.tableau = new Object[this.nbLignes][this.nbCol];
 
         for (int i = 0; i < this.nbLignes; i++) {
             for (int j = 0; j < this.nbCol; j++) {
-                String valeur = (j < lignesBrutes.get(i).length) ? lignesBrutes.get(i)[j].trim() : ""; // si la colonne
-                                                                                                       // est vide
+                String valeur = (j < lignesBrutes.get(i).length)
+                        ? lignesBrutes.get(i)[j].trim()
+                        : "";
                 this.tableau[i][j] = convertirType(valeur);
             }
         }

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import fish.exceptions.*;
 import fish.poisson.Contenu;
-import java.math.*;;
 
 /**
  * Representation d'un poisson
@@ -207,16 +206,21 @@ public class Individu {
 	 * @throws EmptyStringException si le string entré en paramètre est vide
 	 */
 	public Individu(String espece, float taille, float poids, int nbVers, ArrayList<Contenu> contenus) throws NegativeValueException, EmptyStringException{
-		setEspece(espece);
-		setContenus(contenus);
-		setLongueur(taille);
-		setPoids(poids);
-		setNbTotalVers(nbVers);
-		if (nbVers > 0) {
-			setInfested(true);
-		} else {
-			setInfested(false);
+		try{
+			setEspece(espece);
+			setContenus(contenus);
+			setLongueur(taille);
+			setPoids(poids);
+			setNbTotalVers(nbVers);
+			if (nbVers > 0) {
+				setInfested(true);
+			} else {
+				setInfested(false);
+			}
+		} catch(Exception e){
+			System.out.println(e);
 		}
+		
 	}
 
 	/**
@@ -234,18 +238,23 @@ public class Individu {
 	 * @throws TauxValueException si le taux entré en paramètre est supérieur à 1
 	 */
 	public Individu(String espece, float taille, float poids, float taux, ArrayList<Contenu> contenus) throws NegativeValueException, NoNbVersException,IndiceException,TauxValueException, EmptyStringException{
-		setEspece(espece);
-		setContenus(contenus);
-		setLongueur(taille);
-		setPoids(poids);
-		setTauxInfestation(taux);
-		setNbTotalVers(-1);
-		MajNBVersPoisson();
-		if (taux != 0) {
-			setInfested(true);
-		} else {
-			setInfested(false);
+		try{
+			setEspece(espece);
+			setContenus(contenus);
+			setLongueur(taille);
+			setPoids(poids);
+			setTauxInfestation(taux);
+			setNbTotalVers(-1);
+			MajNBVersPoisson();
+			if (taux != 0) {
+				setInfested(true);
+			} else {
+				setInfested(false);
+			}
+		} catch(Exception e){
+			System.out.println(e);
 		}
+		
 	}
 
 	//////////////////////////////Methodes////////////////////
@@ -264,10 +273,52 @@ public class Individu {
 			else{
 				throw new IndiceException();
 			}
-		}else{
+		} else{
 			return this.contenuPoisson.get(indice).getNbVers();
 		}
 	}
+
+	/**
+	 * Méthode renvoyant le nombre total de vers dans un type de contenu en particulier
+	 * @param type le type de contenu
+	 * @return le nombre total de vers dans les contenus du type entré en paramètre
+	 * @throws EmptyStringException si le string entré en paramètre est vide
+	 */
+	public int getVersTotalContenuType(String type) throws EmptyStringException{
+		if(type ==""){
+			throw new EmptyStringException();
+		}
+
+		int somme = 0;
+		for(int i=0;i<this.contenuPoisson.size();i++){
+			if(this.contenuPoisson.get(i).getType() == type){
+				somme+=this.contenuPoisson.get(i).getNbVers();
+			}
+		}
+		return somme;
+	}
+
+
+	/**
+	 * Méthode renvoyant le nombre de vers du premier contenu du type entré en paramètre
+	 * @param type le type du contenu d'intérêt
+	 * @return le nombre de vers du premier contenu de ce type
+	 * @throws EmptyStringException si le string entré en paramètre est vide
+	 */
+	public int getVersContenu(String type) throws EmptyStringException{
+		if(type ==""){
+			throw new EmptyStringException();
+		}
+		int nbVers = 0;
+		for(int i=0;i<this.contenuPoisson.size();i++){
+			if(this.contenuPoisson.get(i).getType() == type){
+				nbVers = this.contenuPoisson.get(i).getNbVers();
+				break;
+			}
+		}
+		return nbVers;
+	}
+
 	/**
 	 * Methode qui renvoie le nombre de vers total des contenus étudiés
 	 * @return Renvoie le nombre de vers total des contenus
@@ -346,7 +397,7 @@ public class Individu {
 			System.out.println(i.getNbTotalVers());
 			System.out.println(i.calculTauxInfestation());
 		} catch(Exception e){
-			System.out.println(e);
+			System.out.println(e.getMessage());
 		}
 	}
 

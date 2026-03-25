@@ -30,19 +30,19 @@ public class Population {
 	 */
 	private int nbInfectes;
 	/**
-	 * Partie du corps étudiée
+	 * Tableau des partie du corps étudiées
 	 */
-	private String partieDuCorps;
+	private String[] partieDuCorps;
 
 	/**
 	 * Abondance : Nombre de vers moyen par poisson de la population
 	 */
-	private float abondance;
+	private double abondance;
 
 	/**
 	 * Intensité : Abondance uniquement sur les poissons infectés
 	 */
-	private float intensite;
+	private double intensite;
 
 	/**
 	 * Taux d'infestation dans la population
@@ -136,7 +136,7 @@ public class Population {
 	 * @param abondance le nombre de vers moyen par poisson de la population
 	 * @throws NegativeValueException si l'abondance entrée en paramètre est négative
 	 */
-	private void setAbondance(float abondance) throws NegativeValueException{
+	private void setAbondance(double abondance) throws NegativeValueException{
 		if(abondance <0){
 			throw new NegativeValueException();
 		}else{
@@ -148,7 +148,7 @@ public class Population {
 	 * Getter abondance dans la population
 	 * @return l'abondance dans la population
 	 */
-	public float getAbondance(){
+	public double getAbondance(){
 		return this.abondance;
 	}
 
@@ -157,7 +157,7 @@ public class Population {
 	 * @param intensite
 	 * @throws NegativeValueException si l'intensité entrée en paramètre est négative
 	 */
-	private void setIntensite(float intensite) throws NegativeValueException{
+	private void setIntensite(double intensite) throws NegativeValueException{
 		if(intensite<0){
 			throw new NegativeValueException();
 		} else{
@@ -169,27 +169,23 @@ public class Population {
 	 * Getter intensité dans la population
 	 * @return l'intensité dans la population
 	 */
-	public float getIntensite(){
+	public double getIntensite(){
 		return this.intensite;
 	}
 
 	/**
 	 * setter partie du corps
 	 * @param partieCorps la partie du corps étudiée dans la population
-	 * @throws EmptyStringException si le string entré en paramètre est vide
 	 */	
-	private void setPartieCorps(String partieCorps) throws EmptyStringException{
-		if(partieCorps == ""){
-			throw new EmptyStringException();
-		}
+	private void setPartieCorps(String[] partieCorps){
 		this.partieDuCorps = partieCorps;
 	}
 
 	/**
-	 * Getter partie du corps
-	 * @return la partie du corps étudiée dans la population
+	 * Getter du tableau de parties du corps
+	 * @return le tableau de parties du corps étudiée dans la population
 	 */
-	public String getPartieCorps(){
+	public String[] getPartieCorps(){
 		return this.partieDuCorps;
 	}
 
@@ -229,14 +225,19 @@ public class Population {
 	 * @throws NegativeValueException si l'une des valeurs entrées en paramètres est négative
 	 * @throws EmptyStringException si l'un des strings passés en paramètres est vide
 	 */
-	public Population(int effectif, String espece, int nbInfectes, String partieCorps, float intensite, float abondance) throws NegativeValueException, EmptyStringException{
-		setEffectif(effectif);
-		setEspece(espece);
-		setNbInfectes(nbInfectes);
-		setPartieCorps(partieCorps);
-		setAbondance(abondance);
-		setIntensite(intensite);
-		this.tabIndividu = null;
+	public Population(int effectif, String espece, int nbInfectes, String[] partieCorps, double intensite, double abondance) throws NegativeValueException, EmptyStringException{
+		try{
+			setEffectif(effectif);
+			setEspece(espece);
+			setNbInfectes(nbInfectes);
+			setPartieCorps(partieCorps);
+			setAbondance(abondance);
+			setIntensite(intensite);
+			this.tabIndividu = null;
+		} catch(Exception e){
+			System.out.println(e);
+		}
+		
 	}
 	
 
@@ -249,14 +250,23 @@ public class Population {
 	 * @throws NegativeValueException si l'une des valeurs entrées en paramètres est négative
 	 * @throws EmptyStringException si l'un des strings passés en paramètres est vide
 	 * @throws TauxValueException si le taux calculé à partir du tableau est supérieur à 1
+	 * @throws NoTabException si le tableau d'individus de la population n'est pas renseigné ou est null
 	 */
-	public Population(int effectif, String espece, String partieCorps, Individu[] tabIndividu) throws NegativeValueException, EmptyStringException, TauxValueException{
-		setTabIndividu(tabIndividu);
-		setEffectif(effectif);
-		setEspece(espece);
-		setPartieCorps(partieCorps);
-		setNbInfectes(calculNbInfectes(tabIndividu));
-		setTauxInfestation(calculTauxInfestation(tabIndividu));
+	public Population(int effectif, String espece, String[] partieCorps, Individu[] tabIndividu) throws NegativeValueException, EmptyStringException, TauxValueException, NoTabException{
+		try{
+			setTabIndividu(tabIndividu);
+			setEffectif(effectif);
+			setEspece(espece);
+			setPartieCorps(partieCorps);
+			setNbInfectes(calculNbInfectes(tabIndividu));
+			setTauxInfestation(calculTauxInfestationTab(tabIndividu));
+			setAbondance(calculAbondance());
+			setIntensite(calculIntensite());
+		} catch(Exception e){
+			System.out.println(e);
+		}
+		
+
 	}
 
 	/////////////////// Méthodes ////////////////////////
@@ -283,7 +293,7 @@ public class Population {
 		int somme = 0;
 		for (int i=0;i < tabIndividus.length;i++){
 			if(tabIndividus[i].isInfected()){
-				somme +=tabIndividus[i].getNbTotalVers();
+				somme += 1;
 			}
 		}
 		return somme;
@@ -292,12 +302,16 @@ public class Population {
 	/**
 	 * Methode pour le calcul du taux d'infestation sans tableau d'individus
 	 * @return le taux d'infestation calculé dans la population
+	 * @throws TauxValueException si le taux calculé est supérieur à 1
+	 * @throws NegativeValueException si le taux calculé est négatif
 	 */
-	public float calculTauxInfestation() throws TauxValueException{
+	public float calculTauxInfestation() throws TauxValueException, NegativeValueException{
 		float taux = this.getNbInfectes()/this.getEffectif();
 		if(taux >1){
 			throw new TauxValueException();
-		}else{
+		} else if(taux <0){
+			throw new NegativeValueException();
+		} else{
 			return taux;
 		}		
 	}
@@ -307,16 +321,64 @@ public class Population {
 	 * @param tabIndividus le tableau d'individus de la population
 	 * @return le taux d'infestation calculé à partir du tableau
 	 */
-	public float calculTauxInfestation(Individu[] tabIndividus){
+	public float calculTauxInfestationTab(Individu[] tabIndividus){
 		float taux;
 		int NbInfectes = calculNbInfectes(tabIndividus);
 		taux = NbInfectes/this.getEffectif();
 		return taux;
 	}
+
+
+	/**
+	 * Méthode calcul d'abondance (nombre de vers moyen dans la population)
+	 * @return l'abondance (float) dans la population
+	 * @throws NoTabException si le tableau d'individus de la population n'est pas renseigné
+	 */
+	public float calculAbondance() throws NoTabException{
+		int sommeTotalVers=0;
+		if(this.aTableau()){
+			for(int i=0; i<this.tabIndividu.length;i++){
+				sommeTotalVers += this.tabIndividu[i].getNbTotalVers();
+			}
+		} else{
+			throw new NoTabException();
+		}
+		float abondance = sommeTotalVers / this.tabIndividu.length;
+		return abondance;
+	}
+
+
+	/**
+	 * Méthode de calcul d'intensité (abondance pour les poissons infectés)
+	 * @return l'intensité calculée
+	 * @throws NoTabException si le tableau d'individus de la population n'est pas renseigné
+	 */
+	public float calculIntensite() throws NoTabException{
+		int sommeTotalVers = 0;
+		if(this.aTableau()){
+			for(int i=0; i<this.tabIndividu.length;i++){
+				sommeTotalVers += this.tabIndividu[i].getNbTotalVers();
+			}
+		} else{
+			throw new NoTabException();
+		}
+		float intensite = sommeTotalVers / this.nbInfectes;
+		return intensite;
+	}
+
 	/////////////////// Main //////////////
 	public static void main(String[] args) {
 		//
-
+		try{
+			String[] parties = {"foie", "gonades"};
+			Population p1 = new Population(12,"maquereau", 6,parties, 0.67,0.5);
+			System.out.println(p1.aTableau());
+			//p1.calculAbondance();
+			p1.calculIntensite();
+		} catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
 	}
 
 }

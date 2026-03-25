@@ -19,6 +19,16 @@ public class DfIndividu extends Dataframe {
      */
     private Population population;
 
+    /**
+     * Le type d'étude
+     */
+    private static String type = "Etude d'individu";
+
+    /**
+     * Le titre
+     */
+    private String titre;
+
     ////////////////////////////// Getter Setter
 
     /**
@@ -30,32 +40,51 @@ public class DfIndividu extends Dataframe {
         return population;
     }
 
-    ////////////////////////////// Constructeur ////////////////////////
-
     /**
-     * Constructeur du Dataframe sans tableau
-     *
-     * @param nbLignes   le nombre de lignes du tableau
-     * @param nomColonne le tableau des noms des colonnes
+     * Méthode get le type d'étude
+     * 
+     * @return un string du type d'étude
      */
-    public DfIndividu(int nbLigne, String[] entete) {
-        super(nbLigne, entete);
+    public String getType() {
+        return type;
     }
 
     /**
-     * Constructeur du Dataframe
-     *
-     * @param nbLignes   le nombre de lignes du tableau
-     * @param nomColonne le tableau des noms des colonnes
-     * @param newtab     le tableau de données
+     * Méthode get le titre
+     * 
+     * @return un string du titre
      */
-    public DfIndividu(int nbLigne, String[] entete, Object[][] newtab) {
-        super(nbLigne, entete, newtab);
+    public String getTitre() {
+        return titre;
+    }
+
+    /**
+     * Set la population
+     * 
+     * @param pop la population que l'on veut mettre
+     */
+    private void setPopulation(Population pop) {
+        this.population = pop;
+    }
+
+    /**
+     * Set le titre
+     * 
+     * @param newTitle le titre que l on veut mettre
+     */
+    private void setTitre(String newTitle) {
+        this.titre = newTitle;
+    }
+
+    ////////////////////////////// Constructeur ////////////////////////
+
+    public DfIndividu(int nbLignes, String[] nomColonne) {
+
     }
 
     //////////////////////////////Methode////////////////////
     public String getTitle() {
-        return "Etude Individu";
+        return this.type + ": " + this.getTitre();
     }
 
 }

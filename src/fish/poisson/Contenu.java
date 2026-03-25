@@ -124,25 +124,21 @@ public class Contenu {
      * @param type   String du type du contenu
      * @param nbVers Int du nombre de vers dans le contenu
      * @throws EmptyStringException si le string entré en paramètre est vide
-     * @throws NoNbVersException si le nombre de vers entré en paramètre vaut -1 donc non renseigné
      * @throws NegativeValueException si le nombre de vers entré en paramère est <-1
-     * 
      */
-    public Contenu(String type, int nbVers) throws NegativeValueException, EmptyStringException, NoNbVersException{
-        if(nbVers < 0){
-            if(nbVers == -1){
-                throw new NoNbVersException();
+    public Contenu(String type, int nbVers) throws NegativeValueException, EmptyStringException{
+        try{
+           setType(type);
+            setNbVers(nbVers);
+            if(nbVers>0){
+                this.isInfected = true;
             }else{
-               throw new NegativeValueException();
-            }
+                this.isInfected = false;
+            } 
+        } catch(Exception e){
+            System.out.println(e);
         }
-        setType(type);
-        setNbVers(nbVers);
-        if(nbVers>0){
-            this.isInfected = true;
-        }else{
-            this.isInfected = false;
-        }
+        
     }
 
     /**
@@ -155,23 +151,33 @@ public class Contenu {
      * @throws TauxValueException si le taux est supérieur à 1
      */
     public Contenu(String type, float taux) throws NegativeValueException, TauxValueException , EmptyStringException{
-        setType(type);
-        setTauxInfestation(taux);
-        setNbVers(-1);
-        if(taux >0){
-            this.isInfected = true;
-        }else{
-            this.isInfected = false;
+        try{
+           setType(type);
+            setTauxInfestation(taux);
+            setNbVers(-1);
+            if(taux >0){
+                this.isInfected = true;
+            }else{
+                this.isInfected = false;
+            } 
+        } catch(Exception e){
+            System.out.println(e);
         }
+        
     }
 
     ///////////////////////////// Main ////////////////////
     public static void main(String[] args){
         try{
             Contenu content = new Contenu("body", 0.33f);
+            Contenu c2 = new Contenu("foie", 0);
             System.out.println(content.getNbVers());
+            System.out.println("Contenu infecté : "+content.isInfected);
+            System.out.println(c2.getNbVers());
+            System.out.println("Contenu 2 infecté : "+ c2.isInfected);
+
         }catch(Exception e){
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
     }
 }

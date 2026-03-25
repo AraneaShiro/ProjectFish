@@ -32,34 +32,99 @@ public abstract class Dataframe implements Statistique {
     /** Tableau contenant l'ensemble des données */
     private Object[][] tableau;
 
+    /** HashMap des statistiques calculées */
+    protected HashMap<String, Double> statistiques = new HashMap<>();
+
     ////////////////////////////// Getter / Setter
 
+    /**
+     * Get le nombre de colonne
+     *
+     * @return le nombre de colonne
+     */
     public int getNbCol() {
         return this.nbCol;
     }
 
+    /**
+     * Set le nombre de colonne
+     *
+     * @param nbcol le nombre de colonne
+     */
     private void setNbCol(int nbCol) {
         this.nbCol = nbCol;
     }
 
+    /**
+     * Get le nombre de ligne
+     *
+     * @return le nombre de ligne
+     */
     public int getNbLignes() {
         return this.nbLignes;
     }
 
+    /**
+     * Set le nombre de ligne
+     *
+     * @param nbLignes le nombre de ligne
+     */
     private void setNbLignes(int nbLignes) {
         this.nbLignes = nbLignes;
     }
 
+    /**
+     * Get le tableau de valeur
+     *
+     * @return le tableau
+     */
     public Object[][] getTableau() {
         return this.tableau;
     }
 
+    /**
+     * Set le tableau de valeur
+     *
+     * @param tab le tableau de valeur
+     */
     private void setTableau(Object[][] tab) {
         this.tableau = tab;
     }
 
-    public String[] getNomColonne() {
+    /**
+     * Get le nom des entetes
+     *
+     * @return un tableau des entetes
+     */
+    public String[] getNomColonnes() {
         return this.nomColonne;
+    }
+
+    /**
+     * Get le nom de l'entete colonnes
+     *
+     * @return le nom de l'entete
+     */
+    public String getNomCol(int col) {
+        return this.nomColonne[col];
+    }
+
+    /**
+     * Set le tableau de valeur
+     *
+     * @param tab le tableau de valeur
+     */
+    private void setNomColonne(String[] tab) {
+        this.nomColonne = tab;
+    }
+
+    /**
+     * Get les statistiques du dataframe
+     *
+     * @return les statistiques du dataframe
+     */
+    public HashMap<String, Double> getStatistique() {
+        return this.statistiques;
     }
 
     ////////////////////////////// Constructeurs ////////////////////
@@ -266,6 +331,48 @@ public abstract class Dataframe implements Statistique {
 
     }
 
+    /**
+     * Supprime une colonne
+     * 
+     * @param col l'index de la colonne
+     * @throws OutOfBoundException si un index est invalide
+     */
+    public void supprimerColonne(int nCol) throws OutOfBoundException {
+
+        // Si la colonne n existe pas
+        if (nCol == -1 || nCol > this.nbCol - 1) {
+            throw new OutOfBoundException(nCol, nbLignes, nbCol);
+        }
+
+        // Nouveau tableau sans la colonne
+        Object[][] nouveauTableau = new Object[this.nbLignes][this.nbCol - 1];
+
+        // On recopie le tableau sauf la colonne sup
+        for (int i = 0; i < this.nbLignes; i++) {
+            int newCol = 0;
+            for (int j = 0; j < this.nbCol; j++) {
+                if (j != nCol) {
+                    nouveauTableau[i][newCol++] = this.tableau[i][j];
+                }
+            }
+        }
+
+        // Mise a jour des entetes
+        String[] nouvellesColonnes = new String[this.nbCol - 1];
+        int k = 0;
+
+        for (int i = 0; i < this.nbCol; i++) {
+            if (i != nCol) {
+                nouvellesColonnes[k++] = this.nomColonne[i];
+            }
+        }
+        // Mis a jour df
+        this.tableau = nouveauTableau;
+        this.nomColonne = nouvellesColonnes;
+        this.nbCol--;
+
+    }
+
     // ─────────────────Unique────────────────────────────────────────────────────────
 
     /**
@@ -335,6 +442,7 @@ public abstract class Dataframe implements Statistique {
         return occurrences;
     }
 
+    // ── Statistiques ─────────────────────────────────────────────────────────────
     /**
      * Récupère toutes les valeurs numériques d'une colonne donnée
      *
@@ -356,8 +464,6 @@ public abstract class Dataframe implements Statistique {
         return valeurs;
     }
 
-    // ── Statistiques ─────────────────────────────────────────────────────────────
-
     /**
      * Calcule la moyenne des valeurs numériques d'une colonne
      *
@@ -369,12 +475,15 @@ public abstract class Dataframe implements Statistique {
     public double calculerMoyenne(int col) throws OutOfBoundException {
         List<Double> valeurs = getValeursNumeriquesColonne(col);
         if (valeurs.isEmpty())
-            return 0.0;
+            return 0.0;// Retourne exception ?
 
         double somme = 0.0;
         for (double v : valeurs)
             somme += v;
-        return somme / valeurs.size();
+
+        somme = somme / valeurs.size();
+        this.statistiques.put("Moyenne :" + getNomCol(col), somme);
+        return somme;
     }
 
     /**
@@ -396,6 +505,7 @@ public abstract class Dataframe implements Statistique {
         if (valeurs.size() % 2 == 0) {
             return (valeurs.get(milieu - 1) + valeurs.get(milieu)) / 2.0;
         }
+        this.statistiques.put("Mediane :" + getNomCol(col), valeurs.get(milieu));
         return valeurs.get(milieu);
     }
 
@@ -417,6 +527,7 @@ public abstract class Dataframe implements Statistique {
         for (double v : valeurs) {
             sommeCarre += Math.pow(v - moyenne, 2);
         }
+        this.statistiques.put("EcartType :" + getNomCol(col), Math.sqrt(sommeCarre / valeurs.size()));
         return Math.sqrt(sommeCarre / valeurs.size());
     }
 
@@ -438,6 +549,7 @@ public abstract class Dataframe implements Statistique {
         for (double v : valeurs) {
             sommeCarre += Math.pow(v - moyenne, 2); // carre de la difference
         }
+        this.statistiques.put("Variance :" + getNomCol(col), sommeCarre / valeurs.size());
         return sommeCarre / valeurs.size();
     }
 
@@ -464,6 +576,8 @@ public abstract class Dataframe implements Statistique {
         for (int i = 0; i < taille; i++) {
             somme += (valeurs1.get(i) - moyenne1) * (valeurs2.get(i) - moyenne2);
         }
+
+        this.statistiques.put("CoVariance :" + getNomCol(col1) + " " + getNomCol(col2), somme / taille);
         return somme / taille;
     }
 
@@ -484,7 +598,8 @@ public abstract class Dataframe implements Statistique {
         // Evite la division par zéro si une colonne est constante
         if (ecartType1 == 0.0 || ecartType2 == 0.0)
             return 0.0;
-
+        this.statistiques.put("Correlation :" + getNomCol(col1) + " " + getNomCol(col2),
+                calculerCoVariance(col1, col2) / (ecartType1 * ecartType2));
         return calculerCoVariance(col1, col2) / (ecartType1 * ecartType2);
     }
 }

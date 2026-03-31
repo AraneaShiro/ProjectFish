@@ -1,0 +1,29 @@
+Espèce,Paramètre,Total,2019,2020,2021
+Gadus morhua,N,120,45,38,37
+Gadus morhua,Longueur moyenne ± SD (cm),52.3 ± 4.12,51.5 ± 3.98,53.1 ± 4.45,52.4 ± 3.87
+Gadus morhua,Poids moyen ± SD (g),1850.4 ± 210.5,1820.3 ± 198.7,1875.2 ± 225.1,1863.8 ± 215.3
+Gadus morhua,Prévalence (%),71.67,68.89,73.68,73.00
+Gadus morhua,IC 95%,63.24-80.10,55.12-82.65,59.47-87.88,58.12-87.88
+Gadus morhua,Intensité moyenne (étendue),5.12 (1-14),4.87 (1-12),5.34 (1-14),5.18 (2-13)
+Gadus morhua,Abondance moyenne,3.67,3.36,3.93,3.78
+Solea solea,N,95,32,30,33
+Solea solea,Longueur moyenne ± SD (cm),28.5 ± 2.87,27.9 ± 2.64,28.8 ± 3.01,28.9 ± 2.95
+Solea solea,Poids moyen ± SD (g),245.7 ± 48.32,238.4 ± 45.11,249.2 ± 50.87,251.3 ± 49.76
+Solea solea,Prévalence (%),55.79,53.13,56.67,57.58
+Solea solea,IC 95%,45.54-66.04,35.43-70.82,38.36-75.00,40.23-74.92
+Solea solea,Intensité moyenne (étendue),3.45 (1-9),3.12 (1-8),3.67 (1-9),3.58 (1-9)
+Solea solea,Abondance moyenne,1.93,1.66,2.07,2.06
+Dicentrarchus labrax,N,80,27,26,27
+Dicentrarchus labrax,Longueur moyenne ± SD (cm),44.1 ± 5.23,43.5 ± 4.98,44.4 ± 5.37,44.5 ± 5.21
+Dicentrarchus labrax,Poids moyen ± SD (g),1124.6 ± 187.4,1098.3 ± 175.2,1138.7 ± 196.3,1142.5 ± 191.8
+Dicentrarchus labrax,Prévalence (%),38.75,37.04,38.46,40.74
+Dicentrarchus labrax,IC 95%,28.11-49.39,18.96-55.11,19.84-57.09,21.98-59.51
+Dicentrarchus labrax,Intensité moyenne (étendue),2.87 (1-7),2.70 (1-6),2.90 (1-7),3.00 (1-7)
+Dicentrarchus labrax,Abondance moyenne,1.11,1.00,1.12,1.22
+Sparus aurata,N,110,38,35,37
+Sparus aurata,Longueur moyenne ± SD (cm),35.8 ± 3.45,35.2 ± 3.21,36.1 ± 3.58,36.2 ± 3.47
+Sparus aurata,Poids moyen ± SD (g),712.3 ± 125.6,698.5 ± 118.4,720.8 ± 130.2,723.7 ± 127.9
+Sparus aurata,Prévalence (%),29.09,26.32,28.57,32.43
+Sparus aurata,IC 95%,20.47-37.71,11.81-40.83,13.23-43.92,16.98-47.89
+Sparus aurata,Intensité moyenne (étendue),2.22 (1-5),2.10 (1-5),2.25 (1-5),2.31 (1-6)
+Sparus aurata,Abondance moyenne,0.65,0.55,0.64,0.75

@@ -1,0 +1,191 @@
+package fish.acquisition;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import fish.exceptions.*;
+
+/**
+ * Couche 3/4 — Statistiques numériques.
+ * Calcule moyenne, médiane, écart-type, variance, covariance et corrélation.
+ *
+ * @author Jules Grenesche
+ * @version 0.4
+ */
+public abstract class DataframeStatistiques extends DataframeColonnes {
+
+    // ── Constructeurs (délégation vers DataframeColonnes) ─────────────────────
+
+    public DataframeStatistiques(int nbLignes, String[] nomColonne) {
+        super(nbLignes, nomColonne);
+    }
+
+    public DataframeStatistiques(int nbLignes, String[] nomColonne, Object[][] newtab)
+            throws OutOfBoundException, NullParameterException {
+        super(nbLignes, nomColonne, newtab);
+    }
+
+    // ── Méthode utilitaire interne ────────────────────────────────────────────
+
+    /**
+     * Récupère toutes les valeurs numériques d'une colonne (null ignorés).
+     *
+     * @param col l'index de la colonne
+     * @return liste des valeurs numériques
+     * @throws OutOfBoundException si l'index est invalide
+     */
+    private List<Double> getValeursNumeriquesColonne(int col) throws OutOfBoundException {
+        if (col < 0 || col >= this.nbCol) {
+            throw new OutOfBoundException(0, col, this.nbLignes, this.nbCol);
+        }
+        List<Double> valeurs = new ArrayList<>();
+        for (int i = 0; i < this.nbLignes; i++) {
+            Object val = this.tableau[i][col];
+            if (val instanceof Number) {
+                valeurs.add(((Number) val).doubleValue());
+            }
+        }
+        return valeurs;
+    }
+
+    // ── Statistiques univariées ───────────────────────────────────────────────
+
+    /**
+     * Calcule la moyenne des valeurs numériques d'une colonne.
+     *
+     * @param col l'index de la colonne
+     * @return la moyenne, ou 0.0 si aucune valeur numérique
+     * @throws OutOfBoundException si l'index est invalide
+     */
+    @Override
+    public double calculerMoyenne(int col) throws OutOfBoundException {
+        List<Double> valeurs = getValeursNumeriquesColonne(col);
+        if (valeurs.isEmpty()) return 0.0;
+
+        double somme = 0.0;
+        for (double v : valeurs) somme += v;
+        somme = somme / valeurs.size();
+
+        this.statistiques.put("Moyenne :" + getNomCol(col), somme);
+        return somme;
+    }
+
+    /**
+     * Calcule la médiane des valeurs numériques d'une colonne.
+     *
+     * @param col l'index de la colonne
+     * @return la médiane, ou 0.0 si aucune valeur numérique
+     * @throws OutOfBoundException si l'index est invalide
+     */
+    @Override
+    public double calculerMediane(int col) throws OutOfBoundException {
+        List<Double> valeurs = getValeursNumeriquesColonne(col);
+        if (valeurs.isEmpty()) return 0.0;
+
+        Collections.sort(valeurs);
+        int milieu = valeurs.size() / 2;
+
+        double mediane = (valeurs.size() % 2 == 0)
+                ? (valeurs.get(milieu - 1) + valeurs.get(milieu)) / 2.0
+                : valeurs.get(milieu);
+
+        this.statistiques.put("Mediane :" + getNomCol(col), mediane);
+        return mediane;
+    }
+
+    /**
+     * Calcule l'écart-type des valeurs numériques d'une colonne.
+     *
+     * @param col l'index de la colonne
+     * @return l'écart-type, ou 0.0 si aucune valeur numérique
+     * @throws OutOfBoundException si l'index est invalide
+     */
+    @Override
+    public double calculerEcartType(int col) throws OutOfBoundException {
+        List<Double> valeurs = getValeursNumeriquesColonne(col);
+        if (valeurs.isEmpty()) return 0.0;
+
+        double moyenne     = calculerMoyenne(col);
+        double sommeCarre  = 0.0;
+        for (double v : valeurs) {
+            sommeCarre += Math.pow(v - moyenne, 2);
+        }
+        double ecartType = Math.sqrt(sommeCarre / valeurs.size());
+        this.statistiques.put("EcartType :" + getNomCol(col), ecartType);
+        return ecartType;
+    }
+
+    /**
+     * Calcule la variance des valeurs numériques d'une colonne.
+     * Variance = moyenne des carrés des écarts à la moyenne.
+     *
+     * @param col l'index de la colonne
+     * @return la variance, ou 0.0 si aucune valeur numérique
+     * @throws OutOfBoundException si l'index est invalide
+     */
+    public double calculerVariance(int col) throws OutOfBoundException {
+        List<Double> valeurs = getValeursNumeriquesColonne(col);
+        if (valeurs.isEmpty()) return 0.0;
+
+        double moyenne    = calculerMoyenne(col);
+        double sommeCarre = 0.0;
+        for (double v : valeurs) {
+            sommeCarre += Math.pow(v - moyenne, 2);
+        }
+        double variance = sommeCarre / valeurs.size();
+        this.statistiques.put("Variance :" + getNomCol(col), variance);
+        return variance;
+    }
+
+    // ── Statistiques bivariées ────────────────────────────────────────────────
+
+    /**
+     * Calcule la covariance entre deux colonnes numériques.
+     * CoVariance = moyenne des produits des écarts à la moyenne de chaque colonne.
+     *
+     * @param col1 l'index de la première colonne
+     * @param col2 l'index de la deuxième colonne
+     * @return la covariance, ou 0.0 si aucune valeur numérique
+     * @throws OutOfBoundException si un index est invalide
+     */
+    public double calculerCoVariance(int col1, int col2) throws OutOfBoundException {
+        List<Double> valeurs1 = getValeursNumeriquesColonne(col1);
+        List<Double> valeurs2 = getValeursNumeriquesColonne(col2);
+        if (valeurs1.isEmpty() || valeurs2.isEmpty()) return 0.0;
+
+        int    taille   = Math.min(valeurs1.size(), valeurs2.size());
+        double moyenne1 = calculerMoyenne(col1);
+        double moyenne2 = calculerMoyenne(col2);
+
+        double somme = 0.0;
+        for (int i = 0; i < taille; i++) {
+            somme += (valeurs1.get(i) - moyenne1) * (valeurs2.get(i) - moyenne2);
+        }
+        double covariance = somme / taille;
+        this.statistiques.put("CoVariance :" + getNomCol(col1) + " " + getNomCol(col2), covariance);
+        return covariance;
+    }
+
+    /**
+     * Calcule la corrélation de Pearson entre deux colonnes numériques.
+     * Corrélation = CoVariance(col1, col2) / (EcartType(col1) * EcartType(col2)).
+     *
+     * @param col1 l'index de la première colonne
+     * @param col2 l'index de la deuxième colonne
+     * @return le coefficient de corrélation entre -1 et 1, ou 0.0 si impossible
+     * @throws OutOfBoundException si un index est invalide
+     */
+    @Override
+    public double calculerCorrelation(int col1, int col2) throws OutOfBoundException {
+        double ecartType1 = calculerEcartType(col1);
+        double ecartType2 = calculerEcartType(col2);
+
+        // Évite la division par zéro si une colonne est constante
+        if (ecartType1 == 0.0 || ecartType2 == 0.0) return 0.0;
+
+        double correlation = calculerCoVariance(col1, col2) / (ecartType1 * ecartType2);
+        this.statistiques.put("Correlation :" + getNomCol(col1) + " " + getNomCol(col2), correlation);
+        return correlation;
+    }
+}

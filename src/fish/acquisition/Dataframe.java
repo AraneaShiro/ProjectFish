@@ -1,605 +1,185 @@
 package fish.acquisition;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
-
-import fish.acquisition.lecture.LectureCSV;
-import fish.exceptions.*;
-import fish.calcul.*;
+import fish.exceptions.OutOfBoundException;
 
 /**
- * Classe abstraite représentant un tableau de données structuré
+ * Couche 4/4 — Affichage.
+ * Point d'entrée public du dataframe. Hérite de toutes les couches précédentes.
+ * Ajouter ici uniquement ce qui concerne la présentation des données.
+ *
+ * Hiérarchie :
+ *   DataframeBase → DataframeColonnes → DataframeStatistiques → Dataframe
  *
  * @author Jules Grenesche
- * @version 0.3
+ * @version 0.4
  */
-public abstract class Dataframe implements Statistique {
+public abstract class Dataframe extends DataframeStatistiques {
 
-    ////////////////////////////// Attributs ////////////////////
+    // ── Constructeurs (délégation vers DataframeStatistiques) ─────────────────
 
-    /** Le nombre de colonnes du dataframe */
-    private int nbCol;
-
-    /** Noms des colonnes */
-    private String[] nomColonne;
-
-    /** Le nombre de lignes du dataframe */
-    private int nbLignes;
-
-    /** Tableau contenant l'ensemble des données */
-    private Object[][] tableau;
-
-    /** HashMap des statistiques calculées */
-    protected HashMap<String, Double> statistiques = new HashMap<>();
-
-    ////////////////////////////// Getter / Setter
-
-    /**
-     * Get le nombre de colonne
-     *
-     * @return le nombre de colonne
-     */
-    public int getNbCol() {
-        return this.nbCol;
-    }
-
-    /**
-     * Set le nombre de colonne
-     *
-     * @param nbcol le nombre de colonne
-     */
-    private void setNbCol(int nbCol) {
-        this.nbCol = nbCol;
-    }
-
-    /**
-     * Get le nombre de ligne
-     *
-     * @return le nombre de ligne
-     */
-    public int getNbLignes() {
-        return this.nbLignes;
-    }
-
-    /**
-     * Set le nombre de ligne
-     *
-     * @param nbLignes le nombre de ligne
-     */
-    private void setNbLignes(int nbLignes) {
-        this.nbLignes = nbLignes;
-    }
-
-    /**
-     * Get le tableau de valeur
-     *
-     * @return le tableau
-     */
-    public Object[][] getTableau() {
-        return this.tableau;
-    }
-
-    /**
-     * Set le tableau de valeur
-     *
-     * @param tab le tableau de valeur
-     */
-    private void setTableau(Object[][] tab) {
-        this.tableau = tab;
-    }
-
-    /**
-     * Get le nom des entetes
-     *
-     * @return un tableau des entetes
-     */
-    public String[] getNomColonnes() {
-        return this.nomColonne;
-    }
-
-    /**
-     * Get le nom de l'entete colonnes
-     *
-     * @return le nom de l'entete
-     */
-    public String getNomCol(int col) {
-        return this.nomColonne[col];
-    }
-
-    /**
-     * Set le tableau de valeur
-     *
-     * @param tab le tableau de valeur
-     */
-    private void setNomColonne(String[] tab) {
-        this.nomColonne = tab;
-    }
-
-    /**
-     * Get les statistiques du dataframe
-     *
-     * @return les statistiques du dataframe
-     */
-    public HashMap<String, Double> getStatistique() {
-        return this.statistiques;
-    }
-
-    ////////////////////////////// Constructeurs ////////////////////
-
-    /**
-     * Constructeur sans tableau de données
-     *
-     * @param nbLignes   le nombre de lignes
-     * @param nomColonne les noms des colonnes
-     */
     public Dataframe(int nbLignes, String[] nomColonne) {
-        this.nbLignes = nbLignes;
-        this.nbCol = nomColonne.length;
-        this.nomColonne = nomColonne;
-        this.tableau = new Object[nbLignes][this.nbCol];
+        super(nbLignes, nomColonne);
     }
 
-    /**
-     * Constructeur avec tableau de données
-     *
-     * @param nbLignes   le nombre de lignes
-     * @param nomColonne les noms des colonnes
-     * @param newtab     le tableau de données
-     * @throws OutOfBoundException    si les dimensions ne correspondent pas
-     * @throws NullParameterException si les paramètres sont vides ou null
-     */
     public Dataframe(int nbLignes, String[] nomColonne, Object[][] newtab)
-            throws OutOfBoundException, NullParameterException {
-
-        if (nbLignes == 0 || nomColonne.length == 0 || newtab == null) {
-            throw new NullParameterException();
-        }
-        if (newtab.length != nbLignes) {
-
-            throw new OutOfBoundException(
-                    nbLignes, newtab.length, newtab[0].length);
-        }
-        if (newtab[0].length != nomColonne.length) {
-            throw new OutOfBoundException(
-                    nomColonne.length, newtab.length, newtab[0].length);
-        }
-
-        this.nbLignes = nbLignes;
-        this.nbCol = nomColonne.length;
-        this.nomColonne = nomColonne;
-        this.tableau = newtab;
+            throws fish.exceptions.OutOfBoundException, fish.exceptions.NullParameterException {
+        super(nbLignes, nomColonne, newtab);
     }
 
-    ////////////////////////////// Méthodes ////////////////////
+    // ── Affichage tabulaire ───────────────────────────────────────────────────
 
     /**
-     * Retourne le titre / type du dataframe
+     * Affiche les n premières lignes du dataframe sous forme de tableau.
+     * Si n dépasse le nombre de lignes, affiche toutes les lignes.
      *
-     * @return une description du type de dataframe
+     * @param n le nombre de lignes à afficher
      */
-    public abstract String getTitle();
+    public void afficherPremieresFignes(int n) {
+        int nbAfficher = Math.min(n, this.nbLignes);
+        int[] largeurs = calculerLargeurs(nbAfficher);
 
-    // ───────────────────────────────── Dimension
-    // ────────────────────────────────────────────────────────
+        afficherSeparateur(largeurs);
+        afficherLigneEntetes(largeurs);
+        afficherSeparateur(largeurs);
 
-    /**
-     * Retourne les dimensions sous forme de tableau [nbLignes, nbCol]
-     *
-     * @return int[] de taille 2
-     */
-    public int[] getSize() {
-        return new int[] { this.nbLignes, this.nbCol };
+        for (int i = 0; i < nbAfficher; i++) {
+            afficherLigneDonnees(i, largeurs);
+        }
+        afficherSeparateur(largeurs);
+
+        if (n > this.nbLignes) {
+            System.out.println("(Toutes les " + this.nbLignes + " lignes affichées)");
+        } else {
+            System.out.println("(" + nbAfficher + " / " + this.nbLignes + " lignes affichées)");
+        }
     }
 
     /**
-     * Retourne les dimensions sous forme lisible
-     *
-     * @return String "X lignes x Y colonnes"
+     * Affiche toutes les statistiques du dataframe :
+     * dimensions, nulls, valeurs uniques, et stats numériques par colonne.
      */
-    public String getDimension() {
-        return this.nbLignes + " lignes x " + this.nbCol + " colonnes";
-    }
+    public void afficherStatistiques() {
+        System.out.println("╔══════════════════════════════════════════════════════╗");
+        System.out.println("║  STATISTIQUES — " + getTitle());
+        System.out.println("╠══════════════════════════════════════════════════════╣");
+        System.out.println("║  Dimensions   : " + getDimension());
+        System.out.println("╠══════════════════════════════════════════════════════╣");
 
-    // Manipulation-du-tableau────────────────────────────────────────────────────────
+        System.out.printf("║  %-20s %-6s %-7s %-8s %-8s %-8s %-8s%n",
+                "Colonne", "Null", "Uniq.", "Moy.", "Méd.", "ÉcartT.", "Var.");
+        System.out.println("╠══════════════════════════════════════════════════════╣");
 
-    /**
-     * Retourne tous les éléments d'une colonne
-     *
-     * @param col l'index de la colonne
-     * @return List<Object> des éléments de la colonne
-     * @throws OutOfBoundException si l'index est invalide
-     */
-    public List<Object> getColonne(int col) throws OutOfBoundException {
-        if (col < 0 || col >= this.nbCol) {
-            throw new OutOfBoundException(col, this.nbLignes, this.nbCol);
-        }
-        List<Object> colonne = new ArrayList<>();
-        for (int i = 0; i < this.nbLignes; i++) {
-            colonne.add(this.tableau[i][col]);
-        }
-        return colonne;
-    }
-
-    /**
-     * Retourne la valeur d'une case
-     *
-     * @param lig la ligne
-     * @param col la colonne
-     * @return l'objet à cette position, ou null si hors limites
-     * @throws OutOfBoundException si les coordonnées sont invalides
-     */
-    public Object getCase(int lig, int col) throws OutOfBoundException {
-        if (lig < 0 || lig >= this.nbLignes || col < 0 || col >= this.nbCol) {
-            throw new OutOfBoundException(lig, col, this.nbLignes, this.nbCol);
-        }
-        return this.tableau[lig][col];
-    }
-
-    /**
-     * Modifie la valeur d'une case
-     *
-     * @param lig    la ligne
-     * @param col    la colonne
-     * @param newObj la nouvelle valeur
-     * @return true si la modification a réussi
-     * @throws OutOfBoundException si les coordonnées sont invalides
-     */
-    public boolean setCase(int lig, int col, Object newObj) throws OutOfBoundException {
-        if (lig < 0 || lig >= this.nbLignes || col < 0 || col >= this.nbCol) {
-            throw new OutOfBoundException(lig, col, this.nbLignes, this.nbCol);
-        }
-        this.tableau[lig][col] = newObj;
-        return true;
-    }
-
-    /**
-     * Fusionne deux colonnes complémentaires en une seule.
-     * Conditions :
-     * - Les deux colonnes doivent avoir le même type de valeurs
-     * - Quand l'une a une valeur, l'autre doit être null (pas de chevauchement)
-     *
-     * @param col1           l'index de la première colonne
-     * @param col2           l'index de la deuxième colonne
-     * @param nomNouvColonne le nom de la nouvelle colonne fusionnée
-     * @throws OutOfBoundException si un index est invalide
-     * @throws NotNullException    si les 2 colonnes sont pleines
-     */
-    public void fusionCol(int col1, int col2, String nomNouvColonne)
-            throws OutOfBoundException, IllegalArgumentException, NotNullException {
-
-        if (col1 < 0 || col1 >= this.nbCol) {
-            throw new OutOfBoundException(0, col1, this.nbLignes, this.nbCol);
-        }
-        if (col2 < 0 || col2 >= this.nbCol) {
-            throw new OutOfBoundException(0, col2, this.nbLignes, this.nbCol);
-        }
-
-        // ── Vérification de la complémentarité ──────────────────────
-
-        // Pour chaque ligne de chaque colonne
-        for (int i = 0; i < this.nbLignes; i++) {
-            Object valCol1 = this.tableau[i][col1];
-            Object valCol2 = this.tableau[i][col2];
-
-            // Les deux ont une valeur pas complémentaires
-            if (valCol1 != null && valCol2 != null) {
-                throw new NotNullException(i, col1, col2);
-            }
-        }
-
-        // ── Construction de la colonne fusionnée et des nouvelles structures ──────
-
-        int nouvelleNbCol = this.nbCol - 1; // On remplace 2 colonnes par 1
-        Object[][] nouveauTableau = new Object[this.nbLignes][nouvelleNbCol];
-        String[] nouveauxNoms = new String[nouvelleNbCol]; // Nouveau nom des labels
-
-        // Index de la colonne fusionnée = position de col1 dans le nouveau tableau
-        int indexFusion = Math.min(col1, col2);
-
-        // Remplissage des noms de colonnes
-        int curseur = 0;
         for (int j = 0; j < this.nbCol; j++) {
-            if (j == indexFusion) {
-                nouveauxNoms[curseur++] = nomNouvColonne; // Nouvelle colonne fusionnée
-            } else if (j != Math.max(col1, col2)) {
-                nouveauxNoms[curseur++] = this.nomColonne[j]; // Colonnes inchangées
-            }
-        }
+            String nom    = this.nomColonne[j];
+            int    nbNull = compterNull(j);
+            int    nbUniq = 0;
+            try { nbUniq = getUniqueCol(j); } catch (OutOfBoundException e) { /* ignoré */ }
 
-        // Remplissage du nouveau tableau
-        for (int i = 0; i < this.nbLignes; i++) {
-            curseur = 0;
-            for (int j = 0; j < this.nbCol; j++) {
-                if (j == indexFusion) {
-                    // On prend la valeur non null entre les deux colonnes
-                    Object valCol1 = this.tableau[i][col1];
-                    Object valCol2 = this.tableau[i][col2];
-                    nouveauTableau[i][curseur++] = (valCol1 != null) ? valCol1 : valCol2;
-                } else if (j != Math.max(col1, col2)) {
-                    nouveauTableau[i][curseur++] = this.tableau[i][j];
-                }
-            }
-        }
-
-        // ── Mise à jour du dataframe ──────────────────────────────────────────────
-        this.tableau = nouveauTableau;
-        this.nomColonne = nouveauxNoms;
-        this.nbCol = nouvelleNbCol;
-
-    }
-
-    /**
-     * Supprime une colonne
-     * 
-     * @param col l'index de la colonne
-     * @throws OutOfBoundException si un index est invalide
-     */
-    public void supprimerColonne(int nCol) throws OutOfBoundException {
-
-        // Si la colonne n existe pas
-        if (nCol == -1 || nCol > this.nbCol - 1) {
-            throw new OutOfBoundException(nCol, nbLignes, nbCol);
-        }
-
-        // Nouveau tableau sans la colonne
-        Object[][] nouveauTableau = new Object[this.nbLignes][this.nbCol - 1];
-
-        // On recopie le tableau sauf la colonne sup
-        for (int i = 0; i < this.nbLignes; i++) {
-            int newCol = 0;
-            for (int j = 0; j < this.nbCol; j++) {
-                if (j != nCol) {
-                    nouveauTableau[i][newCol++] = this.tableau[i][j];
-                }
-            }
-        }
-
-        // Mise a jour des entetes
-        String[] nouvellesColonnes = new String[this.nbCol - 1];
-        int k = 0;
-
-        for (int i = 0; i < this.nbCol; i++) {
-            if (i != nCol) {
-                nouvellesColonnes[k++] = this.nomColonne[i];
-            }
-        }
-        // Mis a jour df
-        this.tableau = nouveauTableau;
-        this.nomColonne = nouvellesColonnes;
-        this.nbCol--;
-
-    }
-
-    // ─────────────────Unique────────────────────────────────────────────────────────
-
-    /**
-     * Retourne le nombre de valeurs uniques dans une colonne
-     *
-     * @param col la colonne à analyser
-     * @return le nombre de valeurs uniques (null inclus)
-     * @throws OutOfBoundException si l'index est invalide
-     */
-    public int getUniqueCol(int col) throws OutOfBoundException {
-        if (col < 0 || col >= this.nbCol) {
-            throw new OutOfBoundException(col, this.nbLignes, this.nbCol);
-        }
-        List<Object> valeursUniques = new ArrayList<>();
-        for (int i = 0; i < this.nbLignes; i++) {
-            Object val = this.tableau[i][col];
-            if (!valeursUniques.contains(val)) { // Si il contient deja la valeur ou non
-                valeursUniques.add(val);
-            }
-        }
-        return valeursUniques.size();
-    }
-
-    /**
-     * Retourne le nombre de valeurs uniques pour chaque colonne
-     *
-     * @return int[] où chaque case correspond au nb de valeurs uniques de la
-     *         colonne
-     */
-    public int[] getUniqueTab() {
-        int[] resultat = new int[this.nbCol];
-        for (int j = 0; j < this.nbCol; j++) {
-            try {
-                resultat[j] = getUniqueCol(j);
-            } catch (OutOfBoundException e) { // Si on dépasse
-                System.out.println(e.getMessage());
-            }
-
-        }
-        return resultat;
-    }
-
-    /**
-     * Retourne chaque valeur unique d'une colonne avec son nombre d'apparitions
-     *
-     * @param col l'index de la colonne
-     * @return une Map où chaque clé est une valeur unique et la valeur est son
-     *         nombre d'apparitions
-     * @throws OutOfBoundException si l'index est invalide
-     */
-    public HashMap<Object, Integer> getUniqueColonneSomme(int col) throws OutOfBoundException {
-        if (col < 0 || col >= this.nbCol) {
-            throw new OutOfBoundException(0, col, this.nbLignes, this.nbCol);
-        }
-
-        HashMap<Object, Integer> occurrences = new HashMap<>();
-
-        for (int i = 0; i < this.nbLignes; i++) {
-            Object valeur = this.tableau[i][col];
-            if (occurrences.containsKey(valeur)) {
-                occurrences.put(valeur, occurrences.get(valeur) + 1); // On incrémente si déjà présente
+            if (colonneEstNumerique(j)) {
+                try {
+                    double moy      = calculerMoyenne(j);
+                    double med      = calculerMediane(j);
+                    double ecart    = calculerEcartType(j);
+                    double variance = calculerVariance(j);
+                    System.out.printf("║  %-20s %-6d %-7d %-8.2f %-8.2f %-8.2f %-8.2f%n",
+                            tronquer(nom, 20), nbNull, nbUniq, moy, med, ecart, variance);
+                } catch (OutOfBoundException e) { /* ignoré */ }
             } else {
-                occurrences.put(valeur, 1); // Première apparition
+                System.out.printf("║  %-20s %-6d %-7d %-8s %-8s %-8s %-8s%n",
+                        tronquer(nom, 20), nbNull, nbUniq, "—", "—", "—", "—");
             }
         }
 
-        return occurrences;
+        if (!this.statistiques.isEmpty()) {
+            System.out.println("╠══════════════════════════════════════════════════════╣");
+            System.out.println("║  Statistiques calculées :");
+            for (var entry : this.statistiques.entrySet()) {
+                System.out.printf("║    %-35s : %.4f%n",
+                        tronquer(entry.getKey(), 35), entry.getValue());
+            }
+        }
+
+        System.out.println("╚══════════════════════════════════════════════════════╝");
     }
 
-    // ── Statistiques ─────────────────────────────────────────────────────────────
-    /**
-     * Récupère toutes les valeurs numériques d'une colonne donnée
-     *
-     * @param col l'index de la colonne
-     * @return liste des valeurs numériques, null ignorés
-     * @throws OutOfBoundException si l'index est invalide
-     */
-    private List<Double> getValeursNumeriquesColonne(int col) throws OutOfBoundException {
-        if (col < 0 || col >= this.nbCol) {
-            throw new OutOfBoundException(0, col, this.nbLignes, this.nbCol);
+    // ── Utilitaires privés d'affichage ────────────────────────────────────────
+
+    /** Calcule la largeur maximale de chaque colonne pour un affichage aligné. */
+    private int[] calculerLargeurs(int nbLignes) {
+        int[] largeurs = new int[this.nbCol];
+        for (int j = 0; j < this.nbCol; j++) {
+            largeurs[j] = this.nomColonne[j].length();
+            for (int i = 0; i < nbLignes; i++) {
+                Object val = null;
+                try { val = getCase(i, j); } catch (OutOfBoundException e) { /* ignoré */ }
+                int len = (val == null) ? 4 : val.toString().length();
+                if (len > largeurs[j]) largeurs[j] = len;
+            }
+            largeurs[j] = Math.min(largeurs[j] + 2, 22);
         }
-        List<Double> valeurs = new ArrayList<>();
+        return largeurs;
+    }
+
+    /** Affiche une ligne séparatrice. */
+    private void afficherSeparateur(int[] largeurs) {
+        StringBuilder sb = new StringBuilder("+");
+        for (int l : largeurs) sb.append("-".repeat(l)).append("+");
+        System.out.println(sb);
+    }
+
+    /** Affiche la ligne d'en-têtes. */
+    private void afficherLigneEntetes(int[] largeurs) {
+        StringBuilder sb = new StringBuilder("|");
+        for (int j = 0; j < this.nbCol; j++) {
+            sb.append(centrer(this.nomColonne[j], largeurs[j])).append("|");
+        }
+        System.out.println(sb);
+    }
+
+    /** Affiche une ligne de données. */
+    private void afficherLigneDonnees(int ligne, int[] largeurs) {
+        StringBuilder sb = new StringBuilder("|");
+        for (int j = 0; j < this.nbCol; j++) {
+            Object val = null;
+            try { val = getCase(ligne, j); } catch (OutOfBoundException e) { /* ignoré */ }
+            String texte = (val == null) ? "null" : val.toString();
+            sb.append(centrer(tronquer(texte, largeurs[j] - 1), largeurs[j])).append("|");
+        }
+        System.out.println(sb);
+    }
+
+    /** Centre un texte dans une largeur donnée. */
+    private String centrer(String texte, int largeur) {
+        if (texte.length() >= largeur) return texte.substring(0, largeur);
+        int gauche = (largeur - texte.length()) / 2;
+        int droite = largeur - texte.length() - gauche;
+        return " ".repeat(gauche) + texte + " ".repeat(droite);
+    }
+
+    /** Tronque un texte à maxLen caractères avec "…" si nécessaire. */
+    private String tronquer(String texte, int maxLen) {
+        if (texte.length() <= maxLen) return texte;
+        return texte.substring(0, maxLen - 1) + "…";
+    }
+
+    /** Compte les valeurs null dans une colonne. */
+    private int compterNull(int col) {
+        int count = 0;
         for (int i = 0; i < this.nbLignes; i++) {
-            Object val = this.tableau[i][col];
-            if (val instanceof Number) {
-                valeurs.add(((Number) val).doubleValue());
-            }
+            try { if (getCase(i, col) == null) count++; }
+            catch (OutOfBoundException e) { /* ignoré */ }
         }
-        return valeurs;
+        return count;
     }
 
-    /**
-     * Calcule la moyenne des valeurs numériques d'une colonne
-     *
-     * @param col l'index de la colonne
-     * @return la moyenne, ou 0.0 si aucune valeur numérique
-     * @throws OutOfBoundException si l'index est invalide
-     */
-    @Override
-    public double calculerMoyenne(int col) throws OutOfBoundException {
-        List<Double> valeurs = getValeursNumeriquesColonne(col);
-        if (valeurs.isEmpty())
-            return 0.0;// Retourne exception ?
-
-        double somme = 0.0;
-        for (double v : valeurs)
-            somme += v;
-
-        somme = somme / valeurs.size();
-        this.statistiques.put("Moyenne :" + getNomCol(col), somme);
-        return somme;
-    }
-
-    /**
-     * Calcule la médiane des valeurs numériques d'une colonne
-     *
-     * @param col l'index de la colonne
-     * @return la médiane, ou 0.0 si aucune valeur numérique
-     * @throws OutOfBoundException si l'index est invalide
-     */
-    @Override
-    public double calculerMediane(int col) throws OutOfBoundException {
-        List<Double> valeurs = getValeursNumeriquesColonne(col);
-        if (valeurs.isEmpty())
-            return 0.0;
-
-        Collections.sort(valeurs);
-        int milieu = valeurs.size() / 2;
-
-        if (valeurs.size() % 2 == 0) {
-            return (valeurs.get(milieu - 1) + valeurs.get(milieu)) / 2.0;
+    /** Vérifie si une colonne contient au moins une valeur numérique. */
+    private boolean colonneEstNumerique(int col) {
+        for (int i = 0; i < this.nbLignes; i++) {
+            try {
+                Object val = getCase(i, col);
+                if (val != null) return val instanceof Number;
+            } catch (OutOfBoundException e) { /* ignoré */ }
         }
-        this.statistiques.put("Mediane :" + getNomCol(col), valeurs.get(milieu));
-        return valeurs.get(milieu);
-    }
-
-    /**
-     * Calcule l'écart type des valeurs numériques d'une colonne
-     *
-     * @param col l'index de la colonne
-     * @return l'écart type, ou 0.0 si aucune valeur numérique
-     * @throws OutOfBoundException si l'index est invalide
-     */
-    @Override
-    public double calculerEcartType(int col) throws OutOfBoundException {
-        List<Double> valeurs = getValeursNumeriquesColonne(col);
-        if (valeurs.isEmpty())
-            return 0.0;
-
-        double moyenne = calculerMoyenne(col);
-        double sommeCarre = 0.0;
-        for (double v : valeurs) {
-            sommeCarre += Math.pow(v - moyenne, 2);
-        }
-        this.statistiques.put("EcartType :" + getNomCol(col), Math.sqrt(sommeCarre / valeurs.size()));
-        return Math.sqrt(sommeCarre / valeurs.size());
-    }
-
-    /**
-     * Calcule la variance des valeurs numériques d'une colonne
-     * Variance = moyenne des carrés des écarts à la moyenne
-     *
-     * @param col l'index de la colonne
-     * @return la variance, ou 0.0 si aucune valeur numérique
-     * @throws OutOfBoundException si l'index est invalide
-     */
-    public double calculerVariance(int col) throws OutOfBoundException {
-        List<Double> valeurs = getValeursNumeriquesColonne(col);
-        if (valeurs.isEmpty())
-            return 0.0;
-
-        double moyenne = calculerMoyenne(col);
-        double sommeCarre = 0.0;
-        for (double v : valeurs) {
-            sommeCarre += Math.pow(v - moyenne, 2); // carre de la difference
-        }
-        this.statistiques.put("Variance :" + getNomCol(col), sommeCarre / valeurs.size());
-        return sommeCarre / valeurs.size();
-    }
-
-    /**
-     * Calcule la covariance entre deux colonnes numériques
-     * CoVariance = moyenne des produits des écarts à la moyenne de chaque colonne
-     *
-     * @param col1 l'index de la première colonne
-     * @param col2 l'index de la deuxième colonne
-     * @return la covariance, ou 0.0 si aucune valeur numérique
-     * @throws OutOfBoundException si un index est invalide
-     */
-    public double calculerCoVariance(int col1, int col2) throws OutOfBoundException {
-        List<Double> valeurs1 = getValeursNumeriquesColonne(col1);
-        List<Double> valeurs2 = getValeursNumeriquesColonne(col2);
-        if (valeurs1.isEmpty() || valeurs2.isEmpty())
-            return 0.0;
-        // Devrait t il etre de la meme taille ? je veux dormir
-        int taille = Math.min(valeurs1.size(), valeurs2.size());
-        double moyenne1 = calculerMoyenne(col1);
-        double moyenne2 = calculerMoyenne(col2);
-
-        double somme = 0.0;
-        for (int i = 0; i < taille; i++) {
-            somme += (valeurs1.get(i) - moyenne1) * (valeurs2.get(i) - moyenne2);
-        }
-
-        this.statistiques.put("CoVariance :" + getNomCol(col1) + " " + getNomCol(col2), somme / taille);
-        return somme / taille;
-    }
-
-    /**
-     * Calcule la corrélation de Pearson entre deux colonnes numériques
-     * Corrélation = CoVariance(col1, col2) / (EcartType(col1) * EcartType(col2))
-     *
-     * @param col1 l'index de la première colonne
-     * @param col2 l'index de la deuxième colonne
-     * @return le coefficient de corrélation entre -1 et 1, ou 0.0 si impossible
-     * @throws OutOfBoundException si un index est invalide
-     */
-    @Override
-    public double calculerCorrelation(int col1, int col2) throws OutOfBoundException {
-        double ecartType1 = calculerEcartType(col1);
-        double ecartType2 = calculerEcartType(col2);
-
-        // Evite la division par zéro si une colonne est constante
-        if (ecartType1 == 0.0 || ecartType2 == 0.0)
-            return 0.0;
-        this.statistiques.put("Correlation :" + getNomCol(col1) + " " + getNomCol(col2),
-                calculerCoVariance(col1, col2) / (ecartType1 * ecartType2));
-        return calculerCoVariance(col1, col2) / (ecartType1 * ecartType2);
+        return false;
     }
 }

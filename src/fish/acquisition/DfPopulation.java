@@ -26,7 +26,7 @@ import java.util.Map;
  * @author Jules Grenesche
  * @version 0.3
  */
-public class DfPopulation extends Dataframe {
+public class DfPopulation extends DataframeComplet implements Utilitaire {
 
     ////////////////////////////// Attributs ////////////////////
 
@@ -82,6 +82,7 @@ public class DfPopulation extends Dataframe {
      * Retourne toutes les populations d'une espèce (utile en multi-période)
      *
      * @param espece le nom de l'espèce
+     * @return une liste de population qui est de l'espece donné
      */
     public List<Population> getPopulationsParEspece(String espece) {
         List<Population> resultat = new ArrayList<>();
@@ -94,13 +95,24 @@ public class DfPopulation extends Dataframe {
 
     ////////////////////////////// Constructeurs ////////////////////
 
+    /**
+     * Constructeur sans tableau de données.
+     *
+     * @param nbLignes   le nombre de lignes
+     * @param nomColonne les noms des colonnes
+     */
     public DfPopulation(int nbLignes, String[] nomColonne) {
         super(nbLignes, nomColonne);
     }
 
     /**
-     * Constructeur avec tableau — utilisé par la réflexion dans LectureCSV.
-     * Détecte automatiquement le format et construit les populations.
+     * Constructeur avec tableau de données.
+     *
+     * @param nbLignes   le nombre de lignes
+     * @param nomColonne les noms des colonnes
+     * @param newtab     le tableau de données
+     * @throws OutOfBoundException    si les dimensions ne correspondent pas
+     * @throws NullParameterException si les paramètres sont vides ou null
      */
     public DfPopulation(int nbLignes, String[] nomColonne, Object[][] newtab)
             throws OutOfBoundException, NullParameterException {
@@ -114,12 +126,14 @@ public class DfPopulation extends Dataframe {
         }
     }
 
-    ////////////////////////////// Détection du format
+    // ───────────────── Détection du format─────────────────
 
     /**
      * Détecte si le tableau est au format multi-période :
      * au moins 2 colonnes contiennent un "_" et le même préfixe avant "_"
      * (ex: "N_Total" et "N_2012" → préfixe "N" présent 2 fois)
+     * 
+     * @return true si les formats est multiperiode
      */
     private boolean detecterFormatMultiPeriode() {
         String[] noms = getNomColonnes();
@@ -142,6 +156,8 @@ public class DfPopulation extends Dataframe {
     /**
      * Extrait les suffixes de période depuis les noms de colonnes.
      * Ex: ["N_Total","N_2012","N_2013"] → ["Total","2012","2013"]
+     * 
+     * @return une liste des différentes periodes
      */
     private String[] extrairePeriodes() {
         String[] noms = getNomColonnes();
@@ -174,6 +190,13 @@ public class DfPopulation extends Dataframe {
 
     ////////////////////////////// Utilitaires ////////////////////
 
+    /**
+     * Fonction utilitaire qui trouve l'index de la
+     * colonne en fonction du nom donnée
+     *
+     * @param motCle le nom de la colonne que l'on recherche
+     * @return le numéro de la colonne ou -1 si elle n'est pas trouvée
+     */
     public int getIndexColonne(String motCle) {
         String[] noms = getNomColonnes();
         for (int j = 0; j < noms.length; j++) {
@@ -185,6 +208,10 @@ public class DfPopulation extends Dataframe {
 
     /**
      * Cherche une colonne dont le nom contient motCle ET suffixe (ex: "N" + "2012")
+     * 
+     * @param motCle  le mot clé recherché
+     * @param periode la période recherché (ex:2019)
+     * @return l'indice trouvé ou -1 sinon
      */
     private int getIndexColonnePeriode(String motCle, String periode) {
         String[] noms = getNomColonnes();
@@ -196,7 +223,16 @@ public class DfPopulation extends Dataframe {
         return -1;
     }
 
-    private float lireFloat(int ligne, int col, float defaut) {
+    /**
+     * Fonction utilitaire qui lis si c est possible en Float
+     * et le renvoie ou une valeur par defaut
+     *
+     * @param ligne  la ligne de la case a lire
+     * @param col    la colonne de la case a lire
+     * @param defaut la valeur par defaut si illisible ou mauvaise coordonné
+     * @return la valeur ou la valeur par defaut
+     */
+    public float lireFloat(int ligne, int col, float defaut) {
         if (col < 0)
             return defaut;
         try {
@@ -208,7 +244,16 @@ public class DfPopulation extends Dataframe {
         return defaut;
     }
 
-    private int lireInt(int ligne, int col, int defaut) {
+    /**
+     * Fonction utilitaire qui lis si c est possible en int
+     * et le renvoie ou une valeur par defaut
+     *
+     * @param ligne  la ligne de la case a lire
+     * @param col    la colonne de la case a lire
+     * @param defaut la valeur par defaut si illisible ou mauvaise coordonné
+     * @return la valeur ou la valeur par defaut
+     */
+    public int lireInt(int ligne, int col, int defaut) {
         if (col < 0)
             return defaut;
         try {
@@ -220,7 +265,15 @@ public class DfPopulation extends Dataframe {
         return defaut;
     }
 
-    private String lireString(int ligne, int col) {
+    /**
+     * Fonction utilitaire qui lis si c est possible en String
+     * et le renvoie ou une valeur par defaut
+     *
+     * @param ligne la ligne de la case a lire
+     * @param col   la colonne de la case a lire
+     * @return la valeur ou un string vide
+     */
+    public String lireString(int ligne, int col) {
         if (col < 0)
             return "Inconnue";
         try {
@@ -235,6 +288,8 @@ public class DfPopulation extends Dataframe {
 
     /**
      * Construit un tableau de Population : une par ligne (format standard)
+     * 
+     * @return une liste de population
      */
     public Population[] construirePopulationsStandard() {
         List<Population> liste = new ArrayList<>();
@@ -270,6 +325,8 @@ public class DfPopulation extends Dataframe {
     /**
      * Construit un tableau de Population : une par espèce × période.
      * Ex: 4 espèces × 3 périodes (Total, 2012, 2013) = 12 populations
+     * 
+     * @return une liste de population
      */
     public Population[] construirePopulationsMultiPeriode() {
         List<Population> liste = new ArrayList<>();
@@ -318,6 +375,7 @@ public class DfPopulation extends Dataframe {
     /**
      * Recharge toutes les populations depuis le tableau actuel.
      * À appeler après un setCase().
+     * 
      */
     public void majPopulations() {
         if (this.formatMultiPeriode) {
@@ -344,6 +402,12 @@ public class DfPopulation extends Dataframe {
         }
     }
 
+    /**
+     * Répercution si le tableau n'est pas périodique
+     *
+     * @param ligne l'index a modifier
+     * @param pop   la nouvelle population
+     */
     private void repercuterDansTableau(int ligne, Population pop) {
         int iEspece = getIndexColonne(CLE_ESPECE);
         int iEffectif = getIndexColonne("effectif");
@@ -370,6 +434,9 @@ public class DfPopulation extends Dataframe {
 
     ////////////////////////////// Affichage ////////////////////
 
+    /**
+     * Affiche dans la console un résumé du dataframe
+     */
     public void afficherResume() {
         System.out.println("=== " + getTitle() + " ===");
         if (formatMultiPeriode) {
@@ -393,6 +460,11 @@ public class DfPopulation extends Dataframe {
         }
     }
 
+    /**
+     * Override de la fonction getTitle
+     * 
+     * @return un string avec Etude de population le format et la taille
+     */
     @Override
     public String getTitle() {
         return "Etude de population"

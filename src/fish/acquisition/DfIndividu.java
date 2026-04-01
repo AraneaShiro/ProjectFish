@@ -21,7 +21,7 @@ import java.util.Map;
  * @author Jules Grenesche
  * @version 0.3
  */
-public class DfIndividu extends DataframeComplet {
+public class DfIndividu extends DataframeComplet implements Utilitaire {
 
     ////////////////////////////// Attributs ////////////////////
 
@@ -157,7 +157,7 @@ public class DfIndividu extends DataframeComplet {
      * @param defaut la valeur par defaut si illisible ou mauvaise coordonné
      * @return la valeur ou la valeur par defaut
      */
-    private float lireFloat(int ligne, int col, float defaut) {
+    public float lireFloat(int ligne, int col, float defaut) {
         if (col < 0)
             return defaut;
         try {
@@ -169,7 +169,16 @@ public class DfIndividu extends DataframeComplet {
         return defaut;
     }
 
-    private int lireInt(int ligne, int col, int defaut) {
+    /**
+     * Fonction utilitaire qui lis si c est possible en int
+     * et le renvoie ou une valeur par defaut
+     *
+     * @param ligne  la ligne de la case a lire
+     * @param col    la colonne de la case a lire
+     * @param defaut la valeur par defaut si illisible ou mauvaise coordonné
+     * @return la valeur ou la valeur par defaut
+     */
+    public int lireInt(int ligne, int col, int defaut) {
         if (col < 0)
             return defaut;
         try {
@@ -181,7 +190,15 @@ public class DfIndividu extends DataframeComplet {
         return defaut;
     }
 
-    private String lireString(int ligne, int col) {
+    /**
+     * Fonction utilitaire qui lis si c est possible en String
+     * et le renvoie ou une valeur par defaut
+     *
+     * @param ligne la ligne de la case a lire
+     * @param col   la colonne de la case a lire
+     * @return la valeur ou un string vide
+     */
+    public String lireString(int ligne, int col) {
         if (col < 0)
             return "";
         try {
@@ -192,11 +209,17 @@ public class DfIndividu extends DataframeComplet {
         }
     }
 
-    ////////////////////////////// Construction ////////////////////
+    // ───────────────────────── Construction ─────────────────────────
 
+    /**
+     * Construit une liste d'individu a partir du dataframe
+     *
+     * @return la liste des individus obtenus
+     */
     public List<Individu> construireIndividus() {
-        List<Individu> individus = new ArrayList<>();
+        List<Individu> individus = new ArrayList<>(); // Liste pour le resultat
 
+        // On prend tous les index de base
         int iEspece = getIndexColonne(CLE_ESPECE);
         int iLongueur = getIndexColonne(CLE_LONGUEUR);
         int iPoids = getIndexColonne(CLE_POIDS);
@@ -204,6 +227,7 @@ public class DfIndividu extends DataframeComplet {
         int iTaux = getIndexColonne(CLE_TAUX);
 
         String[] noms = getNomColonnes();
+        // On recupére les colonnes d'organes
         List<Integer> colonnesOrganes = new ArrayList<>();
         for (int j = 0; j < noms.length; j++) {
             String n = noms[j].toLowerCase();
@@ -213,8 +237,10 @@ public class DfIndividu extends DataframeComplet {
                 colonnesOrganes.add(j);
             }
         }
-
+        // pour chaque ligne du dataframe
         for (int i = 0; i < getNbLignes(); i++) {
+
+            // On met les donnés des colonnes connus
             String espece = lireString(i, iEspece);
             if (espece == null || espece.isBlank()) {
                 espece = "";
@@ -225,12 +251,13 @@ public class DfIndividu extends DataframeComplet {
             float taux = lireFloat(i, iTaux, -1f);
 
             ArrayList<Contenu> contenus = new ArrayList<>();
+
             for (int colOrgane : colonnesOrganes) {
                 try {
                     Object val = getCase(i, colOrgane);
                     if (val instanceof Number) {
                         float valF = ((Number) val).floatValue();
-                        contenus.add(valF <= 1f
+                        contenus.add(valF <= 1f // Si la valeur est inf a 1 c est un taux
                                 ? new Contenu(noms[colOrgane], valF)
                                 : new Contenu(noms[colOrgane], (int) valF));
                     }
@@ -253,14 +280,22 @@ public class DfIndividu extends DataframeComplet {
         return individus;
     }
 
+    /**
+     * Construit la population
+     *
+     * @return la population produite
+     * @throws NegativeValueException si une valeur negative est trouvé
+     * @throws EmptyStringException   si le string est alors qu'il ne devrait pas
+     * @throws TauxValueException     si le taux est mauvais
+     */
     public Population construirePopulation()
             throws NegativeValueException, EmptyStringException, TauxValueException {
-        List<Individu> individus = construireIndividus();
+        List<Individu> individus = construireIndividus(); // On construit notre liste d'individu
         if (individus.isEmpty())
             return null;
 
         Individu[] tableau = individus.toArray(new Individu[0]);
-        String espece = tableau[0].getEspece();
+        String espece = tableau[0].getEspece(); // on récupére l'espece étudié
 
         String[] noms = getNomColonnes();
         StringBuilder parties = new StringBuilder();
@@ -280,7 +315,10 @@ public class DfIndividu extends DataframeComplet {
                 tableau);
     }
 
-    /** Recharge la Population après un setCase() */
+    /**
+     * Recharge la Population après un setCase()
+     * 
+     */
     public void majPopulation() {
         try {
             this.population = construirePopulation();
@@ -289,6 +327,12 @@ public class DfIndividu extends DataframeComplet {
         }
     }
 
+    /**
+     * Permet de classés les individus par especes
+     * 
+     * @return une map avec <Espece, la liste d'individu de l'espece>
+     * 
+     */
     public Map<String, List<Individu>> getIndividusParEspece() {
         LinkedHashMap<String, List<Individu>> map = new LinkedHashMap<>();
         for (Individu ind : construireIndividus()) {
@@ -298,6 +342,11 @@ public class DfIndividu extends DataframeComplet {
         return map;
     }
 
+    /**
+     * Surcharge de la methode toString
+     * 
+     * @return un string sous la forme de Individu Titre
+     */
     @Override
     public String getTitle() {
         return TYPE + (titre != null ? " : " + titre : "");

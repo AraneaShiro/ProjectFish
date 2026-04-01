@@ -1,17 +1,21 @@
+// ── Package ────────────────────────────────────────────────────────────
 package fish.acquisition;
 
+// ── Import ────────────────────────────────────────────────────────────
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import fish.exceptions.*;
 
+// ── Test : NON ────────────────────────────────────────────────────────────
 /**
- * Couche 1/4 — Attributs, constructeurs et accès aux cases.
+ * Squelette de base du dataframe
+ * Attributs, constructeurs et accès aux cases.
  * Toutes les autres couches héritent de cette classe.
- *
+ * 
+ * @see fish.calcul.Statistique
  * @author Jules Grenesche
- * @version 0.4
+ * @version 1.0
  */
 public abstract class DataframeBase implements fish.calcul.Statistique {
 
@@ -34,12 +38,60 @@ public abstract class DataframeBase implements fish.calcul.Statistique {
 
     // ── Accesseurs ───────────────────────────────────────────────────────────
 
-    public int getNbCol()                        { return this.nbCol; }
-    public int getNbLignes()                     { return this.nbLignes; }
-    public Object[][] getTableau()               { return this.tableau; }
-    public String[] getNomColonnes()             { return this.nomColonne; }
-    public String getNomCol(int col)             { return this.nomColonne[col]; }
-    public HashMap<String, Double> getStatistique() { return this.statistiques; }
+    /**
+     * Get le nombre de colonne
+     * 
+     * @return le nombre de colonne du dataframe
+     */
+    public int getNbCol() {
+        return this.nbCol;
+    }
+
+    /**
+     * Get le nombre de ligne
+     * 
+     * @return le nombre de ligne du dataframe
+     */
+    public int getNbLignes() {
+        return this.nbLignes;
+    }
+
+    /**
+     * Get le tableau de données
+     * 
+     * @return le tableau de données du dataframe
+     */
+    public Object[][] getTableau() {
+        return this.tableau;
+    }
+
+    /**
+     * Get les entetes
+     * 
+     * @return une liste des entetes du dataframe
+     */
+    public String[] getNomColonnes() {
+        return this.nomColonne;
+    }
+
+    /**
+     * Get le nom de la colonne
+     * 
+     * @param col le numéro de la colonne voulue
+     * @return l'entete de la colonne
+     */
+    public String getNomCol(int col) {
+        return this.nomColonne[col];
+    }
+
+    /**
+     * Get les statistiques du dataframe
+     * 
+     * @return une hashMap des statistiques du dataframe
+     */
+    public HashMap<String, Double> getStatistique() {
+        return this.statistiques;
+    }
 
     // ── Constructeurs ────────────────────────────────────────────────────────
 
@@ -50,10 +102,10 @@ public abstract class DataframeBase implements fish.calcul.Statistique {
      * @param nomColonne les noms des colonnes
      */
     public DataframeBase(int nbLignes, String[] nomColonne) {
-        this.nbLignes    = nbLignes;
-        this.nbCol       = nomColonne.length;
-        this.nomColonne  = nomColonne;
-        this.tableau     = new Object[nbLignes][this.nbCol];
+        this.nbLignes = nbLignes;
+        this.nbCol = nomColonne.length;
+        this.nomColonne = nomColonne;
+        this.tableau = new Object[nbLignes][this.nbCol];
     }
 
     /**
@@ -78,10 +130,10 @@ public abstract class DataframeBase implements fish.calcul.Statistique {
             throw new OutOfBoundException(nomColonne.length, newtab.length, newtab[0].length);
         }
 
-        this.nbLignes   = nbLignes;
-        this.nbCol      = nomColonne.length;
+        this.nbLignes = nbLignes;
+        this.nbCol = nomColonne.length;
         this.nomColonne = nomColonne;
-        this.tableau    = newtab;
+        this.tableau = newtab;
     }
 
     // ── Méthode abstraite ─────────────────────────────────────────────────────
@@ -91,12 +143,20 @@ public abstract class DataframeBase implements fish.calcul.Statistique {
 
     // ── Dimensions ────────────────────────────────────────────────────────────
 
-    /** Retourne les dimensions sous forme de tableau [nbLignes, nbCol]. */
+    /**
+     * Retourne les dimensions sous forme de tableau [nbLignes, nbCol].
+     * 
+     * @return un tableau ligne x col des dimensions
+     */
     public int[] getSize() {
         return new int[] { this.nbLignes, this.nbCol };
     }
 
-    /** Retourne les dimensions sous forme lisible "X lignes x Y colonnes". */
+    /**
+     * Retourne les dimensions sous forme lisible "X lignes x Y colonnes".
+     * 
+     * @return un string des dimensions
+     */
     public String getDimension() {
         return this.nbLignes + " lignes x " + this.nbCol + " colonnes";
     }

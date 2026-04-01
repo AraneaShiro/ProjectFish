@@ -1,6 +1,6 @@
 package fish.completion;
 
-import fish.acquisition.Dataframe;
+import fish.acquisition.DataframeComplet;
 import fish.exceptions.OutOfBoundException;
 
 import java.util.ArrayList;
@@ -20,9 +20,9 @@ import java.util.List;
  */
 public class CompletionRegression {
 
-    private final Dataframe df;
+    private final DataframeComplet df;
 
-    public CompletionRegression(Dataframe df) {
+    public CompletionRegression(DataframeComplet df) {
         this.df = df;
     }
 

@@ -1,5 +1,7 @@
+// ── Package ────────────────────────────────────────────────────────────
 package fish.acquisition;
 
+// ── Import ────────────────────────────────────────────────────────────
 import fish.exceptions.*;
 import fish.poisson.Contenu;
 import fish.poisson.Individu;
@@ -10,6 +12,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+// ── Test : NON ────────────────────────────────────────────────────────────
+
 /**
  * Dataframe pour un CSV de poissons individuels.
  * Contient une unique Population composée de plusieurs Individus.
@@ -17,28 +21,52 @@ import java.util.Map;
  * @author Jules Grenesche
  * @version 0.3
  */
-public class DfIndividu extends Dataframe {
+public class DfIndividu extends DataframeComplet {
 
     ////////////////////////////// Attributs ////////////////////
 
+    /**
+     * La population étudie
+     * 
+     */
     private Population population;
+
+    /** Le type d'étude ici Individu */
     private static final String TYPE = "Etude d'individu";
+
+    /** Le titre du dataFrame */
     private String titre;
 
-    ////////////////////////////// Constantes colonnes
+    // ───────────────────────────────── Constantes colonnes
 
+    /* Les différents cle de base */
+    /** la constante de la colonne pour espece */
     private static final String CLE_ESPECE = "espece";
+    /** la constante de la colonne pour longueur */
     private static final String CLE_LONGUEUR = "longueur";
+    /** la constante de la colonne pour poids */
     private static final String CLE_POIDS = "poids";
+    /** la constante de la colonne pour nbvers */
     private static final String CLE_NBVERS = "nbvers";
+    /** la constante de la colonne pour taux */
     private static final String CLE_TAUX = "taux";
 
-    ////////////////////////////// Getter / Setter
+    // ─────────────────────────────────Getter / Setter
 
+    /**
+     * Get la population du dataframe
+     * 
+     * @return la population du dataframe
+     */
     public Population getPopulation() {
         return population;
     }
 
+    /**
+     * Get le titre du dataframe
+     * 
+     * @return le titre du dataframe
+     */
     public String getTitre() {
         return titre;
     }
@@ -56,17 +84,26 @@ public class DfIndividu extends Dataframe {
         this.titre = titre;
     }
 
-    ////////////////////////////// Constructeurs ////////////////////
+    // ───────────────────────────── Constructeurs ─────────────────────────────
 
     /**
-     * Constructeur sans tableau
+     * Constructeur sans tableau de données.
+     *
+     * @param nbLignes   le nombre de lignes
+     * @param nomColonne les noms des colonnes
      */
     public DfIndividu(int nbLignes, String[] nomColonne) {
         super(nbLignes, nomColonne);
     }
 
     /**
-     * Constructeur avec tableau — utilisé par la réflexion dans LectureCSV
+     * Constructeur avec tableau de données.
+     *
+     * @param nbLignes   le nombre de lignes
+     * @param nomColonne les noms des colonnes
+     * @param newtab     le tableau de données
+     * @throws OutOfBoundException    si les dimensions ne correspondent pas
+     * @throws NullParameterException si les paramètres sont vides ou null
      */
     public DfIndividu(int nbLignes, String[] nomColonne, Object[][] newtab)
             throws OutOfBoundException, NullParameterException {
@@ -92,7 +129,15 @@ public class DfIndividu extends Dataframe {
         setTitre(titre);
     }
 
-    ////////////////////////////// Utilitaires ////////////////////
+    // ─────────────────────── Utilitaires ───────────────────────
+
+    /**
+     * Fonction utilitaire qui trouve l'index de la
+     * colonne en fonction du nom donnée
+     *
+     * @param motCle le nom de la colonne que l'on recherche
+     * @return le numéro de la colonne ou -1 si elle n'est pas trouvée
+     */
 
     public int getIndexColonne(String motCle) {
         String[] noms = getNomColonnes();
@@ -103,6 +148,15 @@ public class DfIndividu extends Dataframe {
         return -1;
     }
 
+    /**
+     * Fonction utilitaire qui lis si c est possible en Float
+     * et le renvoie ou une valeur par defaut
+     *
+     * @param ligne  la ligne de la case a lire
+     * @param col    la colonne de la case a lire
+     * @param defaut la valeur par defaut si illisible ou mauvaise coordonné
+     * @return la valeur ou la valeur par defaut
+     */
     private float lireFloat(int ligne, int col, float defaut) {
         if (col < 0)
             return defaut;

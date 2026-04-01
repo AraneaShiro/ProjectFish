@@ -1,27 +1,46 @@
+// ── Package ────────────────────────────────────────────────────────────
 package fish.acquisition;
 
+// ── Import ────────────────────────────────────────────────────────────
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import fish.exceptions.*;
 
+// ── Test : NON ────────────────────────────────────────────────────────────
 /**
- * Couche 2/4 — Manipulation de colonnes.
+ * Classe héritant de dataframe de base mais qui ajoute les méthodes de
+ * manipulation du tableau
  * Gère la fusion, la suppression et l'analyse des valeurs uniques.
  *
  * @author Jules Grenesche
- * @version 0.4
+ * @version 1.0
+ * 
  */
-public abstract class DataframeColonnes extends DataframeBase {
+public abstract class DataframeManipulation extends DataframeBase {
 
     // ── Constructeurs (délégation vers DataframeBase) ─────────────────────────
 
-    public DataframeColonnes(int nbLignes, String[] nomColonne) {
+    /**
+     * Constructeur sans tableau de données.
+     *
+     * @param nbLignes   le nombre de lignes
+     * @param nomColonne les noms des colonnes
+     */
+    public DataframeManipulation(int nbLignes, String[] nomColonne) {
         super(nbLignes, nomColonne);
     }
 
-    public DataframeColonnes(int nbLignes, String[] nomColonne, Object[][] newtab)
+    /**
+     * Constructeur avec tableau de données.
+     *
+     * @param nbLignes   le nombre de lignes
+     * @param nomColonne les noms des colonnes
+     * @param newtab     le tableau de données
+     * @throws OutOfBoundException    si les dimensions ne correspondent pas
+     * @throws NullParameterException si les paramètres sont vides ou null
+     */
+    public DataframeManipulation(int nbLignes, String[] nomColonne, Object[][] newtab)
             throws OutOfBoundException, NullParameterException {
         super(nbLignes, nomColonne, newtab);
     }
@@ -60,9 +79,9 @@ public abstract class DataframeColonnes extends DataframeBase {
         }
 
         // ── Construction de la colonne fusionnée ─────────────────────────────
-        int nouvelleNbCol  = this.nbCol - 1;
+        int nouvelleNbCol = this.nbCol - 1;
         Object[][] nouveauTableau = new Object[this.nbLignes][nouvelleNbCol];
-        String[] nouveauxNoms     = new String[nouvelleNbCol];
+        String[] nouveauxNoms = new String[nouvelleNbCol];
 
         int indexFusion = Math.min(col1, col2);
 
@@ -91,9 +110,9 @@ public abstract class DataframeColonnes extends DataframeBase {
         }
 
         // ── Mise à jour du dataframe ──────────────────────────────────────────
-        this.tableau    = nouveauTableau;
+        this.tableau = nouveauTableau;
         this.nomColonne = nouveauxNoms;
-        this.nbCol      = nouvelleNbCol;
+        this.nbCol = nouvelleNbCol;
     }
 
     /**
@@ -107,6 +126,7 @@ public abstract class DataframeColonnes extends DataframeBase {
             throw new OutOfBoundException(nCol, nbLignes, nbCol);
         }
 
+        // ── Creation d'un nouveau tableau sans la colonnes
         Object[][] nouveauTableau = new Object[this.nbLignes][this.nbCol - 1];
         for (int i = 0; i < this.nbLignes; i++) {
             int newCol = 0;
@@ -125,7 +145,8 @@ public abstract class DataframeColonnes extends DataframeBase {
             }
         }
 
-        this.tableau    = nouveauTableau;
+        // ── Mise à jour du dataframe ──────────────────────────────────────────
+        this.tableau = nouveauTableau;
         this.nomColonne = nouvellesColonnes;
         this.nbCol--;
     }
@@ -143,6 +164,7 @@ public abstract class DataframeColonnes extends DataframeBase {
         if (col < 0 || col >= this.nbCol) {
             throw new OutOfBoundException(col, this.nbLignes, this.nbCol);
         }
+        // ── Liste d'unique ───────────────────────
         List<Object> valeursUniques = new ArrayList<>();
         for (int i = 0; i < this.nbLignes; i++) {
             Object val = this.tableau[i][col];
@@ -188,4 +210,6 @@ public abstract class DataframeColonnes extends DataframeBase {
         }
         return occurrences;
     }
+
+    // ── TEST A FAIRE ───────────────────────
 }

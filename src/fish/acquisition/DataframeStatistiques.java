@@ -1,26 +1,44 @@
+// ── Package ─────────────────
 package fish.acquisition;
 
+// ── Import ─────────────────
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import fish.exceptions.*;
 
+// ── TESTE : NON ─────────────────
 /**
- * Couche 3/4 — Statistiques numériques.
+ * Statistiques numériques du dataframe.
  * Calcule moyenne, médiane, écart-type, variance, covariance et corrélation.
  *
  * @author Jules Grenesche
  * @version 0.4
  */
-public abstract class DataframeStatistiques extends DataframeColonnes {
+public abstract class DataframeStatistiques extends DataframeManipulation {
 
-    // ── Constructeurs (délégation vers DataframeColonnes) ─────────────────────
+    // ── Constructeurs (délégation vers DataframeManipulation)
+    // ─────────────────────
 
+    /**
+     * Constructeur sans tableau de données.
+     *
+     * @param nbLignes   le nombre de lignes
+     * @param nomColonne les noms des colonnes
+     */
     public DataframeStatistiques(int nbLignes, String[] nomColonne) {
         super(nbLignes, nomColonne);
     }
 
+    /**
+     * Constructeur avec tableau de données.
+     *
+     * @param nbLignes   le nombre de lignes
+     * @param nomColonne les noms des colonnes
+     * @param newtab     le tableau de données
+     * @throws OutOfBoundException    si les dimensions ne correspondent pas
+     * @throws NullParameterException si les paramètres sont vides ou null
+     */
     public DataframeStatistiques(int nbLignes, String[] nomColonne, Object[][] newtab)
             throws OutOfBoundException, NullParameterException {
         super(nbLignes, nomColonne, newtab);
@@ -49,7 +67,7 @@ public abstract class DataframeStatistiques extends DataframeColonnes {
         return valeurs;
     }
 
-    // ── Statistiques univariées ───────────────────────────────────────────────
+    // ── Statistiques a une variable──────────────────────────────────────
 
     /**
      * Calcule la moyenne des valeurs numériques d'une colonne.
@@ -61,10 +79,12 @@ public abstract class DataframeStatistiques extends DataframeColonnes {
     @Override
     public double calculerMoyenne(int col) throws OutOfBoundException {
         List<Double> valeurs = getValeursNumeriquesColonne(col);
-        if (valeurs.isEmpty()) return 0.0;
+        if (valeurs.isEmpty())
+            return 0.0;
 
         double somme = 0.0;
-        for (double v : valeurs) somme += v;
+        for (double v : valeurs)
+            somme += v;
         somme = somme / valeurs.size();
 
         this.statistiques.put("Moyenne :" + getNomCol(col), somme);
@@ -81,12 +101,13 @@ public abstract class DataframeStatistiques extends DataframeColonnes {
     @Override
     public double calculerMediane(int col) throws OutOfBoundException {
         List<Double> valeurs = getValeursNumeriquesColonne(col);
-        if (valeurs.isEmpty()) return 0.0;
+        if (valeurs.isEmpty())
+            return 0.0;
 
         Collections.sort(valeurs);
         int milieu = valeurs.size() / 2;
 
-        double mediane = (valeurs.size() % 2 == 0)
+        double mediane = (valeurs.size() % 2 == 0) // si pair ou non
                 ? (valeurs.get(milieu - 1) + valeurs.get(milieu)) / 2.0
                 : valeurs.get(milieu);
 
@@ -104,10 +125,11 @@ public abstract class DataframeStatistiques extends DataframeColonnes {
     @Override
     public double calculerEcartType(int col) throws OutOfBoundException {
         List<Double> valeurs = getValeursNumeriquesColonne(col);
-        if (valeurs.isEmpty()) return 0.0;
+        if (valeurs.isEmpty())
+            return 0.0;
 
-        double moyenne     = calculerMoyenne(col);
-        double sommeCarre  = 0.0;
+        double moyenne = calculerMoyenne(col);
+        double sommeCarre = 0.0;
         for (double v : valeurs) {
             sommeCarre += Math.pow(v - moyenne, 2);
         }
@@ -126,9 +148,10 @@ public abstract class DataframeStatistiques extends DataframeColonnes {
      */
     public double calculerVariance(int col) throws OutOfBoundException {
         List<Double> valeurs = getValeursNumeriquesColonne(col);
-        if (valeurs.isEmpty()) return 0.0;
+        if (valeurs.isEmpty())
+            return 0.0;
 
-        double moyenne    = calculerMoyenne(col);
+        double moyenne = calculerMoyenne(col);
         double sommeCarre = 0.0;
         for (double v : valeurs) {
             sommeCarre += Math.pow(v - moyenne, 2);
@@ -138,7 +161,7 @@ public abstract class DataframeStatistiques extends DataframeColonnes {
         return variance;
     }
 
-    // ── Statistiques bivariées ────────────────────────────────────────────────
+    // ── Statistiques a 2 valeur ────────────────────────────────────────────────
 
     /**
      * Calcule la covariance entre deux colonnes numériques.
@@ -152,9 +175,10 @@ public abstract class DataframeStatistiques extends DataframeColonnes {
     public double calculerCoVariance(int col1, int col2) throws OutOfBoundException {
         List<Double> valeurs1 = getValeursNumeriquesColonne(col1);
         List<Double> valeurs2 = getValeursNumeriquesColonne(col2);
-        if (valeurs1.isEmpty() || valeurs2.isEmpty()) return 0.0;
+        if (valeurs1.isEmpty() || valeurs2.isEmpty())
+            return 0.0;
 
-        int    taille   = Math.min(valeurs1.size(), valeurs2.size());
+        int taille = Math.min(valeurs1.size(), valeurs2.size());
         double moyenne1 = calculerMoyenne(col1);
         double moyenne2 = calculerMoyenne(col2);
 
@@ -182,7 +206,8 @@ public abstract class DataframeStatistiques extends DataframeColonnes {
         double ecartType2 = calculerEcartType(col2);
 
         // Évite la division par zéro si une colonne est constante
-        if (ecartType1 == 0.0 || ecartType2 == 0.0) return 0.0;
+        if (ecartType1 == 0.0 || ecartType2 == 0.0)
+            return 0.0;
 
         double correlation = calculerCoVariance(col1, col2) / (ecartType1 * ecartType2);
         this.statistiques.put("Correlation :" + getNomCol(col1) + " " + getNomCol(col2), correlation);

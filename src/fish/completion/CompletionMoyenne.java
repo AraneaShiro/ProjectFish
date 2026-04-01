@@ -1,24 +1,26 @@
+// ── Package ───────────────────────────────────────────────────
 package fish.completion;
 
-import fish.acquisition.Dataframe;
+// ── Import ───────────────────────────────────────────────────
+import fish.acquisition.DataframeComplet;
 import fish.exceptions.OutOfBoundException;
-
 import java.util.ArrayList;
 import java.util.List;
 
+// ── TESTE : NON ───────────────────────────────────────────────────
 /**
  * Complète les valeurs null d'un Dataframe par la moyenne de leur colonne.
  * Seules les colonnes numériques sont complétées.
  * Les colonnes String/Boolean sont ignorées.
  *
  * @author Jules Grenesche
- * @version 0.1
+ * @version 1
  */
 public class CompletionMoyenne {
 
-    private final Dataframe df;
+    private final DataframeComplet df;
 
-    public CompletionMoyenne(Dataframe df) {
+    public CompletionMoyenne(DataframeComplet df) {
         this.df = df;
     }
 

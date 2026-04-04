@@ -1,6 +1,6 @@
 package fish.conversion;
 
-import fish.acquisition.Dataframe;
+import fish.acquisition.DataframeComplet;
 import fish.exceptions.OutOfBoundException;
 import fish.poisson.Individu;
 import fish.poisson.Population;
@@ -112,7 +112,7 @@ public class ConversionMetrique {
      * @param vers l'unité cible
      * @return le nombre de valeurs converties
      */
-    public static int convertirColonneLongueur(Dataframe df, int col,
+    public static int convertirColonneLongueur(DataframeComplet df, int col,
             UniteLongueur de, UniteLongueur vers) {
         int converties = 0;
         for (int i = 0; i < df.getNbLignes(); i++) {
@@ -141,7 +141,7 @@ public class ConversionMetrique {
      * @param vers l'unité cible
      * @return le nombre de valeurs converties
      */
-    public static int convertirColonnePoids(Dataframe df, int col,
+    public static int convertirColonnePoids(DataframeComplet df, int col,
             UnitePoids de, UnitePoids vers) {
         int converties = 0;
         for (int i = 0; i < df.getNbLignes(); i++) {
@@ -170,7 +170,7 @@ public class ConversionMetrique {
      * @param vers   l'unité cible
      * @return le nombre de valeurs converties, ou -1 si colonne non trouvée
      */
-    public static int convertirColonneLongueurParNom(Dataframe df, String motCle,
+    public static int convertirColonneLongueurParNom(DataframeComplet df, String motCle,
             UniteLongueur de, UniteLongueur vers) {
         int col = getIndexColonne(df, motCle);
         if (col < 0) {
@@ -189,7 +189,7 @@ public class ConversionMetrique {
      * @param vers   l'unité cible
      * @return le nombre de valeurs converties, ou -1 si colonne non trouvée
      */
-    public static int convertirColonnePoidsParNom(Dataframe df, String motCle,
+    public static int convertirColonnePoidsParNom(DataframeComplet df, String motCle,
             UnitePoids de, UnitePoids vers) {
         int col = getIndexColonne(df, motCle);
         if (col < 0) {
@@ -283,7 +283,7 @@ public class ConversionMetrique {
 
     ////////////////////////////// Utilitaire ////////////////////
 
-    private static int getIndexColonne(Dataframe df, String motCle) {
+    private static int getIndexColonne(DataframeComplet df, String motCle) {
         String[] noms = df.getNomColonnes();
         for (int j = 0; j < noms.length; j++) {
             if (noms[j].toLowerCase().contains(motCle.toLowerCase()))

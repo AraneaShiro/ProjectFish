@@ -1,6 +1,6 @@
 package fish.nettoyage;
 
-import fish.acquisition.Dataframe;
+import fish.acquisition.DataframeComplet;
 import fish.exceptions.OutOfBoundException;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.List;
 public abstract class NettoyageDataframe {
 
     /** Le dataframe à nettoyer */
-    protected Dataframe df;
+    protected DataframeComplet df;
 
     /**
      * Seuil de tolérance null : proportion maximale de null autorisée par
@@ -37,7 +37,7 @@ public abstract class NettoyageDataframe {
      * @param df        le dataframe à nettoyer
      * @param seuilNull proportion max de null autorisée par ligne (ex: 0.5)
      */
-    public NettoyageDataframe(Dataframe df, double seuilNull) {
+    public NettoyageDataframe(DataframeComplet df, double seuilNull) {
         this.df = df;
         this.seuilNull = seuilNull;
     }
@@ -47,11 +47,11 @@ public abstract class NettoyageDataframe {
      *
      * @param df le dataframe à nettoyer
      */
-    public NettoyageDataframe(Dataframe df) {
+    public NettoyageDataframe(DataframeComplet df) {
         this(df, 0.5);
     }
 
-    public Dataframe getDf() {
+    public DataframeComplet getDf() {
         return df;
     }
 

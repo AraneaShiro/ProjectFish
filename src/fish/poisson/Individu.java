@@ -14,6 +14,7 @@ import fish.poisson.Contenu;
  * @see Contenu
  * 
  */
+
 public class Individu {
 	//////////////////////////////Attribut////////////////////
 	/**

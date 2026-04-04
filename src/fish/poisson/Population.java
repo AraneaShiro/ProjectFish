@@ -234,7 +234,7 @@ public class Population {
 			setIntensite(intensite);
 			this.tabIndividu = null;
 		} catch(Exception e){
-			System.out.println(e);
+			//System.out.println(e);
 		}
 		
 	}
@@ -262,7 +262,7 @@ public class Population {
 			setAbondance(calculAbondance());
 			setIntensite(calculIntensite());
 		} catch(Exception e){
-			System.out.println(e);
+			//System.out.println(e);
 		}
 		
 

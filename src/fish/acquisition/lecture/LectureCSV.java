@@ -1,15 +1,12 @@
 package fish.acquisition.lecture;
 
 import fish.acquisition.*;
-import fish.acquisition.DfIndividu;
-
+import fish.exceptions.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
-
-import fish.exceptions.*;
 
 /**
  * LectureCSV est la classe qui permet de lire un csv et le convertir dans le
@@ -36,6 +33,9 @@ public class LectureCSV {
     /** Le nombre de colonnes du tableau */
     protected int nbCol;
 
+    /** Charset utilisé pour la lecture */
+    private String charset;
+
     ////////////////////////////// Getter / Setter
 
     /** Retourne les entêtes */
@@ -57,6 +57,9 @@ public class LectureCSV {
     public int getNbCol() {
         return this.nbCol;
     }
+
+    /** Retourne le charset */
+    public String getCharset() { return this.charset; }
 
     /**
      * Retourne les dimensions du tableau [nbLignes, nbColonnes]
@@ -81,19 +84,25 @@ public class LectureCSV {
 
     ////////////////////////////// Constructeurs ////////////////////
 
+   /** Constructeur avec séparateur — UTF-8 par défaut */
+public LectureCSV(String separateur) {
+    this(separateur, "UTF-8");
+}
     /**
-     * Constructeur avec séparateur personnalisé
-     *
-     * @param separateur le séparateur du fichier CSV
-     */
-    public LectureCSV(String separateur) {
-        this.separateur = separateur;
-    }
+ * Constructeur avec séparateur ET charset
+ *
+ * @param separateur le séparateur du fichier CSV
+ * @param charset    l'encodage du fichier (ex: "UTF-8", "windows-1252")
+ */
+public LectureCSV(String separateur, String charset) {
+    this.separateur = separateur;
+    this.charset    = charset;
+}
 
-    /** Constructeur par défaut avec virgule comme séparateur */
-    public LectureCSV() {
-        this(",");
-    }
+    /** Constructeur par défaut — virgule + UTF-8 */
+public LectureCSV() {
+    this(",", "UTF-8");
+}
 
     ////////////////////////////// Méthodes ////////////////////
 
@@ -194,7 +203,7 @@ public class LectureCSV {
 
         List<String[]> lignesBrutes = new ArrayList<>();
 
-        try (Scanner scanner = new Scanner(new File(cheminFichier))) {
+        try (Scanner scanner = new Scanner(new File(cheminFichier), this.charset)) {
 
             boolean premiereLigne = true;
 

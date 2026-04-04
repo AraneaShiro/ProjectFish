@@ -4,10 +4,18 @@ import java.util.List;
 import fish.exceptions.*;
 
 /**
+ * Interface de methode de calcule statistique
+ * 
+ * @author Jules Grenesche
+ * @version 0.1
+ *          Date : 18/03
+ */
+
+/**
  * Interface de méthodes de calcul statistique
  *
  * @author Jules Grenesche
- * @version 1
+ * @version 0.2
  */
 public interface Statistique {
 

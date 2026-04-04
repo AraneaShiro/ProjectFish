@@ -2,7 +2,6 @@ package fish.nettoyage;
 
 import fish.acquisition.*;
 import fish.exceptions.OutOfBoundException;
-
 import java.util.ArrayList;
 import java.util.List;
 

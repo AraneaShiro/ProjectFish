@@ -6,7 +6,6 @@ import fish.exceptions.*;
 import fish.poisson.Contenu;
 import fish.poisson.Individu;
 import fish.poisson.Population;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -417,7 +416,7 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
         System.out.println("\n── Lecture merlu2018_75164.csv ──────────────────────");
 
         DfIndividu dfMerlu = null;
-        fish.acquisition.lecture.LectureCSV lecteurMerlu = new fish.acquisition.lecture.LectureCSV(";");
+        fish.acquisition.lecture.LectureCSV lecteurMerlu = new fish.acquisition.lecture.LectureCSV(";","windows-1252");
         try {
             dfMerlu = lecteurMerlu.lireCSV("data/merlu2018_75164.csv", DfIndividu.class);
         } catch (Exception e) { System.out.println("Chargement échoué : " + e); }

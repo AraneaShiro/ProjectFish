@@ -7,31 +7,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Utilitaire de complétion par régression linéaire simple.
- * Toutes les méthodes sont statiques — cette classe ne s'instancie pas.
+ * Complète les valeurs null d'une colonne cible par régression linéaire simple
+ * à partir d'une colonne source (prédicteur).
  *
- * Formule : y = a*x + b
+ * Formule de la régression linéaire :
+ * y = a*x + b
  * a = Cov(X,Y) / Var(X)
  * b = moy(Y) - a * moy(X)
  *
  * @author Jules Grenesche
- * @version 2
+ * @version 0.1
  */
-public final class CompletionRegression {
+public class CompletionRegression {
 
-    // Empêche l'instanciation
-    private CompletionRegression() {
+    private final DataframeComplet df;
+
+    public CompletionRegression(DataframeComplet df) {
+        this.df = df;
     }
 
     /**
-     * Complète les null de colCible par régression linéaire sur colSource.
+     * Complète les null de la colonne cible en utilisant la régression linéaire
+     * calculée sur les paires (colSource, colCible) non-null existantes.
      *
-     * @param df        le dataframe à compléter
      * @param colSource l'index de la colonne prédicteur (X)
      * @param colCible  l'index de la colonne à compléter (Y)
      * @return le nombre de cases complétées, ou -1 si la régression est impossible
      */
-    public static int completerParRegression(DataframeComplet df, int colSource, int colCible) {
+    public int completerParRegression(int colSource, int colCible) {
+        // Collecte les paires (x, y) où ni x ni y ne sont null
         List<double[]> paires = new ArrayList<>();
         for (int i = 0; i < df.getNbLignes(); i++) {
             try {
@@ -52,9 +56,11 @@ public final class CompletionRegression {
             return -1;
         }
 
+        // Calcul des moyennes
         double moyX = paires.stream().mapToDouble(p -> p[0]).average().orElse(0);
         double moyY = paires.stream().mapToDouble(p -> p[1]).average().orElse(0);
 
+        // Calcul de a (pente) = Cov(X,Y) / Var(X)
         double cov = 0, varX = 0;
         for (double[] p : paires) {
             cov += (p[0] - moyX) * (p[1] - moyY);
@@ -67,18 +73,20 @@ public final class CompletionRegression {
         }
 
         double a = cov / varX;
-        double b = moyY - a * moyX;
+        double b = moyY - a * moyX; // ordonnée à l'origine
 
         System.out.printf("Régression calculée : y = %.4f * x + %.4f  (sur %d paires)%n",
                 a, b, paires.size());
 
+        // Complétion des null dans colCible
         int completes = 0;
         for (int i = 0; i < df.getNbLignes(); i++) {
             try {
                 Object valY = df.getCase(i, colCible);
                 Object valX = df.getCase(i, colSource);
                 if (valY == null && valX instanceof Number) {
-                    double yPredit = a * ((Number) valX).doubleValue() + b;
+                    double x = ((Number) valX).doubleValue();
+                    double yPredit = a * x + b;
                     df.setCase(i, colCible, yPredit);
                     completes++;
                 }
@@ -94,37 +102,46 @@ public final class CompletionRegression {
      * Complète toutes les colonnes numériques nulles en cherchant automatiquement
      * le meilleur prédicteur (corrélation maximale) pour chacune.
      *
-     * @param df le dataframe à compléter
      * @return le nombre total de cases complétées
      */
-    public static int completerToutParMeilleurPredicteur(DataframeComplet df) {
+    public int completerToutParMeilleurPredicteur() {
         int total = 0;
         int nbCol = df.getNbCol();
 
         for (int colCible = 0; colCible < nbCol; colCible++) {
-            if (!colonneADesNull(df, colCible) || !colonneEstNumerique(df, colCible))
+            if (!colonneADesNull(colCible) || !colonneEstNumerique(colCible))
                 continue;
 
-            int meilleurPredicteur = trouverMeilleurPredicteur(df, colCible);
+            int meilleurPredicteur = trouverMeilleurPredicteur(colCible);
             if (meilleurPredicteur < 0)
                 continue;
 
             System.out.println("Complétion de \"" + df.getNomColonnes()[colCible]
                     + "\" via \"" + df.getNomColonnes()[meilleurPredicteur] + "\"");
-            total += completerParRegression(df, meilleurPredicteur, colCible);
+            total += completerParRegression(meilleurPredicteur, colCible);
         }
         return total;
     }
 
-    // ── Utilitaires privés ────────────────────────────────────────────────────
+    // ── Utilitaires ──────────────────────────────────────────────────────────
 
-    private static int trouverMeilleurPredicteur(DataframeComplet df, int colCible) {
+    /**
+     * Trouve la colonne source ayant la corrélation absolue maximale avec colCible.
+     * Ne prend en compte que les lignes où les deux colonnes sont non-null.
+     *
+     * @param colCible la colonne à prédire
+     * @return l'index du meilleur prédicteur, ou -1 si aucun trouvé
+     */
+    private int trouverMeilleurPredicteur(int colCible) {
         int meilleur = -1;
         double maxCorr = 0;
-        for (int j = 0; j < df.getNbCol(); j++) {
-            if (j == colCible || !colonneEstNumerique(df, j))
+        int nbCol = df.getNbCol();
+
+        for (int j = 0; j < nbCol; j++) {
+            if (j == colCible || !colonneEstNumerique(j))
                 continue;
-            double corr = Math.abs(calculerCorrelation(df, j, colCible));
+
+            double corr = Math.abs(calculerCorrelation(j, colCible));
             if (corr > maxCorr) {
                 maxCorr = corr;
                 meilleur = j;
@@ -133,7 +150,11 @@ public final class CompletionRegression {
         return meilleur;
     }
 
-    private static double calculerCorrelation(DataframeComplet df, int col1, int col2) {
+    /**
+     * Calcule la corrélation de Pearson entre deux colonnes (sur les paires
+     * complètes)
+     */
+    private double calculerCorrelation(int col1, int col2) {
         List<double[]> paires = new ArrayList<>();
         for (int i = 0; i < df.getNbLignes(); i++) {
             try {
@@ -164,7 +185,7 @@ public final class CompletionRegression {
         return denom == 0 ? 0 : num / denom;
     }
 
-    private static boolean colonneADesNull(DataframeComplet df, int col) {
+    private boolean colonneADesNull(int col) {
         for (int i = 0; i < df.getNbLignes(); i++) {
             try {
                 if (df.getCase(i, col) == null)
@@ -175,7 +196,7 @@ public final class CompletionRegression {
         return false;
     }
 
-    private static boolean colonneEstNumerique(DataframeComplet df, int col) {
+    private boolean colonneEstNumerique(int col) {
         for (int i = 0; i < df.getNbLignes(); i++) {
             try {
                 Object val = df.getCase(i, col);

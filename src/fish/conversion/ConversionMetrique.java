@@ -1,7 +1,6 @@
 package fish.conversion;
 
 import fish.acquisition.*;
-import fish.acquisition.DfIndividu;
 import fish.exceptions.OutOfBoundException;
 import fish.poisson.Individu;
 import fish.poisson.Population;

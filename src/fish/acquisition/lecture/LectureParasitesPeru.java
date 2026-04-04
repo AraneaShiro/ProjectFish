@@ -1,10 +1,7 @@
 package fish.acquisition.lecture;
 
 import fish.acquisition.*;
-import fish.acquisition.DfIndividu;
-import fish.acquisition.DfPopulation;
 import fish.exceptions.FileEmpty;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;

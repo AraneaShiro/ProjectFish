@@ -1,6 +1,6 @@
 package fish.nettoyage;
 
-import fish.acquisition.*;
+import fish.acquisition.DataframeComplet;
 import fish.exceptions.OutOfBoundException;
 
 import java.util.ArrayList;

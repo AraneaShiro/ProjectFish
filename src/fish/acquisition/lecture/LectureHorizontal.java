@@ -7,8 +7,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-import fish.acquisition.*;
-import fish.acquisition.DfIndividu;
+import fish.acquisition.DataframeComplet;
 import fish.exceptions.FileEmpty;
 
 /**
@@ -91,103 +90,5 @@ public class LectureHorizontal extends LectureCSV {
             return null;
         }
 
-    }
-
-    public static void main(String[] args) {
-        int ok = 0, total = 0;
-
-        // Le format horizontal place les entêtes en 1ère colonne,
-        // les valeurs en colonnes suivantes → transposition.
-        // On utilise merlu2018_75164.csv (format séparateur ;, entêtes en ligne 1)
-        // comme données réelles et test_sep.csv pour les cas simples.
-
-        // ── Lecture fichier standard (entêtes en ligne) ───────────────────────
-        System.out.println("── Lecture merlu2018_75164.csv via LectureHorizontal ─");
-
-        LectureHorizontal lh = new LectureHorizontal(";");
-        DfIndividu dfMerlu = null;
-        try {
-            dfMerlu = lh.lireCSV("data/merlu2018_75164.csv", DfIndividu.class);
-        } catch (Exception e) { System.out.println("Chargement : " + e); }
-
-        // Test 1 : lecture sans exception et df non null
-        total++;
-        if (dfMerlu != null) {
-            System.out.println("PASS Test 1 : merlu chargé (horizontal), "
-                    + dfMerlu.getNbLignes() + " lignes, " + dfMerlu.getNbCol() + " cols");
-            ok++;
-            dfMerlu.afficherPremieresFignes(5);
-            dfMerlu.afficherStatistiques();
-        } else {
-            System.out.println("FAIL Test 1 : dfMerlu null");
-        }
-
-        // Test 2 : dimensions cohérentes (transposition : lignes ↔ colonnes vs CSV standard)
-        total++;
-        if (dfMerlu != null && dfMerlu.getNbLignes() > 0 && dfMerlu.getNbCol() > 0) {
-            System.out.println("PASS Test 2 : dimensions cohérentes ["
-                    + dfMerlu.getNbLignes() + "x" + dfMerlu.getNbCol() + "]");
-            ok++;
-        } else {
-            System.out.println("FAIL Test 2 : dimensions invalides");
-        }
-
-        // Test 3 : entêtes = première colonne du fichier horizontal
-        total++;
-        if (dfMerlu != null && dfMerlu.getNomColonnes() != null
-                && dfMerlu.getNomColonnes().length > 0) {
-            System.out.println("PASS Test 3 : entêtes présentes, 1ère = '"
-                    + dfMerlu.getNomColonnes()[0] + "'");
-            ok++;
-        } else {
-            System.out.println("FAIL Test 3 : entêtes null ou vides");
-        }
-
-        // ── Fichier inexistant ────────────────────────────────────────────────
-        System.out.println("\n── Cas d'erreur ─────────────────────────────────────");
-
-        // Test 4 : fichier inexistant → null
-        total++;
-        try {
-            DfIndividu dfNull = lh.lireCSV("fichier_inexistant.csv", DfIndividu.class);
-            if (dfNull == null) {
-                System.out.println("PASS Test 4 : fichier inexistant → null");
-                ok++;
-            } else {
-                System.out.println("FAIL Test 4 : attendu null");
-            }
-        } catch (Exception e) { System.out.println("FAIL Test 4 : exception inattendue " + e); }
-
-        // Test 5 : séparateur différent préservé par getSeparateur()
-        total++;
-        LectureHorizontal lhVirgule = new LectureHorizontal(",");
-        if (",".equals(lhVirgule.getSeparateur())) {
-            System.out.println("PASS Test 5 : getSeparateur() retourne ','");
-            ok++;
-        } else {
-            System.out.println("FAIL Test 5 : " + lhVirgule.getSeparateur());
-        }
-
-        // ── Cohérence getSize ─────────────────────────────────────────────────
-        System.out.println("\n── getSize cohérent ─────────────────────────────────");
-
-        // Test 6 : getSize() = [nbLignes, nbCol]
-        total++;
-        if (dfMerlu != null) {
-            int[] size = dfMerlu.getSize();
-            if (size[0] == dfMerlu.getNbLignes() && size[1] == dfMerlu.getNbCol()) {
-                System.out.println("PASS Test 6 : getSize() cohérent avec getNbLignes/getNbCol");
-                ok++;
-            } else {
-                System.out.println("FAIL Test 6 : incohérence getSize");
-            }
-        } else {
-            System.out.println("SKIP Test 6 : dfMerlu null");
-            total--;
-        }
-
-        System.out.println("\n═══════════════════════════════════════════════════");
-        System.out.println("=== LectureHorizontal : " + ok + "/" + total + " tests réussis ===");
-        System.out.println("═══════════════════════════════════════════════════");
     }
 }

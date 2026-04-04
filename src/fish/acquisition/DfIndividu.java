@@ -26,7 +26,7 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
     ////////////////////////////// Attributs ////////////////////
 
     /**
-     * La population étudiée
+     * La population étudie
      * 
      */
     private Population population;
@@ -133,7 +133,7 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
 
     /**
      * Fonction utilitaire qui trouve l'index de la
-     * colonne en fonction du nom donné
+     * colonne en fonction du nom donnée
      *
      * @param motCle le nom de la colonne que l'on recherche
      * @return le numéro de la colonne ou -1 si elle n'est pas trouvée
@@ -149,12 +149,12 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
     }
 
     /**
-     * Fonction utilitaire qui lit si c est possible en Float
+     * Fonction utilitaire qui lis si c est possible en Float
      * et le renvoie ou une valeur par defaut
      *
      * @param ligne  la ligne de la case a lire
      * @param col    la colonne de la case a lire
-     * @param defaut la valeur par defaut si illisible ou mauvaise coordonnée
+     * @param defaut la valeur par defaut si illisible ou mauvaise coordonné
      * @return la valeur ou la valeur par defaut
      */
     public float lireFloat(int ligne, int col, float defaut) {
@@ -170,12 +170,12 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
     }
 
     /**
-     * Fonction utilitaire qui lit si c est possible en int
+     * Fonction utilitaire qui lis si c est possible en int
      * et le renvoie ou une valeur par defaut
      *
      * @param ligne  la ligne de la case a lire
      * @param col    la colonne de la case a lire
-     * @param defaut la valeur par defaut si illisible ou mauvaise coordonnée
+     * @param defaut la valeur par defaut si illisible ou mauvaise coordonné
      * @return la valeur ou la valeur par defaut
      */
     public int lireInt(int ligne, int col, int defaut) {
@@ -191,7 +191,7 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
     }
 
     /**
-     * Fonction utilitaire qui lit si c est possible en String
+     * Fonction utilitaire qui lis si c est possible en String
      * et le renvoie ou une valeur par defaut
      *
      * @param ligne la ligne de la case a lire
@@ -240,7 +240,7 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
         // pour chaque ligne du dataframe
         for (int i = 0; i < getNbLignes(); i++) {
 
-            // On met les données des colonnes connus
+            // On met les donnés des colonnes connus
             String espece = lireString(i, iEspece);
             if (espece == null || espece.isBlank()) {
                 espece = "";
@@ -284,18 +284,18 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
      * Construit la population
      *
      * @return la population produite
-     * @throws NegativeValueException si une valeur negative est trouvée
-     * @throws EmptyStringException   si le string est vide alors qu'il ne devrait pas
+     * @throws NegativeValueException si une valeur negative est trouvé
+     * @throws EmptyStringException   si le string est alors qu'il ne devrait pas
      * @throws TauxValueException     si le taux est mauvais
      */
     public Population construirePopulation()
-            throws NegativeValueException, EmptyStringException, TauxValueException, NoTabException {
+            throws NegativeValueException, EmptyStringException, TauxValueException {
         List<Individu> individus = construireIndividus(); // On construit notre liste d'individu
         if (individus.isEmpty())
             return null;
 
         Individu[] tableau = individus.toArray(new Individu[0]);
-        String espece = tableau[0].getEspece(); // on récupère l'espece étudiée
+        String espece = tableau[0].getEspece(); // on récupére l'espece étudié
 
         String[] noms = getNomColonnes();
         StringBuilder parties = new StringBuilder();
@@ -310,11 +310,8 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
             }
         }
 
-        String partie = parties.length() > 0 ? parties.toString() : "corps entier";
-        String[] tabParties = {partie};
-
         return new Population(individus.size(), espece,
-                tabParties,
+                parties.length() > 0 ? parties.toString() : "corps entier",
                 tableau);
     }
 
@@ -331,7 +328,7 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
     }
 
     /**
-     * Permet de classer les individus par especes
+     * Permet de classés les individus par especes
      * 
      * @return une map avec <Espece, la liste d'individu de l'espece>
      * 
@@ -355,212 +352,27 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
         return TYPE + (titre != null ? " : " + titre : "");
     }
 
+
     public static void main(String[] args) {
-        int ok = 0, total = 0;
+		/*
+		 * public int getVersContenu(int indice)
+		 * public int getVersTotalContenuType(String type)
+		 * public int getVersContenu(String type)
+		 * public int getVersContenuTotal()
+		 * public boolean MajNBVersPoisson()
+		 * public float calculTauxInfestation()
+		 * public int calculNbVers()
+		 * public Individu(String espece, float taille, float poids, int nbVers,
+		 * ArrayList<Contenu> contenus)
+		 * public Individu(String espece, float taille, float poids, float taux,
+		 * ArrayList<Contenu> contenus)
+		 */
 
-        // Lecture du fichier mackerel.97442.csv (séparateur ;)
-        fish.acquisition.lecture.LectureCSV lecteur = new fish.acquisition.lecture.LectureCSV(";");
+		try {
 
-        // ── Construction depuis mackerel.97442.csv ────────────────────────────
-        System.out.println("── Lecture mackerel.97442.csv ───────────────────────");
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 
-        DfIndividu dfMackerel = null;
-        try {
-            dfMackerel = lecteur.lireCSV("data/mackerel.97442.csv", DfIndividu.class);
-        } catch (Exception e) { System.out.println("Chargement échoué : " + e); }
-
-        // Test 1 : lecture sans exception, df non null
-        total++;
-        if (dfMackerel != null) {
-            System.out.println("PASS Test 1 : mackerel chargé, " + dfMackerel.getNbLignes() + " lignes");
-            ok++;
-            dfMackerel.afficherPremieresFignes(5);
-            dfMackerel.afficherStatistiques();
-        } else {
-            System.out.println("FAIL Test 1 : dfMackerel est null");
-        }
-
-        // Test 2 : nb colonnes = 20 (entêtes du fichier)
-        total++;
-        if (dfMackerel != null && dfMackerel.getNbCol() == 20) {
-            System.out.println("PASS Test 2 : 20 colonnes");
-            ok++;
-        } else {
-            System.out.println("FAIL Test 2 : colonnes = " + (dfMackerel != null ? dfMackerel.getNbCol() : "N/A"));
-        }
-
-        // Test 3 : construireIndividus() → liste non vide
-        total++;
-        try {
-            List<Individu> inds = dfMackerel.construireIndividus();
-            if (!inds.isEmpty()) {
-                System.out.println("PASS Test 3 : construireIndividus() → " + inds.size() + " individus");
-                ok++;
-            } else {
-                System.out.println("FAIL Test 3 : liste vide");
-            }
-        } catch (Exception e) { System.out.println("FAIL Test 3 : " + e); }
-
-        // Test 4 : construirePopulation() → population non null
-        total++;
-        try {
-            Population pop = dfMackerel.construirePopulation();
-            if (pop != null && pop.getEffectif() > 0) {
-                System.out.println("PASS Test 4 : construirePopulation() → effectif " + pop.getEffectif());
-                ok++;
-            } else {
-                System.out.println("FAIL Test 4 : population null ou effectif 0");
-            }
-        } catch (Exception e) { System.out.println("FAIL Test 4 : " + e); }
-
-        // ── Construction depuis merlu2018_75164.csv ───────────────────────────
-        System.out.println("\n── Lecture merlu2018_75164.csv ──────────────────────");
-
-        DfIndividu dfMerlu = null;
-        fish.acquisition.lecture.LectureCSV lecteurMerlu = new fish.acquisition.lecture.LectureCSV(";");
-        try {
-            dfMerlu = lecteurMerlu.lireCSV("data/merlu2018_75164.csv", DfIndividu.class);
-        } catch (Exception e) { System.out.println("Chargement échoué : " + e); }
-
-        // Test 5 : lecture sans exception
-        total++;
-        if (dfMerlu != null) {
-            System.out.println("PASS Test 5 : merlu chargé, " + dfMerlu.getNbLignes() + " lignes");
-            ok++;
-            dfMerlu.afficherPremieresFignes(5);
-            dfMerlu.afficherStatistiques();
-        } else {
-            System.out.println("FAIL Test 5 : dfMerlu est null");
-        }
-
-        // Test 6 : 20 lignes de données
-        total++;
-        if (dfMerlu != null && dfMerlu.getNbLignes() == 20) {
-            System.out.println("PASS Test 6 : 20 lignes");
-            ok++;
-        } else {
-            System.out.println("FAIL Test 6 : lignes = " + (dfMerlu != null ? dfMerlu.getNbLignes() : "N/A"));
-        }
-
-        // ── getIndexColonne ───────────────────────────────────────────────────
-        System.out.println("\n── getIndexColonne ──────────────────────────────────");
-
-        // Test 7 : recherche d'un mot-clé présent
-        total++;
-        try {
-            Object[][] data = {{"Merlan", 30.5}};
-            DfIndividu dfTest = new DfIndividu(1, new String[]{"espece", "longueur"}, data);
-            int idx = dfTest.getIndexColonne("longueur");
-            if (idx == 1) {
-                System.out.println("PASS Test 7 : getIndexColonne('longueur') = 1");
-                ok++;
-            } else {
-                System.out.println("FAIL Test 7 : attendu 1, obtenu " + idx);
-            }
-        } catch (Exception e) { System.out.println("FAIL Test 7 : " + e); }
-
-        // Test 8 : mot-clé absent → -1
-        total++;
-        try {
-            Object[][] data = {{"Merlan"}};
-            DfIndividu dfTest = new DfIndividu(1, new String[]{"espece"}, data);
-            int idx = dfTest.getIndexColonne("inexistant");
-            if (idx == -1) {
-                System.out.println("PASS Test 8 : getIndexColonne mot-clé absent → -1");
-                ok++;
-            } else {
-                System.out.println("FAIL Test 8 : attendu -1, obtenu " + idx);
-            }
-        } catch (Exception e) { System.out.println("FAIL Test 8 : " + e); }
-
-        // ── setTitre / getTitre ───────────────────────────────────────────────
-        System.out.println("\n── setTitre / getTitre ──────────────────────────────");
-
-        // Test 9 : setTitre valide
-        total++;
-        try {
-            DfIndividu dfTest = new DfIndividu(1, new String[]{"x"});
-            dfTest.setTitre("Test Maquereau");
-            if ("Test Maquereau".equals(dfTest.getTitre())) {
-                System.out.println("PASS Test 9 : setTitre/getTitre fonctionnels");
-                ok++;
-            } else {
-                System.out.println("FAIL Test 9 : titre = " + dfTest.getTitre());
-            }
-        } catch (Exception e) { System.out.println("FAIL Test 9 : " + e); }
-
-        // Test 10 : setTitre vide → EmptyStringException
-        total++;
-        try {
-            DfIndividu dfTest = new DfIndividu(1, new String[]{"x"});
-            dfTest.setTitre("");
-            System.out.println("FAIL Test 10 : EmptyStringException attendue non levée");
-        } catch (fish.exceptions.EmptyStringException e) {
-            System.out.println("PASS Test 10 : setTitre('') → EmptyStringException");
-            ok++;
-        } catch (Exception e) { System.out.println("FAIL Test 10 : " + e); }
-
-        // ── lireFloat / lireInt / lireString ──────────────────────────────────
-        System.out.println("\n── lireFloat / lireInt / lireString ────────────────");
-
-        // Test 11 : lireFloat sur une valeur Double → ok
-        total++;
-        try {
-            Object[][] data = {{30.5, 5}};
-            DfIndividu dfTest = new DfIndividu(1, new String[]{"lon", "nv"}, data);
-            float f = dfTest.lireFloat(0, 0, -1f);
-            if (Math.abs(f - 30.5f) < 1e-4) {
-                System.out.println("PASS Test 11 : lireFloat → 30.5");
-                ok++;
-            } else {
-                System.out.println("FAIL Test 11 : attendu 30.5, obtenu " + f);
-            }
-        } catch (Exception e) { System.out.println("FAIL Test 11 : " + e); }
-
-        // Test 12 : lireInt sur un Integer → ok
-        total++;
-        try {
-            Object[][] data = {{30.5, 5}};
-            DfIndividu dfTest = new DfIndividu(1, new String[]{"lon", "nv"}, data);
-            int i = dfTest.lireInt(0, 1, -1);
-            if (i == 5) {
-                System.out.println("PASS Test 12 : lireInt → 5");
-                ok++;
-            } else {
-                System.out.println("FAIL Test 12 : attendu 5, obtenu " + i);
-            }
-        } catch (Exception e) { System.out.println("FAIL Test 12 : " + e); }
-
-        // Test 13 : lireString sur String → ok
-        total++;
-        try {
-            Object[][] data = {{"Merlan"}};
-            DfIndividu dfTest = new DfIndividu(1, new String[]{"espece"}, data);
-            String s = dfTest.lireString(0, 0);
-            if ("Merlan".equals(s)) {
-                System.out.println("PASS Test 13 : lireString → 'Merlan'");
-                ok++;
-            } else {
-                System.out.println("FAIL Test 13 : attendu 'Merlan', obtenu '" + s + "'");
-            }
-        } catch (Exception e) { System.out.println("FAIL Test 13 : " + e); }
-
-        // ── getIndividusParEspece ─────────────────────────────────────────────
-        System.out.println("\n── getIndividusParEspece ────────────────────────────");
-
-        // Test 14 : regroupement par espèce sur mackerel
-        total++;
-        try {
-            Map<String, List<Individu>> map = dfMackerel.getIndividusParEspece();
-            if (!map.isEmpty()) {
-                System.out.println("PASS Test 14 : " + map.size() + " espèce(s) distincte(s)");
-                ok++;
-            } else {
-                System.out.println("FAIL Test 14 : map vide");
-            }
-        } catch (Exception e) { System.out.println("FAIL Test 14 : " + e); }
-        System.out.println("\n═══════════════════════════════════════════════════");
-        System.out.println("=== DfIndividu : " + ok + "/" + total + " tests réussis ===");
-        System.out.println("═══════════════════════════════════════════════════");
-    }
+	}
 }

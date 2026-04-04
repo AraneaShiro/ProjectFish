@@ -1,6 +1,6 @@
 package fish.acquisition.lecture;
 
-import fish.acquisition.*;
+import fish.acquisition.DataframeComplet;
 import fish.acquisition.DfIndividu;
 
 import java.io.*;
@@ -263,13 +263,6 @@ public class LectureCSV {
     public static void main(String[] args) {
         int reussis = 0, total = 0;
 
-        // ── Helper : lit silencieusement (supprime les prints internes) ───────
-        // Les EmptyStringException et ArithmeticException viennent de
-        // construireIndividus() sur des lignes sans espèce — c'est du bruit.
-        java.io.PrintStream stdout = System.out;
-        java.io.PrintStream devNull = new java.io.PrintStream(
-                new java.io.OutputStream() { public void write(int b) {} });
-
         // ────────────────────────────────────────────────────────────────────
         // CSV 1 — Format standard (virgule, entêtes ligne 1)
         // Contenu : espece,longueur,poids,nbvers
@@ -279,18 +272,14 @@ public class LectureCSV {
         // ,35.0,,3 ← ligne avec nulls
         // ────────────────────────────────────────────────────────────────────
         System.out.println("── CSV 1 : format standard ──────────────────────────");
+        LectureCSV lecteur = new LectureCSV(",");
 
-        // Test 1 : lecture du fichier mackerel (séparateur ;) — vérification sans exception
+        // Test 1 : lecture sans exception
         total++;
         try {
-            LectureCSV lecteurMackerel = new LectureCSV(";");
-            DfIndividu df = lecteurMackerel.lireCSV("data/mackerel.97442.csv", DfIndividu.class);
+            DfIndividu df = lecteur.lireCSV("src/data/Test/test_simple.csv", DfIndividu.class);
             if (df != null) {
-                System.out.println("PASS Test 1 : lecture sans exception — "
-                        + df.getNbLignes() + " lignes, " + df.getNbCol() + " colonnes");
-                lecteurMackerel.afficherEntetes();
-                df.afficherPremieresFignes(5);
-                df.afficherStatistiques();
+                System.out.println("PASS Test 1 : lecture sans exception");
                 reussis++;
             } else {
                 System.out.println("FAIL Test 1 : df est null");
@@ -299,23 +288,11 @@ public class LectureCSV {
             System.out.println("FAIL Test 1 : " + e);
         }
 
-
-        // ── Tests 2–7 : test_simple.csv (séparateur virgule) ─────────────────
-        // Instance fraîche à chaque lecture pour éviter la pollution d'état
-        System.out.println("\n── CSV simple (virgule) ─────────────────────────────");
-        DfIndividu dfSimple = null;
-        try {
-            System.setOut(devNull);
-            dfSimple = new LectureCSV(",").lireCSV("data/Test/test_simple.csv", DfIndividu.class);
-        } catch (FileEmpty e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally { System.setOut(stdout); }
-
         // Test 2 : dimensions correctes (4 lignes, 4 colonnes)
         total++;
         try {
-            int[] size = dfSimple.getSize();
+            DfIndividu df = lecteur.lireCSV("src/data/Test/test_simple.csv", DfIndividu.class);
+            int[] size = df.getSize();
             if (size[0] == 4 && size[1] == 4) {
                 System.out.println("PASS Test 2 : dimensions 4x4");
                 reussis++;
@@ -323,12 +300,15 @@ public class LectureCSV {
                 System.out.println("FAIL Test 2 : dimensions attendues [4,4], obtenues ["
                         + size[0] + "," + size[1] + "]");
             }
-        } catch (Exception e) { System.out.println("FAIL Test 2 : " + e); }
+        } catch (Exception e) {
+            System.out.println("FAIL Test 2 : " + e);
+        }
 
         // Test 3 : entêtes correctes
         total++;
         try {
-            String[] noms = dfSimple.getNomColonnes();
+            DfIndividu df = lecteur.lireCSV("src/data/Test/test_simple.csv", DfIndividu.class);
+            String[] noms = df.getNomColonnes();
             if ("espece".equals(noms[0]) && "longueur".equals(noms[1])
                     && "poids".equals(noms[2]) && "nbvers".equals(noms[3])) {
                 System.out.println("PASS Test 3 : entêtes correctes");
@@ -337,13 +317,16 @@ public class LectureCSV {
                 System.out.println("FAIL Test 3 : entêtes incorrectes : "
                         + java.util.Arrays.toString(noms));
             }
-        } catch (Exception e) { System.out.println("FAIL Test 3 : " + e); }
+        } catch (Exception e) {
+            System.out.println("FAIL Test 3 : " + e);
+        }
 
         // Test 4 : types détectés — longueur=Double, nbvers=Integer
         total++;
         try {
-            Object longueur = dfSimple.getCase(0, 1);
-            Object nbvers   = dfSimple.getCase(0, 3);
+            DfIndividu df = lecteur.lireCSV("src/data/Test/test_simple.csv", DfIndividu.class);
+            Object longueur = df.getCase(0, 1); // 30.5
+            Object nbvers = df.getCase(0, 3); // 5
             if (longueur instanceof Double && nbvers instanceof Integer) {
                 System.out.println("PASS Test 4 : types détectés (Double, Integer)");
                 reussis++;
@@ -352,72 +335,86 @@ public class LectureCSV {
                         + longueur.getClass().getSimpleName()
                         + ", nbvers=" + nbvers.getClass().getSimpleName());
             }
-        } catch (Exception e) { System.out.println("FAIL Test 4 : " + e); }
+        } catch (Exception e) {
+            System.out.println("FAIL Test 4 : " + e);
+        }
 
-        // Test 5 : valeur numérique correcte — longueur[0] = 30.5
+        // Test 5 : valeur numérique correcte
         total++;
         try {
-            double longueur = (Double) dfSimple.getCase(0, 1);
+            DfIndividu df = lecteur.lireCSV("src/data/Test/test_simple.csv", DfIndividu.class);
+            double longueur = (Double) df.getCase(0, 1); // 30.5
             if (Math.abs(longueur - 30.5) < 1e-9) {
                 System.out.println("PASS Test 5 : valeur 30.5 correcte");
                 reussis++;
             } else {
                 System.out.println("FAIL Test 5 : longueur attendue 30.5, obtenue " + longueur);
             }
-        } catch (Exception e) { System.out.println("FAIL Test 5 : " + e); }
+        } catch (Exception e) {
+            System.out.println("FAIL Test 5 : " + e);
+        }
 
-        // Test 6 : cellules vides → null (ligne 4 : espece vide, poids vide)
+        // Test 6 : cellule vide → null
         total++;
         try {
-            Object espece = dfSimple.getCase(3, 0);
-            Object poids  = dfSimple.getCase(3, 2);
+            DfIndividu df = lecteur.lireCSV("src/data/Test/test_simple.csv", DfIndividu.class);
+            Object espece = df.getCase(3, 0); // ligne 4, col espece → vide
+            Object poids = df.getCase(3, 2); // ligne 4, col poids → vide
             if (espece == null && poids == null) {
                 System.out.println("PASS Test 6 : cellules vides → null");
                 reussis++;
             } else {
                 System.out.println("FAIL Test 6 : espece=" + espece + ", poids=" + poids);
             }
-        } catch (Exception e) { System.out.println("FAIL Test 6 : " + e); }
+        } catch (Exception e) {
+            System.out.println("FAIL Test 6 : " + e);
+        }
 
-        // Test 7 : valeur String correcte — espece[1] = "Hareng"
+        // Test 7 : valeur String correcte
         total++;
         try {
-            Object espece = dfSimple.getCase(1, 0);
+            DfIndividu df = lecteur.lireCSV("src/data/Test/test_simple.csv", DfIndividu.class);
+            Object espece = df.getCase(1, 0); // "Hareng"
             if ("Hareng".equals(espece)) {
                 System.out.println("PASS Test 7 : valeur String 'Hareng' correcte");
                 reussis++;
             } else {
                 System.out.println("FAIL Test 7 : espece attendue 'Hareng', obtenue " + espece);
             }
-        } catch (Exception e) { System.out.println("FAIL Test 7 : " + e); }
+        } catch (Exception e) {
+            System.out.println("FAIL Test 7 : " + e);
+        }
 
-        // ── Tests 8–12 : test_special.csv (valeurs spéciales ±, <LOQ, min-max) ─
+        // ────────────────────────────────────────────────────────────────────
+        // CSV 2 — Valeurs spéciales (±, <LOQ, min-max, null)
+        // Contenu : espece,longueur,poids,prevalence,ic95
+        // Merlan,34.83 ± 2.32,325.78 ± 54.71,64.76,55.47-74.05
+        // Hareng,<LOQ,459.17 ± 95.28,77.65,68.61-86.69
+        // Thon,,<12.5,22.67,12.97-32.36
+        // ────────────────────────────────────────────────────────────────────
         System.out.println("\n── CSV 2 : valeurs spéciales ────────────────────────");
-        DfIndividu dfSpecial = null;
-        try {
-            System.setOut(devNull);
-            dfSpecial = new LectureCSV(",").lireCSV("data/Test/test_special.csv", DfIndividu.class);
-        } catch (FileEmpty e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally { System.setOut(stdout); }
+        LectureCSV lecteurSpecial = new LectureCSV(",");
 
         // Test 8 : "34.83 ± 2.32" → Double 34.83
         total++;
         try {
-            Object val = dfSpecial.getCase(0, 1);
+            DfIndividu df = lecteurSpecial.lireCSV("src/data/Test/test_special.csv", DfIndividu.class);
+            Object val = df.getCase(0, 1); // longueur Merlan
             if (val instanceof Double && Math.abs((Double) val - 34.83) < 1e-9) {
                 System.out.println("PASS Test 8 : '34.83 ± 2.32' → 34.83");
                 reussis++;
             } else {
                 System.out.println("FAIL Test 8 : '34.83 ± 2.32' → " + val);
             }
-        } catch (Exception e) { System.out.println("FAIL Test 8 : " + e); }
+        } catch (Exception e) {
+            System.out.println("FAIL Test 8 : " + e);
+        }
 
         // Test 9 : "<LOQ" → 0.0
         total++;
         try {
-            Object val = dfSpecial.getCase(1, 1);
+            DfIndividu df = lecteurSpecial.lireCSV("src/data/Test/test_special.csv", DfIndividu.class);
+            Object val = df.getCase(1, 1); // longueur Hareng = <LOQ
             if (Double.valueOf(0.0).equals(val)) {
                 System.out.println("PASS Test 9 : '<LOQ' → 0.0");
                 reussis++;
@@ -425,71 +422,83 @@ public class LectureCSV {
                 System.out.println("FAIL Test 9 : '<LOQ' → " + val
                         + " (" + (val != null ? val.getClass().getSimpleName() : "null") + ")");
             }
-        } catch (Exception e) { System.out.println("FAIL Test 9 : " + e); }
+        } catch (Exception e) {
+            System.out.println("FAIL Test 9 : " + e);
+        }
 
-        // Test 10 : "<12.5" → 6.25
+        // Test 10 : "<12.5" → 6.25 (moitié)
         total++;
         try {
-            Object val = dfSpecial.getCase(2, 2);
+            DfIndividu df = lecteurSpecial.lireCSV("src/data/Test/test_special.csv", DfIndividu.class);
+            Object val = df.getCase(2, 2); // poids Thon = <12.5
             if (val instanceof Double && Math.abs((Double) val - 6.25) < 1e-9) {
                 System.out.println("PASS Test 10 : '<12.5' → 6.25");
                 reussis++;
             } else {
                 System.out.println("FAIL Test 10 : '<12.5' → " + val);
             }
-        } catch (Exception e) { System.out.println("FAIL Test 10 : " + e); }
+        } catch (Exception e) {
+            System.out.println("FAIL Test 10 : " + e);
+        }
 
         // Test 11 : "55.47-74.05" → 64.76 (centre intervalle)
         total++;
         try {
-            Object val = dfSpecial.getCase(0, 4);
+            DfIndividu df = lecteurSpecial.lireCSV("src/data/Test/test_special.csv", DfIndividu.class);
+            Object val = df.getCase(0, 4); // ic95 Merlan = "55.47-74.05"
             if (val instanceof Double && Math.abs((Double) val - 64.76) < 1e-9) {
                 System.out.println("PASS Test 11 : '55.47-74.05' → 64.76");
                 reussis++;
             } else {
                 System.out.println("FAIL Test 11 : '55.47-74.05' → " + val);
             }
-        } catch (Exception e) { System.out.println("FAIL Test 11 : " + e); }
+        } catch (Exception e) {
+            System.out.println("FAIL Test 11 : " + e);
+        }
 
-        // Test 12 : cellule vide → null (longueur Thon)
+        // Test 12 : cellule vide (longueur Thon) → null
         total++;
         try {
-            Object val = dfSpecial.getCase(2, 1);
+            DfIndividu df = lecteurSpecial.lireCSV("src/data/Test/test_special.csv", DfIndividu.class);
+            Object val = df.getCase(2, 1); // longueur Thon → vide
             if (val == null) {
                 System.out.println("PASS Test 12 : cellule vide → null");
                 reussis++;
             } else {
                 System.out.println("FAIL Test 12 : cellule vide → " + val);
             }
-        } catch (Exception e) { System.out.println("FAIL Test 12 : " + e); }
+        } catch (Exception e) {
+            System.out.println("FAIL Test 12 : " + e);
+        }
 
-        // ── Tests 13–14 : test_sep.csv (séparateur ; + décimale ,) ───────────
+        // ────────────────────────────────────────────────────────────────────
+        // CSV 3 — Séparateur point-virgule + décimale virgule
+        // Contenu : espece;longueur;poids
+        // Merlan;30,5;200
+        // Hareng;25,0;150
+        // ────────────────────────────────────────────────────────────────────
         System.out.println("\n── CSV 3 : séparateur ';' et décimale ',' ───────────");
-        DfIndividu dfSep = null;
-        try {
-            System.setOut(devNull);
-            dfSep = new LectureCSV(";").lireCSV("data/Test/test_sep.csv", DfIndividu.class);
-        } catch (FileEmpty e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally { System.setOut(stdout); }
+        LectureCSV lecteurFR = new LectureCSV(";");
 
-        // Test 13 : dimensions 2 lignes, 3 colonnes
+        // Test 13 : lecture avec séparateur ;
         total++;
         try {
-            if (dfSep != null && dfSep.getNbLignes() == 2 && dfSep.getNbCol() == 3) {
+            DfIndividu df = lecteurFR.lireCSV("src/data/Test/test_sep.csv", DfIndividu.class);
+            if (df != null && df.getNbLignes() == 2 && df.getNbCol() == 3) {
                 System.out.println("PASS Test 13 : lecture ; → 2 lignes, 3 colonnes");
-                dfSep.afficherPremieresFignes(2);
                 reussis++;
             } else {
-                System.out.println("FAIL Test 13 : df=" + dfSep);
+                System.out.println("FAIL Test 13 : df=" + df);
             }
-        } catch (Exception e) { System.out.println("FAIL Test 13 : " + e); }
+        } catch (Exception e) {
+            System.out.println("FAIL Test 13 : " + e);
+        }
 
         // Test 14 : "30,5" → Double 30.5
         total++;
         try {
-            Object val = dfSep.getCase(0, 1);
+            DfIndividu df = lecteurFR.lireCSV("src/data/Test/test_sep.csv", DfIndividu.class);
+            Object val = df.getCase(0, 1); // longueur Merlan = "30,5"
             if (val instanceof Double && Math.abs((Double) val - 30.5) < 1e-9) {
                 System.out.println("PASS Test 14 : '30,5' → Double 30.5");
                 reussis++;
@@ -497,13 +506,19 @@ public class LectureCSV {
                 System.out.println("FAIL Test 14 : '30,5' → " + val
                         + " (" + (val != null ? val.getClass().getSimpleName() : "null") + ")");
             }
-        } catch (Exception e) { System.out.println("FAIL Test 14 : " + e); }
+        } catch (Exception e) {
+            System.out.println("FAIL Test 14 : " + e);
+        }
 
-        // ── Test 15 : fichier inexistant ──────────────────────────────────────
+        // ────────────────────────────────────────────────────────────────────
+        // CSV 4 — Fichier inexistant
+        // ────────────────────────────────────────────────────────────────────
         System.out.println("\n── CSV 4 : cas d'erreur ─────────────────────────────");
+
+        // Test 15 : fichier inexistant → retourne null (pas d'exception)
         total++;
         try {
-            DfIndividu df = new LectureCSV(",").lireCSV("fichier_inexistant.csv", DfIndividu.class);
+            DfIndividu df = lecteur.lireCSV("fichier_inexistant.csv", DfIndividu.class);
             if (df == null) {
                 System.out.println("PASS Test 15 : fichier inexistant → null");
                 reussis++;
@@ -513,7 +528,6 @@ public class LectureCSV {
         } catch (Exception e) {
             System.out.println("FAIL Test 15 : exception inattendue " + e);
         }
-
 
         System.out.println("\n═══════════════════════════════════════════════════");
         System.out.println("=== LectureCSV : " + reussis + "/" + total + " tests réussis ===");

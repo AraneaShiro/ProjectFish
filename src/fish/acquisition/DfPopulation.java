@@ -82,7 +82,7 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
      * Retourne toutes les populations d'une espèce (utile en multi-période)
      *
      * @param espece le nom de l'espèce
-     * @return une liste de population qui est de l'espece donnée
+     * @return une liste de population qui est de l'espece donné
      */
     public List<Population> getPopulationsParEspece(String espece) {
         List<Population> resultat = new ArrayList<>();
@@ -192,7 +192,7 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
 
     /**
      * Fonction utilitaire qui trouve l'index de la
-     * colonne en fonction du nom donné
+     * colonne en fonction du nom donnée
      *
      * @param motCle le nom de la colonne que l'on recherche
      * @return le numéro de la colonne ou -1 si elle n'est pas trouvée
@@ -210,7 +210,7 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
      * Cherche une colonne dont le nom contient motCle ET suffixe (ex: "N" + "2012")
      * 
      * @param motCle  le mot clé recherché
-     * @param periode la période recherchée (ex:2019)
+     * @param periode la période recherché (ex:2019)
      * @return l'indice trouvé ou -1 sinon
      */
     private int getIndexColonnePeriode(String motCle, String periode) {
@@ -224,12 +224,12 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
     }
 
     /**
-     * Fonction utilitaire qui lit si c est possible en Float
+     * Fonction utilitaire qui lis si c est possible en Float
      * et le renvoie ou une valeur par defaut
      *
      * @param ligne  la ligne de la case a lire
      * @param col    la colonne de la case a lire
-     * @param defaut la valeur par defaut si illisible ou mauvaise coordonnée
+     * @param defaut la valeur par defaut si illisible ou mauvaise coordonné
      * @return la valeur ou la valeur par defaut
      */
     public float lireFloat(int ligne, int col, float defaut) {
@@ -245,12 +245,12 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
     }
 
     /**
-     * Fonction utilitaire qui lit si c est possible en int
+     * Fonction utilitaire qui lis si c est possible en int
      * et le renvoie ou une valeur par defaut
      *
      * @param ligne  la ligne de la case a lire
      * @param col    la colonne de la case a lire
-     * @param defaut la valeur par defaut si illisible ou mauvaise coordonnée
+     * @param defaut la valeur par defaut si illisible ou mauvaise coordonné
      * @return la valeur ou la valeur par defaut
      */
     public int lireInt(int ligne, int col, int defaut) {
@@ -266,7 +266,7 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
     }
 
     /**
-     * Fonction utilitaire qui lit si c est possible en String
+     * Fonction utilitaire qui lis si c est possible en String
      * et le renvoie ou une valeur par defaut
      *
      * @param ligne la ligne de la case a lire
@@ -308,12 +308,11 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
             int effectif = lireInt(i, iEffectif, 0);
             int infectes = lireInt(i, iInfectes, 0);
             String partie = lireString(i, iPartie);
-            String[] parties = {partie};
             float intensite = lireFloat(i, iIntensite, 0f);
             float abondance = lireFloat(i, iAbondance, 0f);
 
             try {
-                liste.add(new Population(effectif, espece, infectes, parties, intensite, abondance));
+                liste.add(new Population(effectif, espece, infectes, partie, intensite, abondance));
             } catch (Exception e) {
                 System.out.println("Population ligne " + i + " ignorée : " + e.getMessage());
             }
@@ -358,10 +357,10 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
 
                 // Partie du corps = la période (ex: "Total", "2012")
                 String partie = periode;
-                String[] parties = {partie};
+
                 try {
                     if (effectif > 0) { // On ignore les périodes sans données
-                        liste.add(new Population(effectif, espece, infectes, parties, intensite, abondance));
+                        liste.add(new Population(effectif, espece, infectes, partie, intensite, abondance));
                     }
                 } catch (Exception e) {
                     System.out.println("Population " + espece + " / " + periode + " ignorée : " + e.getMessage());
@@ -404,7 +403,7 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
     }
 
     /**
-     * Répercussion si le tableau n'est pas multi-périodique
+     * Répercution si le tableau n'est pas périodique
      *
      * @param ligne l'index a modifier
      * @param pop   la nouvelle population

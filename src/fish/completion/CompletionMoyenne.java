@@ -1,38 +1,34 @@
-// ── Package ───────────────────────────────────────────────────
 package fish.completion;
 
-// ── Import ───────────────────────────────────────────────────
 import fish.acquisition.DataframeComplet;
 import fish.exceptions.OutOfBoundException;
+
 import java.util.ArrayList;
 import java.util.List;
 
-// ── TESTE : NON ───────────────────────────────────────────────────
 /**
- * Complète les valeurs null d'un Dataframe par la moyenne de leur colonne.
- * Seules les colonnes numériques sont complétées.
- * Les colonnes String/Boolean sont ignorées.
+ * Utilitaire de complétion par moyenne.
+ * Toutes les méthodes sont statiques — cette classe ne s'instancie pas.
  *
  * @author Jules Grenesche
- * @version 1
+ * @version 2
  */
-public class CompletionMoyenne {
+public final class CompletionMoyenne {
 
-    private final DataframeComplet df;
-
-    public CompletionMoyenne(DataframeComplet df) {
-        this.df = df;
+    // Empêche l'instanciation
+    private CompletionMoyenne() {
     }
 
     /**
-     * Complète TOUTES les colonnes numériques du dataframe.
+     * Complète TOUTES les colonnes numériques nulles du dataframe par leur moyenne.
      *
+     * @param df le dataframe à compléter
      * @return le nombre de cases complétées
      */
-    public int completerTout() {
+    public static int completerTout(DataframeComplet df) {
         int total = 0;
         for (int j = 0; j < df.getNbCol(); j++) {
-            total += completerColonne(j);
+            total += completerColonne(df, j);
         }
         System.out.println(total + " case(s) complétée(s) par la moyenne.");
         return total;
@@ -41,11 +37,12 @@ public class CompletionMoyenne {
     /**
      * Complète une colonne spécifique par sa moyenne.
      *
+     * @param df  le dataframe à compléter
      * @param col l'index de la colonne
      * @return le nombre de cases complétées dans cette colonne
      */
-    public int completerColonne(int col) {
-        double moyenne = calculerMoyenneColonne(col);
+    public static int completerColonne(DataframeComplet df, int col) {
+        double moyenne = calculerMoyenneColonne(df, col);
         if (Double.isNaN(moyenne))
             return 0; // Colonne non numérique
 
@@ -65,23 +62,24 @@ public class CompletionMoyenne {
     /**
      * Complète uniquement les colonnes dont le nom contient le mot-clé.
      *
+     * @param df     le dataframe à compléter
      * @param motCle le mot-clé à rechercher dans les noms de colonnes
      * @return le nombre de cases complétées
      */
-    public int completerColonneParNom(String motCle) {
+    public static int completerColonneParNom(DataframeComplet df, String motCle) {
         int total = 0;
         String[] noms = df.getNomColonnes();
         for (int j = 0; j < noms.length; j++) {
             if (noms[j].toLowerCase().contains(motCle.toLowerCase())) {
-                total += completerColonne(j);
+                total += completerColonne(df, j);
             }
         }
         return total;
     }
 
-    // ── Utilitaire ───────────────────────────────────────────────────────────
+    // ── Utilitaire privé ─────────────────────────────────────────────────────
 
-    private double calculerMoyenneColonne(int col) {
+    private static double calculerMoyenneColonne(DataframeComplet df, int col) {
         List<Double> valeurs = new ArrayList<>();
         for (int i = 0; i < df.getNbLignes(); i++) {
             try {

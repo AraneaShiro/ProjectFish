@@ -1,13 +1,12 @@
 package fish.poisson;
 
 import fish.exceptions.*;
-import fish.poisson.*;
 
 /**
  * Classe representant un ensemble de poisson
  * 
- * @author Jules Grenesche
- * @version 0.1
+ * @author Jules Grenesche et Arthur Bernard
+ * @version 1
  * @see Individu
  */
 public class Population {
@@ -306,7 +305,7 @@ public class Population {
 	 * @throws NegativeValueException si le taux calculé est négatif
 	 */
 	public float calculTauxInfestation() throws TauxValueException, NegativeValueException{
-		float taux = this.getNbInfectes()/this.getEffectif();
+		float taux = (float) this.getNbInfectes()/ this.getEffectif();
 		if(taux >1){
 			throw new TauxValueException();
 		} else if(taux <0){
@@ -324,7 +323,7 @@ public class Population {
 	public float calculTauxInfestationTab(Individu[] tabIndividus){
 		float taux;
 		int NbInfectes = calculNbInfectes(tabIndividus);
-		taux = NbInfectes/this.getEffectif();
+		taux = (float)NbInfectes/this.getEffectif();
 		return taux;
 	}
 
@@ -343,7 +342,7 @@ public class Population {
 		} else{
 			throw new NoTabException();
 		}
-		float abondance = sommeTotalVers / this.tabIndividu.length;
+		float abondance =  (float)sommeTotalVers / this.tabIndividu.length;
 		return abondance;
 	}
 
@@ -362,23 +361,123 @@ public class Population {
 		} else{
 			throw new NoTabException();
 		}
-		float intensite = sommeTotalVers / this.nbInfectes;
+		float intensite = (float)sommeTotalVers / this.nbInfectes;
 		return intensite;
 	}
 
 	/////////////////// Main //////////////
 	public static void main(String[] args) {
-		//
-		try{
-			String[] parties = {"foie", "gonades"};
-			Population p1 = new Population(12,"maquereau", 6,parties, 0.67,0.5);
-			System.out.println(p1.aTableau());
-			//p1.calculAbondance();
-			p1.calculIntensite();
-		} catch(Exception e){
-			System.out.println(e.getMessage());
-		}
-		
-	}
+try {
+
+
+    System.out.println("===== CREATION DES CONTENUS =====");
+
+    Contenu c1 = new Contenu("foie", 2);
+    Contenu c2 = new Contenu("gonades", 1);
+
+    java.util.ArrayList<Contenu> contenus1 = new java.util.ArrayList<>();
+    contenus1.add(c1);
+    contenus1.add(c2);
+
+    java.util.ArrayList<Contenu> contenus2 = new java.util.ArrayList<>();
+    contenus2.add(new Contenu("foie", 0));
+    contenus2.add(new Contenu("gonades", 0));
+
+    System.out.println("===== CREATION DES INDIVIDUS =====");
+
+    Individu i1 = new Individu("maquereau", 10, 5, 0.3f, contenus1); // infecté
+    Individu i2 = new Individu("maquereau", 12, 6, 0, contenus2);   // non infecté
+    Individu i3 = new Individu("maquereau", 8, 4, 0.5f, contenus1); // infecté
+
+    Individu[] tab = {i1, i2, i3};
+
+    String[] parties = {"foie", "gonades"};
+
+    System.out.println("\n===== TEST CONSTRUCTEUR SANS TABLEAU =====");
+
+    Population p1 = new Population(12, "maquereau", 6, parties, 0.67, 0.5);
+
+    System.out.println("Effectif : " + p1.getEffectif());
+    System.out.println("Espèce : " + p1.getEspece());
+    System.out.println("Nb infectés : " + p1.getNbInfectes());
+    System.out.println("Abondance : " + p1.getAbondance());
+    System.out.println("Intensité : " + p1.getIntensite());
+    System.out.println("aTableau ? " + p1.aTableau());
+
+    System.out.println("\n===== TEST calculTauxInfestation =====");
+    try {
+        System.out.println("Taux : " + p1.calculTauxInfestation());
+    } catch (Exception e) {
+        System.out.println("Erreur : " + e);
+    }
+
+    System.out.println("\n===== TEST CONSTRUCTEUR AVEC TABLEAU =====");
+
+    Population p2 = new Population(3, "maquereau", parties, tab);
+
+    System.out.println("aTableau ? " + p2.aTableau());
+    System.out.println("Nb infectés : " + p2.getNbInfectes());
+    System.out.println("Taux infestation : " + p2.getTauxInfestation());
+
+    System.out.println("\n===== TEST calculNbInfectes =====");
+    System.out.println("Nb infectés (manuel) : " + p2.calculNbInfectes(tab));
+
+    System.out.println("\n===== TEST calculTauxInfestationTab =====");
+    System.out.println("Taux (tab) : " + p2.calculTauxInfestationTab(tab));
+
+    System.out.println("\n===== TEST calculAbondance =====");
+    try {
+        System.out.println("Abondance : " + p2.calculAbondance());
+    } catch (Exception e) {
+        System.out.println("Erreur : " + e);
+    }
+
+    System.out.println("\n===== TEST calculIntensite =====");
+    try {
+        System.out.println("Intensité : " + p2.calculIntensite());
+    } catch (Exception e) {
+        System.out.println("Erreur : " + e);
+    }
+
+    System.out.println("\n===== TEST CAS LIMITES =====");
+
+    // Tableau null
+    try {
+        Population p3 = new Population(5, "thon", parties, null);
+    } catch (Exception e) {
+        System.out.println("Erreur tableau null : " + e);
+    }
+
+    // Effectif négatif
+    try {
+        Population p4 = new Population(-1, "thon", 2, parties, 0.2, 0.1);
+    } catch (Exception e) {
+        System.out.println("Erreur effectif négatif : " + e);
+    }
+
+    // String vide
+    try {
+        Population p5 = new Population(5, "", 2, parties, 0.2, 0.1);
+    } catch (Exception e) {
+        System.out.println("Erreur string vide : " + e);
+    }
+
+    // Division par 0 (intensité si 0 infecté)
+    try {
+        Individu i4 = new Individu("maquereau", 10, 5, 0, contenus2);
+        Individu[] tab2 = {i4};
+        Population p6 = new Population(1, "maquereau", parties, tab2);
+        System.out.println("Intensité : " + p6.calculIntensite());
+    } catch (Exception e) {
+        System.out.println("Erreur intensité : " + e);
+    }
+
+} catch (Exception e) {
+    System.out.println("Erreur générale : " + e);
+}
+
+
+}
+
 
 }

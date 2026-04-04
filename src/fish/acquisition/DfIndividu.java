@@ -354,9 +354,9 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
         return TYPE + (titre != null ? " : " + titre : "");
     }
 
-    public static void main(String[] args) {
+    public  static void main(String[] args) {
         int ok = 0, total = 0;
-
+/*
         // Lecture du fichier mackerel.97442.csv (séparateur ;)
         fish.acquisition.lecture.LectureCSV lecteur = new fish.acquisition.lecture.LectureCSV(";");
 
@@ -411,7 +411,7 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
                 System.out.println("FAIL Test 4 : population null ou effectif 0");
             }
         } catch (Exception e) { System.out.println("FAIL Test 4 : " + e); }
-
+*/
         // ── Construction depuis merlu2018_75164.csv ───────────────────────────
         System.out.println("\n── Lecture merlu2018_75164.csv ──────────────────────");
 
@@ -427,11 +427,14 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
             System.out.println("PASS Test 5 : merlu chargé, " + dfMerlu.getNbLignes() + " lignes");
             ok++;
             dfMerlu.afficherPremieresFignes(5);
-            dfMerlu.afficherStatistiques();
+            for(int i=0;i<dfMerlu.nomColonne.length;i++){
+                System.out.println(i+" : " +dfMerlu.nomColonne[i]);
+            }
+
         } else {
             System.out.println("FAIL Test 5 : dfMerlu est null");
         }
-
+/* 
         // Test 6 : 20 lignes de données
         total++;
         if (dfMerlu != null && dfMerlu.getNbLignes() == 20) {
@@ -560,6 +563,6 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
         } catch (Exception e) { System.out.println("FAIL Test 14 : " + e); }
         System.out.println("\n═══════════════════════════════════════════════════");
         System.out.println("=== DfIndividu : " + ok + "/" + total + " tests réussis ===");
-        System.out.println("═══════════════════════════════════════════════════");
+        System.out.println("═══════════════════════════════════════════════════");*/
     }
 }

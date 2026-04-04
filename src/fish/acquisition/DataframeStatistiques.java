@@ -2,10 +2,10 @@
 package fish.acquisition;
 
 // ── Import ─────────────────
+import fish.exceptions.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import fish.exceptions.*;
 
 // ── TESTE : NON ─────────────────
 /**
@@ -212,5 +212,80 @@ public abstract class DataframeStatistiques extends DataframeManipulation {
         double correlation = calculerCoVariance(col1, col2) / (ecartType1 * ecartType2);
         this.statistiques.put("Correlation :" + getNomCol(col1) + " " + getNomCol(col2), correlation);
         return correlation;
+    }
+
+     //Test
+    public static void main(String[] args) {
+        int ok = 0, tot = 0;
+        System.out.println("=== Tests DataframeStatistiques ===");
+
+        try {
+            // Données : x = [10,20,30,40,50]
+            Object[][] data = {{10.0, 1.0}, {20.0, 4.0}, {30.0, 9.0}, {40.0, 16.0}, {50.0, 25.0}};
+            DfIndividu df = new DfIndividu(5, new String[]{"x", "y"}, data);
+
+            // moyenne
+            double moy = df.calculerMoyenne(0);
+            tot++; if (Math.abs(moy - 30.0) < 1e-9) { ok++; System.out.println("PASS moyenne = 30.0"); } else System.out.println("FAIL moyenne = " + moy);
+
+            // médiane nb valeurs impair
+            double med = df.calculerMediane(0);
+            tot++; if (Math.abs(med - 30.0) < 1e-9) { ok++; System.out.println("PASS médiane impaire = 30.0"); } else System.out.println("FAIL médiane = " + med);
+
+            // médiane nb valeurs pair
+            Object[][] dataPair = {{10.0}, {20.0}, {30.0}, {40.0}};
+            DfIndividu dfPair = new DfIndividu(4, new String[]{"v"}, dataPair);
+            double medPair = dfPair.calculerMediane(0);
+            tot++; if (Math.abs(medPair - 25.0) < 1e-9) { ok++; System.out.println("PASS médiane paire = 25.0"); } else System.out.println("FAIL médiane paire = " + medPair);
+
+            // écart-type
+            double ecart = df.calculerEcartType(0);
+            double expectedEcart = Math.sqrt(200.0);
+            tot++; if (Math.abs(ecart - expectedEcart) < 1e-6) { ok++; System.out.println("PASS écart-type = √200 ≈ 14.14"); } else System.out.println("FAIL écart-type = " + ecart);
+
+            // écart-type colonne constante = 0
+            Object[][] dataConst = {{5.0}, {5.0}, {5.0}};
+            DfIndividu dfConst = new DfIndividu(3, new String[]{"c"}, dataConst);
+            double ecartConst = dfConst.calculerEcartType(0);
+            tot++; if (Math.abs(ecartConst) < 1e-9) { ok++; System.out.println("PASS écart-type colonne constante = 0"); } else System.out.println("FAIL écart-type constante = " + ecartConst);
+
+            // variance
+            double var = df.calculerVariance(0);
+            tot++; if (Math.abs(var - 200.0) < 1e-9) { ok++; System.out.println("PASS variance = 200.0"); } else System.out.println("FAIL variance = " + var);
+
+            // covariance positive
+            double cov = df.calculerCoVariance(0, 1);
+            tot++; if (cov > 0) { ok++; System.out.println("PASS covariance > 0"); } else System.out.println("FAIL covariance = " + cov);
+
+            // corrélation
+            double corr = df.calculerCorrelation(0, 1);
+            tot++; if (corr > 0.95 && corr <= 1.0) { ok++; System.out.println("PASS corrélation = " + String.format("%.4f", corr)); } else System.out.println("FAIL corrélation = " + corr);
+
+            // corrélation colonne constante = 0
+            Object[][] dataConst2 = {{10.0, 5.0}, {20.0, 5.0}, {30.0, 5.0}};
+            DfIndividu dfConst2 = new DfIndividu(3, new String[]{"a", "b"}, dataConst2);
+            double corrConst = dfConst2.calculerCorrelation(0, 1);
+            tot++; if (Math.abs(corrConst) < 1e-9) { ok++; System.out.println("PASS corrélation colonne constante = 0"); } else System.out.println("FAIL corrélation constante = " + corrConst);
+
+            // colonne String → moyenne = 0
+            Object[][] dataString = {{"A"}, {"B"}, {"C"}};
+            DfIndividu dfStr = new DfIndividu(3, new String[]{"s"}, dataString);
+            double moyStr = dfStr.calculerMoyenne(0);
+            tot++; if (Math.abs(moyStr) < 1e-9) { ok++; System.out.println("PASS moyenne colonne String = 0"); } else System.out.println("FAIL moyenne String = " + moyStr);
+
+            // exceptions
+            try {
+                df.calculerMoyenne(99);
+                System.out.println("FAIL calculerMoyenne index invalide");
+            } catch (OutOfBoundException e) { tot++; ok++; System.out.println("PASS calculerMoyenne index invalide → exception"); }
+
+            // statistiques stockées
+            tot++; if (!df.getStatistique().isEmpty()) { ok++; System.out.println("PASS statistiques stockées dans HashMap"); } else System.out.println("FAIL statistiques stockées");
+
+        } catch (Exception e) {
+            System.out.println("FAIL général : " + e);
+        }
+
+        System.out.println("\n=== DataframeStatistiques : " + ok + "/" + tot + " ===");
     }
 }

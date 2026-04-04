@@ -2,10 +2,10 @@
 package fish.acquisition;
 
 // ── Import ────────────────────────────────────────────────────────────
+import fish.exceptions.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import fish.exceptions.*;
 
 // ── Test : NON ────────────────────────────────────────────────────────────
 /**
@@ -212,4 +212,76 @@ public abstract class DataframeManipulation extends DataframeBase {
     }
 
     // ── TEST A FAIRE ───────────────────────
+    public static void main(String[] args) {
+        int ok = 0, tot = 0;
+        System.out.println("=== Tests DataframeManipulation ===");
+
+        try {
+            // ── 1. getUniqueCol ──────────────────────────────────────────────────
+            Object[][] data = {
+                {"Merlan", 30.0, null},
+                {"Hareng", 25.0, "A"},
+                {"Merlan", 35.0, "B"},
+                {"Thon",   null, "A"}
+            };
+            DfIndividu df = new DfIndividu(4, new String[]{"espece","longueur","cat"}, data);
+
+            tot++; if (df.getUniqueCol(0) == 3) { ok++; System.out.println("PASS getUniqueCol espece=3"); } else System.out.println("FAIL getUniqueCol espece=" + df.getUniqueCol(0));
+            tot++; if (df.getUniqueCol(1) == 4) { ok++; System.out.println("PASS getUniqueCol longueur=4 (inclut null)"); } else System.out.println("FAIL getUniqueCol longueur=" + df.getUniqueCol(1));
+            tot++; if (df.getUniqueCol(2) == 3) { ok++; System.out.println("PASS getUniqueCol cat=3"); } else System.out.println("FAIL getUniqueCol cat=" + df.getUniqueCol(2));
+
+            // Exception sur index invalide
+            try {
+                df.getUniqueCol(99);
+                System.out.println("FAIL getUniqueCol index invalide");
+            } catch (OutOfBoundException e) { tot++; ok++; System.out.println("PASS getUniqueCol index invalide → exception"); }
+
+            // ── 2. getUniqueTab ───────────────────────────────────────────────────
+            int[] tab = df.getUniqueTab();
+            tot++; if (tab.length == 3 && tab[0] == 3 && tab[1] == 4 && tab[2] == 3) { ok++; System.out.println("PASS getUniqueTab"); } else System.out.println("FAIL getUniqueTab = " + java.util.Arrays.toString(tab));
+
+            // ── 3. getUniqueColonneSomme ──────────────────────────────────────────
+            HashMap<Object, Integer> map = df.getUniqueColonneSomme(0);
+            tot++; if (map.get("Merlan") == 2 && map.get("Hareng") == 1 && map.get("Thon") == 1) { ok++; System.out.println("PASS getUniqueColonneSomme"); } else System.out.println("FAIL getUniqueColonneSomme");
+
+            // ── 4. supprimerColonne ───────────────────────────────────────────────
+            Object[][] d2 = {{"A", 1.0, true}, {"B", 2.0, false}, {"C", 3.0, true}};
+            DfIndividu df2 = new DfIndividu(3, new String[]{"x", "y", "z"}, d2);
+            df2.supprimerColonne(1); // supprime "y"
+            tot++; if (df2.getNbCol() == 2 && "x".equals(df2.getNomColonnes()[0]) && "z".equals(df2.getNomColonnes()[1])) { ok++; System.out.println("PASS supprimerColonne"); } else System.out.println("FAIL supprimerColonne");
+
+            // Exception sur index invalide
+            try {
+                df2.supprimerColonne(99);
+                System.out.println("FAIL supprimerColonne index invalide");
+            } catch (OutOfBoundException e) { tot++; ok++; System.out.println("PASS supprimerColonne index invalide → exception"); }
+
+            // ── 5. fusionCol (complémentarité) ────────────────────────────────────
+            Object[][] d3 = {{"Merlan", null, 30.5}, {"Hareng", 25.0, null}};
+            DfIndividu df3 = new DfIndividu(2, new String[]{"esp", "lon1", "lon2"}, d3);
+            df3.fusionCol(1, 2, "longueur");
+
+            tot++; if (df3.getNbCol() == 2 && "longueur".equals(df3.getNomColonnes()[1])) { ok++; System.out.println("PASS fusionCol noms"); } else System.out.println("FAIL fusionCol noms");
+            tot++; if (Double.valueOf(30.5).equals(df3.getCase(0, 1)) && Double.valueOf(25.0).equals(df3.getCase(1, 1))) { ok++; System.out.println("PASS fusionCol valeurs"); } else System.out.println("FAIL fusionCol valeurs");
+
+            // ── 6. fusionCol avec chevauchement → NotNullException ────────────────
+            Object[][] d4 = {{"A", 1.0, 2.0}};
+            DfIndividu df4 = new DfIndividu(1, new String[]{"x", "a", "b"}, d4);
+            try {
+                df4.fusionCol(1, 2, "m");
+                System.out.println("FAIL fusionCol chevauchement (exception attendue)");
+            } catch (NotNullException e) { tot++; ok++; System.out.println("PASS fusionCol chevauchement → NotNullException"); }
+
+            // ── 7. fusionCol avec index invalide → OutOfBoundException ────────────
+            try {
+                df3.fusionCol(0, 99, "x");
+                System.out.println("FAIL fusionCol index invalide");
+            } catch (OutOfBoundException e) { tot++; ok++; System.out.println("PASS fusionCol index invalide → OutOfBoundException"); }
+
+        } catch (Exception e) {
+            System.out.println("FAIL général : " + e);
+        }
+
+        System.out.println("\n=== DataframeManipulation : " + ok + "/" + tot + " ===");
+    }
 }

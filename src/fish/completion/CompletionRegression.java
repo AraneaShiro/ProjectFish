@@ -1,8 +1,8 @@
 package fish.completion;
 
 import fish.acquisition.DataframeComplet;
+import fish.acquisition.DfIndividu;
 import fish.exceptions.OutOfBoundException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -206,5 +206,242 @@ public class CompletionRegression {
                 /* ignoré */ }
         }
         return false;
+    }
+
+     public static void main(String[] args) {
+        int ok = 0, tot = 0;
+        System.out.println("================================================================================");
+        System.out.println("                   TESTS CompletionRegression");
+        System.out.println("================================================================================");
+        System.out.println();
+
+        // TEST 1 : Relation lineaire parfaite y = 2x + 1
+        System.out.println("--- TEST 1 : Regression lineaire parfaite y = 2x + 1 --------------------------");
+        try {
+            Object[][] data = {{1.0, 3.0}, {2.0, 5.0}, {3.0, null}, {4.0, null}};
+            DfIndividu df = new DfIndividu(4, new String[]{"x", "y"}, data);
+            CompletionRegression cr = new CompletionRegression(df);
+
+            System.out.println("\nAVANT regression :");
+            df.afficherPremieresFignes(4);
+            System.out.println("\n   -> Paires completes : (1,3) et (2,5)");
+            System.out.println("   -> Regression : y = 2x + 1");
+            System.out.println("   -> Predictions : x=3 -> y=7, x=4 -> y=9");
+
+            int n = cr.completerParRegression(0, 1);
+            tot++; 
+            if (n == 2) { 
+                ok++; 
+                System.out.println("\n[OK] Test 1.1 : completerParRegression -> " + n + " case(s) completee(s)"); 
+            } else { 
+                System.out.println("\n[FAIL] Test 1.1 : completerParRegression -> " + n + " (attendu 2)"); 
+            }
+
+            System.out.println("\nAPRES regression :");
+            df.afficherPremieresFignes(4);
+            df.afficherStatistiques();
+
+        } catch (Exception e) { 
+            System.out.println("[FAIL] Test 1 : Exception - " + e.getMessage()); 
+        }
+        System.out.println();
+
+        // TEST 2 : Aucun null dans la colonne cible
+        System.out.println("--- TEST 2 : Aucune valeur null dans la colonne cible ------------------------");
+        try {
+            Object[][] data = {{1.0, 2.0}, {2.0, 4.0}, {3.0, 6.0}};
+            DfIndividu df = new DfIndividu(3, new String[]{"x", "y"}, data);
+            CompletionRegression cr = new CompletionRegression(df);
+
+            System.out.println("\nDonnees (pas de null) :");
+            df.afficherPremieresFignes(3);
+
+            int n = cr.completerParRegression(0, 1);
+            tot++; 
+            if (n == 0) { 
+                ok++; 
+                System.out.println("\n[OK] Test 2 : completerParRegression -> " + n + " case(s) (rien a completer)"); 
+            } else { 
+                System.out.println("\n[FAIL] Test 2 : completerParRegression -> " + n + " (attendu 0)"); 
+            }
+
+        } catch (Exception e) { 
+            System.out.println("[FAIL] Test 2 : Exception - " + e.getMessage()); 
+        }
+        System.out.println();
+
+        // TEST 3 : Moins de 2 paires completes
+        System.out.println("--- TEST 3 : Moins de 2 paires completes -------------------------------------");
+        try {
+            Object[][] data = {{1.0, null}, {null, 5.0}, {3.0, null}};
+            DfIndividu df = new DfIndividu(3, new String[]{"x", "y"}, data);
+            CompletionRegression cr = new CompletionRegression(df);
+
+            System.out.println("\nDonnees (pas assez de paires x,y completes) :");
+            df.afficherPremieresFignes(3);
+            System.out.println("\n   -> Aucune paire complete !");
+
+            int n = cr.completerParRegression(0, 1);
+            tot++; 
+            if (n == -1) { 
+                ok++; 
+                System.out.println("\n[OK] Test 3 : completerParRegression -> " + n + " (regression impossible)"); 
+            } else { 
+                System.out.println("\n[FAIL] Test 3 : completerParRegression -> " + n + " (attendu -1)"); 
+            }
+
+        } catch (Exception e) { 
+            System.out.println("[FAIL] Test 3 : Exception - " + e.getMessage()); 
+        }
+        System.out.println();
+
+        // TEST 4 : X constant (variance nulle)
+        System.out.println("--- TEST 4 : X constant (variance nulle) -------------------------------------");
+        try {
+            Object[][] data = {{5.0, 3.0}, {5.0, 7.0}, {5.0, null}};
+            DfIndividu df = new DfIndividu(3, new String[]{"x", "y"}, data);
+            CompletionRegression cr = new CompletionRegression(df);
+
+            System.out.println("\nDonnees (x constant = 5) :");
+            df.afficherPremieresFignes(3);
+            System.out.println("\n   -> Variance de X = 0 -> regression impossible");
+
+            int n = cr.completerParRegression(0, 1);
+            tot++; 
+            if (n == -1) { 
+                ok++; 
+                System.out.println("\n[OK] Test 4 : completerParRegression -> " + n + " (variance nulle)"); 
+            } else { 
+                System.out.println("\n[FAIL] Test 4 : completerParRegression -> " + n + " (attendu -1)"); 
+            }
+
+        } catch (Exception e) { 
+            System.out.println("[FAIL] Test 4 : Exception - " + e.getMessage()); 
+        }
+        System.out.println();
+
+        // TEST 5 : completerToutParMeilleurPredicteur
+        System.out.println("--- TEST 5 : completerToutParMeilleurPredicteur() -----------------------------");
+        try {
+            Object[][] data = {
+                {1.0, 2.0, 5.0},
+                {2.0, 4.0, 5.0},
+                {3.0, null, 5.0},
+                {4.0, 8.0, 5.0}
+            };
+            DfIndividu df = new DfIndividu(4, new String[]{"x", "y", "z"}, data);
+            CompletionRegression cr = new CompletionRegression(df);
+
+            System.out.println("\nAVANT regression :");
+            df.afficherPremieresFignes(4);
+            System.out.println("\n   -> Correlation x/y est parfaite, z est constant");
+            System.out.println("   -> Le meilleur predicteur pour y devrait etre x");
+
+            int n = cr.completerToutParMeilleurPredicteur();
+            tot++; 
+            if (n == 1) { 
+                ok++; 
+                System.out.println("\n[OK] Test 5.1 : completerToutParMeilleurPredicteur -> " + n + " case(s) completee(s)"); 
+            } else { 
+                System.out.println("\n[FAIL] Test 5.1 : completerToutParMeilleurPredicteur -> " + n + " (attendu 1)"); 
+            }
+
+            System.out.println("\nAPRES regression :");
+            df.afficherPremieresFignes(4);
+            df.afficherStatistiques();
+
+        } catch (Exception e) { 
+            System.out.println("[FAIL] Test 5 : Exception - " + e.getMessage()); 
+        }
+        System.out.println();
+
+        // TEST 6 : Dataframe sans nulls
+        System.out.println("--- TEST 6 : Dataframe sans valeurs null -------------------------------------");
+        try {
+            Object[][] data = {{1.0, 10.0}, {2.0, 20.0}, {3.0, 30.0}};
+            DfIndividu df = new DfIndividu(3, new String[]{"a", "b"}, data);
+            CompletionRegression cr = new CompletionRegression(df);
+
+            System.out.println("\nDonnees (aucune valeur null) :");
+            df.afficherPremieresFignes(3);
+
+            int n = cr.completerToutParMeilleurPredicteur();
+            tot++; 
+            if (n == 0) { 
+                ok++; 
+                System.out.println("\n[OK] Test 6 : completerToutParMeilleurPredicteur -> " + n + " case(s) (rien a completer)"); 
+            } else { 
+                System.out.println("\n[FAIL] Test 6 : completerToutParMeilleurPredicteur -> " + n + " (attendu 0)"); 
+            }
+
+        } catch (Exception e) { 
+            System.out.println("[FAIL] Test 6 : Exception - " + e.getMessage()); 
+        }
+        System.out.println();
+
+        // TEST 7 : Colonne non numerique
+        System.out.println("--- TEST 7 : Colonne non numerique (String) ----------------------------------");
+        try {
+            Object[][] data = {{"A", 1.0}, {"B", null}, {"C", 3.0}};
+            DfIndividu df = new DfIndividu(3, new String[]{"categorie", "valeur"}, data);
+            CompletionRegression cr = new CompletionRegression(df);
+
+            System.out.println("\nDonnees (colonne 'categorie' est String) :");
+            df.afficherPremieresFignes(3);
+            System.out.println("\n   -> La colonne 'categorie' ne peut pas etre un predicteur");
+            System.out.println("   -> La colonne 'valeur' n'a pas de predicteur valide");
+
+            int n = cr.completerToutParMeilleurPredicteur();
+            tot++; 
+            if (n <= 0) { 
+                ok++; 
+                System.out.println("\n[OK] Test 7 : completerToutParMeilleurPredicteur -> " + n + " (aucune completion possible)"); 
+            } else { 
+                System.out.println("\n[FAIL] Test 7 : completerToutParMeilleurPredicteur -> " + n + " (attendu <=0)"); 
+            }
+
+        } catch (Exception e) { 
+            System.out.println("[FAIL] Test 7 : Exception - " + e.getMessage()); 
+        }
+        System.out.println();
+
+        // TEST 8 : Fichier reel mackerel.97442.csv
+        System.out.println("--- TEST 8 : Fichier reel mackerel.97442.csv ---------------------------------");
+        try {
+            fish.acquisition.lecture.LectureCSV lecteur = new fish.acquisition.lecture.LectureCSV(";");
+            DfIndividu dfMack = lecteur.lireCSV("data/mackerel.97442.csv", DfIndividu.class);
+
+            if (dfMack != null) {
+                System.out.println("\n[OK] Lecture reussie : " + dfMack.getNbLignes() + " lignes, " + dfMack.getNbCol() + " colonnes");
+
+                System.out.println("\nAVANT regression (3 premieres lignes) :");
+                dfMack.afficherPremieresFignes(3);
+
+                CompletionRegression cr = new CompletionRegression(dfMack);
+                int n = cr.completerToutParMeilleurPredicteur();
+                tot++; ok++; 
+                System.out.println("\n[OK] Test 8 : completerToutParMeilleurPredicteur -> " + n + " case(s) completee(s)");
+
+                System.out.println("\nAPRES regression (3 premieres lignes) :");
+                dfMack.afficherPremieresFignes(3);
+
+                System.out.println("\nStatistiques APRES regression :");
+                dfMack.afficherStatistiques();
+
+            } else {
+                System.out.println("[FAIL] Test 8 : Lecture du fichier echouee");
+            }
+
+        } catch (Exception e) { 
+            System.out.println("[FAIL] Test 8 : Exception - " + e.getMessage()); 
+        }
+        System.out.println();
+
+        // RESULTAT FINAL
+        System.out.println("================================================================================");
+        System.out.println("                    RESULTAT DES TESTS");
+        System.out.println("================================================================================");
+        System.out.println("  CompletionRegression : " + ok + "/" + tot + " tests reussis");
+        System.out.println("================================================================================");
     }
 }

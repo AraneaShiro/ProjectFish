@@ -181,12 +181,23 @@ public class Population {
 	}
 
 	/**
-	 * Getter du tableau de parties du corps
-	 * @return le tableau de parties du corps étudiée dans la population
-	 */
-	public String[] getPartieCorps(){
-		return this.partieDuCorps;
-	}
+ * Getter du tableau de parties du corps sous forme de String lisible
+ *
+ * @return les parties du corps séparées par ", "
+ */
+public String getPartieCorps() {
+    if (this.partieDuCorps == null || this.partieDuCorps.length == 0) return "";
+    return String.join(", ", this.partieDuCorps);
+}
+
+/**
+ * Getter du tableau brut de parties du corps
+ *
+ * @return le tableau de parties du corps
+ */
+public String[] getPartieCorpsTab() {
+    return this.partieDuCorps;
+}
 
 	/**
 	 * Setter taux d'infestation
@@ -264,9 +275,42 @@ public class Population {
 		} catch(Exception e){
 			//System.out.println(e);
 		}
-		
-
 	}
+
+	/**
+ * Constructeur sans tableau d'individus avec partie du corps en String simple
+ *
+ * @param effectif    l'effectif de la population
+ * @param espece      le nom de l'espece de poisson
+ * @param nbInfectes  le nombre d'infectés de la population
+ * @param partieCorps la partie du corps étudiée (String simple)
+ * @param intensite   l'intensité dans la population
+ * @param abondance   l'abondance dans la population
+ * @throws NegativeValueException si l'une des valeurs est négative
+ * @throws EmptyStringException   si l'espèce est vide
+ */
+public Population(int effectif, String espece, int nbInfectes, String partieCorps,
+        double intensite, double abondance) throws NegativeValueException, EmptyStringException {
+    this(effectif, espece, nbInfectes, new String[]{partieCorps}, intensite, abondance);
+}
+
+/**
+ * Constructeur avec tableau d'individus et partie du corps en String simple
+ *
+ * @param effectif    l'effectif de la population
+ * @param espece      le nom de l'espece de poisson
+ * @param partieCorps la partie du corps étudiée (String simple)
+ * @param tabIndividu le tableau d'individus de la population
+ * @throws NegativeValueException si l'une des valeurs est négative
+ * @throws EmptyStringException   si l'espèce est vide
+ * @throws TauxValueException     si le taux calculé est supérieur à 1
+ * @throws NoTabException         si le tableau est null
+ */
+public Population(int effectif, String espece, String partieCorps,
+        Individu[] tabIndividu) throws NegativeValueException, EmptyStringException,
+        TauxValueException, NoTabException {
+    this(effectif, espece, new String[]{partieCorps}, tabIndividu);
+}
 
 	/////////////////// Méthodes ////////////////////////
 

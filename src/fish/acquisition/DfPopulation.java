@@ -2,7 +2,6 @@ package fish.acquisition;
 
 import fish.exceptions.*;
 import fish.poisson.Population;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,7 +23,7 @@ import java.util.Map;
  * produit une Population par espèce × période
  *
  * @author Jules Grenesche
- * @version 0.3
+ * @version 0.4
  */
 public class DfPopulation extends DataframeComplet implements Utilitaire {
 
@@ -41,26 +40,41 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
      */
     private String[] periodes;
 
-    ////////////////////////////// Constantes colonnes
+    ////////////////////////////// Constantes colonnes ////////////////////
 
-    private static final String CLE_ESPECE = "espece";
-    private static final String CLE_INFECTES = "infect";
-    private static final String CLE_PREVALENCE = "prévalence";
+    private static final String CLE_ESPECE    = "espece";
+    private static final String CLE_INFECTES  = "infect";
+    private static final String CLE_PREVALENCE= "prevalence"; // sans accent, normaliser() gère
     private static final String CLE_INTENSITE = "intensit";
     private static final String CLE_ABONDANCE = "abondance";
-    private static final String CLE_N = "n_"; // ex: "N_Total", "N_2012"
-    private static final String CLE_N_EXACT = "n";
+    private static final String CLE_N         = "n_";         // ex: "N_Total", "N_2012"
+    private static final String CLE_N_EXACT   = "n";
 
     ////////////////////////////// Getter ////////////////////
 
+    /**
+     * Retourne le tableau des populations construites
+     *
+     * @return le tableau de Population
+     */
     public Population[] getPopulations() {
         return populations;
     }
 
+    /**
+     * Retourne si le format est multi-période
+     *
+     * @return true si multi-période
+     */
     public boolean isFormatMultiPeriode() {
         return formatMultiPeriode;
     }
 
+    /**
+     * Retourne les périodes détectées
+     *
+     * @return tableau des périodes
+     */
     public String[] getPeriodes() {
         return periodes;
     }
@@ -69,6 +83,7 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
      * Retourne la population à l'index donné
      *
      * @param index l'index de la population
+     * @return la Population à cet index
      * @throws OutOfBoundException si l'index est invalide
      */
     public Population getPopulation(int index) throws OutOfBoundException {
@@ -82,7 +97,7 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
      * Retourne toutes les populations d'une espèce (utile en multi-période)
      *
      * @param espece le nom de l'espèce
-     * @return une liste de population qui est de l'espece donnée
+     * @return une liste de populations de cette espèce
      */
     public List<Population> getPopulationsParEspece(String espece) {
         List<Population> resultat = new ArrayList<>();
@@ -107,6 +122,7 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
 
     /**
      * Constructeur avec tableau de données.
+     * Détecte automatiquement le format et construit les populations.
      *
      * @param nbLignes   le nombre de lignes
      * @param nomColonne les noms des colonnes
@@ -119,36 +135,43 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
         super(nbLignes, nomColonne, newtab);
         this.formatMultiPeriode = detecterFormatMultiPeriode();
         if (this.formatMultiPeriode) {
-            this.periodes = extrairePeriodes();
+            this.periodes   = extrairePeriodes();
             this.populations = construirePopulationsMultiPeriode();
         } else {
             this.populations = construirePopulationsStandard();
         }
     }
 
-    // ───────────────── Détection du format─────────────────
+    // ───────────────── Détection du format ─────────────────────────────────────
 
     /**
-     * Détecte si le tableau est au format multi-période :
-     * au moins 2 colonnes contiennent un "_" et le même préfixe avant "_"
-     * (ex: "N_Total" et "N_2012" → préfixe "N" présent 2 fois)
-     * 
-     * @return true si les formats est multiperiode
+     * Détecte si le tableau est au format multi-période.
+     * Un suffixe de période valide est : une année (4 chiffres) ou "Total" ou "Moyenne".
+     * Cela évite de confondre des colonnes comme "d13C_raw" / "d13C_corr" avec
+     * des colonnes de période.
+     *
+     * @return true si le format est multi-période
      */
     private boolean detecterFormatMultiPeriode() {
         String[] noms = getNomColonnes();
         Map<String, Integer> compteurPrefixes = new LinkedHashMap<>();
+
         for (String nom : noms) {
             int idx = nom.lastIndexOf('_');
             if (idx > 0) {
-                String prefixe = nom.substring(0, idx);
-                compteurPrefixes.merge(prefixe, 1, Integer::sum);
+                String suffixe = nom.substring(idx + 1);
+                // Suffixe valide = année (4 chiffres), "Total" ou "Moyenne"
+                if (suffixe.matches("\\d{4}")
+                        || suffixe.equalsIgnoreCase("Total")
+                        || suffixe.equalsIgnoreCase("Moyenne")) {
+                    String prefixe = nom.substring(0, idx);
+                    compteurPrefixes.merge(prefixe, 1, Integer::sum);
+                }
             }
         }
-        // Multi-période si au moins un préfixe apparaît 2+ fois
+
         for (int count : compteurPrefixes.values()) {
-            if (count >= 2)
-                return true;
+            if (count >= 2) return true;
         }
         return false;
     }
@@ -156,13 +179,12 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
     /**
      * Extrait les suffixes de période depuis les noms de colonnes.
      * Ex: ["N_Total","N_2012","N_2013"] → ["Total","2012","2013"]
-     * 
-     * @return une liste des différentes periodes
+     *
+     * @return tableau des périodes détectées
      */
     private String[] extrairePeriodes() {
         String[] noms = getNomColonnes();
 
-        // Cherche le préfixe le plus fréquent avec "_"
         Map<String, List<String>> prefixToSuffixes = new LinkedHashMap<>();
         for (String nom : noms) {
             int idx = nom.lastIndexOf('_');
@@ -178,104 +200,108 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
         int maxCount = 0;
         for (Map.Entry<String, List<String>> e : prefixToSuffixes.entrySet()) {
             if (e.getValue().size() > maxCount) {
-                maxCount = e.getValue().size();
+                maxCount        = e.getValue().size();
                 meilleurPrefixe = e.getKey();
             }
         }
 
-        if (meilleurPrefixe == null)
-            return new String[0];
+        if (meilleurPrefixe == null) return new String[0];
         return prefixToSuffixes.get(meilleurPrefixe).toArray(new String[0]);
     }
 
     ////////////////////////////// Utilitaires ////////////////////
 
     /**
-     * Fonction utilitaire qui trouve l'index de la
-     * colonne en fonction du nom donné
+     * Normalise un String en retirant les accents et en mettant en minuscules.
+     * Permet de matcher "Espèce" avec "espece", "Prévalence" avec "prevalence", etc.
+     *
+     * @param s le String à normaliser
+     * @return le String normalisé
+     */
+    private String normaliser(String s) {
+        if (s == null) return "";
+        return java.text.Normalizer
+                .normalize(s, java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}", "")
+                .toLowerCase();
+    }
+
+    /**
+     * Retourne l'index de la première colonne dont le nom normalisé contient motCle.
      *
      * @param motCle le nom de la colonne que l'on recherche
      * @return le numéro de la colonne ou -1 si elle n'est pas trouvée
      */
     public int getIndexColonne(String motCle) {
-        String[] noms = getNomColonnes();
+        String[] noms    = getNomColonnes();
+        String   motNorm = normaliser(motCle);
         for (int j = 0; j < noms.length; j++) {
-            if (noms[j].toLowerCase().contains(motCle.toLowerCase()))
-                return j;
+            if (normaliser(noms[j]).contains(motNorm)) return j;
         }
         return -1;
     }
 
     /**
-     * Cherche une colonne dont le nom contient motCle ET suffixe (ex: "N" + "2012")
-     * 
+     * Cherche une colonne dont le nom contient motCle ET se termine par "_periode".
+     * Ex: getIndexColonnePeriode("N", "2012") → index de "N_2012"
+     *
      * @param motCle  le mot clé recherché
-     * @param periode la période recherchée (ex:2019)
+     * @param periode la période recherchée (ex: "2019", "Total")
      * @return l'indice trouvé ou -1 sinon
      */
     private int getIndexColonnePeriode(String motCle, String periode) {
-        String[] noms = getNomColonnes();
+        String[] noms    = getNomColonnes();
+        String   motNorm = normaliser(motCle);
         for (int j = 0; j < noms.length; j++) {
-            String n = noms[j].toLowerCase();
-            if (n.contains(motCle.toLowerCase()) && noms[j].endsWith("_" + periode))
-                return j;
+            if (normaliser(noms[j]).contains(motNorm)
+                    && noms[j].endsWith("_" + periode)) return j;
         }
         return -1;
     }
 
     /**
-     * Fonction utilitaire qui lit si c est possible en Float
-     * et le renvoie ou une valeur par defaut
+     * Lit si possible en Float et retourne la valeur ou le défaut.
      *
-     * @param ligne  la ligne de la case a lire
-     * @param col    la colonne de la case a lire
-     * @param defaut la valeur par defaut si illisible ou mauvaise coordonnée
-     * @return la valeur ou la valeur par defaut
+     * @param ligne  la ligne de la case à lire
+     * @param col    la colonne de la case à lire
+     * @param defaut la valeur par défaut si illisible ou mauvaise coordonnée
+     * @return la valeur ou la valeur par défaut
      */
     public float lireFloat(int ligne, int col, float defaut) {
-        if (col < 0)
-            return defaut;
+        if (col < 0) return defaut;
         try {
             Object val = getCase(ligne, col);
-            if (val instanceof Number)
-                return ((Number) val).floatValue();
-        } catch (OutOfBoundException e) {
-            /* ignoré */ }
+            if (val instanceof Number) return ((Number) val).floatValue();
+        } catch (OutOfBoundException e) { /* ignoré */ }
         return defaut;
     }
 
     /**
-     * Fonction utilitaire qui lit si c est possible en int
-     * et le renvoie ou une valeur par defaut
+     * Lit si possible en int et retourne la valeur ou le défaut.
      *
-     * @param ligne  la ligne de la case a lire
-     * @param col    la colonne de la case a lire
-     * @param defaut la valeur par defaut si illisible ou mauvaise coordonnée
-     * @return la valeur ou la valeur par defaut
+     * @param ligne  la ligne de la case à lire
+     * @param col    la colonne de la case à lire
+     * @param defaut la valeur par défaut si illisible ou mauvaise coordonnée
+     * @return la valeur ou la valeur par défaut
      */
     public int lireInt(int ligne, int col, int defaut) {
-        if (col < 0)
-            return defaut;
+        if (col < 0) return defaut;
         try {
             Object val = getCase(ligne, col);
-            if (val instanceof Number)
-                return ((Number) val).intValue();
-        } catch (OutOfBoundException e) {
-            /* ignoré */ }
+            if (val instanceof Number) return ((Number) val).intValue();
+        } catch (OutOfBoundException e) { /* ignoré */ }
         return defaut;
     }
 
     /**
-     * Fonction utilitaire qui lit si c est possible en String
-     * et le renvoie ou une valeur par defaut
+     * Lit si possible en String et retourne la valeur ou "Inconnue".
      *
-     * @param ligne la ligne de la case a lire
-     * @param col   la colonne de la case a lire
-     * @return la valeur ou un string vide
+     * @param ligne la ligne de la case à lire
+     * @param col   la colonne de la case à lire
+     * @return la valeur ou "Inconnue"
      */
     public String lireString(int ligne, int col) {
-        if (col < 0)
-            return "Inconnue";
+        if (col < 0) return "Inconnue";
         try {
             Object val = getCase(ligne, col);
             return val != null ? val.toString() : "Inconnue";
@@ -284,36 +310,35 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
         }
     }
 
-    ////////////////////////////// Format standard
+    ////////////////////////////// Format standard /////////////////////////////
 
     /**
-     * Construit un tableau de Population : une par ligne (format standard)
-     * 
-     * @return une liste de population
+     * Construit un tableau de Population : une par ligne (format standard).
+     *
+     * @return un tableau de Population
      */
     public Population[] construirePopulationsStandard() {
         List<Population> liste = new ArrayList<>();
 
-        int iEspece = getIndexColonne(CLE_ESPECE);
+        int iEspece   = getIndexColonne(CLE_ESPECE);
         int iEffectif = getIndexColonne("effectif");
-        if (iEffectif < 0)
-            iEffectif = getIndexColonne(CLE_N_EXACT);
-        int iInfectes = getIndexColonne(CLE_INFECTES);
-        int iPartie = getIndexColonne("partie");
+        if (iEffectif < 0) iEffectif = getIndexColonne(CLE_N_EXACT);
+        int iInfectes  = getIndexColonne(CLE_INFECTES);
+        int iPartie    = getIndexColonne("partie");
         int iIntensite = getIndexColonne(CLE_INTENSITE);
         int iAbondance = getIndexColonne(CLE_ABONDANCE);
 
         for (int i = 0; i < getNbLignes(); i++) {
-            String espece = lireString(i, iEspece);
-            int effectif = lireInt(i, iEffectif, 0);
-            int infectes = lireInt(i, iInfectes, 0);
-            String partie = lireString(i, iPartie);
-            String[] parties = {partie};
-            float intensite = lireFloat(i, iIntensite, 0f);
-            float abondance = lireFloat(i, iAbondance, 0f);
+            String espece   = lireString(i, iEspece);
+            int    effectif = lireInt   (i, iEffectif,  0);
+            int    infectes = lireInt   (i, iInfectes,  0);
+            String partie   = lireString(i, iPartie);
+            float  intensite= lireFloat (i, iIntensite, 0f);
+            float  abondance= lireFloat (i, iAbondance, 0f);
 
             try {
-                liste.add(new Population(effectif, espece, infectes, parties, intensite, abondance));
+                // ✅ Correction : on passe une String simple au lieu de String[]
+                liste.add(new Population(effectif, espece, infectes, partie, intensite, abondance));
             } catch (Exception e) {
                 System.out.println("Population ligne " + i + " ignorée : " + e.getMessage());
             }
@@ -321,13 +346,13 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
         return liste.toArray(new Population[0]);
     }
 
-    ////////////////////////////// Format multi-période (style Peru)
+    ////////////////////////////// Format multi-période (style Peru) ///////////
 
     /**
      * Construit un tableau de Population : une par espèce × période.
-     * Ex: 4 espèces × 3 périodes (Total, 2012, 2013) = 12 populations
-     * 
-     * @return une liste de population
+     * Ex: 4 espèces × 3 périodes (Total, 2012, 2013) = 12 populations.
+     *
+     * @return un tableau de Population
      */
     public Population[] construirePopulationsMultiPeriode() {
         List<Population> liste = new ArrayList<>();
@@ -341,42 +366,39 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
 
                 // Effectif : colonne "N_Periode"
                 int iN = getIndexColonnePeriode(CLE_N, periode);
-                if (iN < 0)
-                    iN = getIndexColonnePeriode(CLE_N_EXACT, periode);
+                if (iN < 0) iN = getIndexColonnePeriode(CLE_N_EXACT, periode);
                 int effectif = lireInt(i, iN, 0);
+                if (effectif == 0) continue; // On ignore les périodes sans données
 
                 // Prévalence → nombre infectés = prévalence% × effectif
-                int iPrevalence = getIndexColonnePeriode(CLE_PREVALENCE, periode);
-                float prevalence = lireFloat(i, iPrevalence, 0f);
-                int infectes = Math.round(prevalence / 100f * effectif);
+                int   iPrevalence = getIndexColonnePeriode(CLE_PREVALENCE, periode);
+                float prevalence  = lireFloat(i, iPrevalence, 0f);
+                int   infectes    = Math.round(prevalence / 100f * effectif);
 
                 // Intensité et abondance
-                int iIntensite = getIndexColonnePeriode(CLE_INTENSITE, periode);
-                int iAbondance = getIndexColonnePeriode(CLE_ABONDANCE, periode);
-                float intensite = lireFloat(i, iIntensite, 0f);
-                float abondance = lireFloat(i, iAbondance, 0f);
+                int   iIntensite = getIndexColonnePeriode(CLE_INTENSITE, periode);
+                int   iAbondance = getIndexColonnePeriode(CLE_ABONDANCE, periode);
+                float intensite  = lireFloat(i, iIntensite, 0f);
+                float abondance  = lireFloat(i, iAbondance, 0f);
 
-                // Partie du corps = la période (ex: "Total", "2012")
-                String partie = periode;
-                String[] parties = {partie};
                 try {
-                    if (effectif > 0) { // On ignore les périodes sans données
-                        liste.add(new Population(effectif, espece, infectes, parties, intensite, abondance));
-                    }
+                    // ✅ Correction : on passe une String simple au lieu de String[]
+                    // La période joue le rôle de "partie du corps" (ex: "Total", "2012")
+                    liste.add(new Population(effectif, espece, infectes, periode, intensite, abondance));
                 } catch (Exception e) {
-                    System.out.println("Population " + espece + " / " + periode + " ignorée : " + e.getMessage());
+                    System.out.println("Population " + espece + " / " + periode
+                            + " ignorée : " + e.getMessage());
                 }
             }
         }
         return liste.toArray(new Population[0]);
     }
 
-    ////////////////////////////// Mise à jour
+    ////////////////////////////// Mise à jour /////////////////////////////////
 
     /**
      * Recharge toutes les populations depuis le tableau actuel.
      * À appeler après un setCase().
-     * 
      */
     public void majPopulations() {
         if (this.formatMultiPeriode) {
@@ -404,39 +426,35 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
     }
 
     /**
-     * Répercussion si le tableau n'est pas multi-périodique
+     * Répercute les données d'une Population dans la ligne du tableau.
+     * Uniquement pour le format standard (le multi-période est en lecture seule).
      *
-     * @param ligne l'index a modifier
+     * @param ligne l'index de la ligne à modifier
      * @param pop   la nouvelle population
      */
     private void repercuterDansTableau(int ligne, Population pop) {
-        int iEspece = getIndexColonne(CLE_ESPECE);
+        int iEspece   = getIndexColonne(CLE_ESPECE);
         int iEffectif = getIndexColonne("effectif");
-        if (iEffectif < 0)
-            iEffectif = getIndexColonne(CLE_N_EXACT);
-        int iInfectes = getIndexColonne(CLE_INFECTES);
+        if (iEffectif < 0) iEffectif = getIndexColonne(CLE_N_EXACT);
+        int iInfectes  = getIndexColonne(CLE_INFECTES);
         int iIntensite = getIndexColonne(CLE_INTENSITE);
         int iAbondance = getIndexColonne(CLE_ABONDANCE);
         try {
-            if (iEspece >= 0)
-                setCase(ligne, iEspece, pop.getEspece());
-            if (iEffectif >= 0)
-                setCase(ligne, iEffectif, pop.getEffectif());
-            if (iInfectes >= 0)
-                setCase(ligne, iInfectes, pop.getNbInfectes());
-            if (iIntensite >= 0)
-                setCase(ligne, iIntensite, pop.getIntensite());
-            if (iAbondance >= 0)
-                setCase(ligne, iAbondance, pop.getAbondance());
+            if (iEspece   >= 0) setCase(ligne, iEspece,    pop.getEspece());
+            if (iEffectif >= 0) setCase(ligne, iEffectif,  pop.getEffectif());
+            if (iInfectes >= 0) setCase(ligne, iInfectes,  pop.getNbInfectes());
+            if (iIntensite>= 0) setCase(ligne, iIntensite, pop.getIntensite());
+            if (iAbondance>= 0) setCase(ligne, iAbondance, pop.getAbondance());
         } catch (OutOfBoundException e) {
             System.out.println("Erreur répercussion tableau : " + e.getMessage());
         }
     }
 
-    ////////////////////////////// Affichage ////////////////////
+    ////////////////////////////// Affichage ///////////////////////////////////
 
     /**
-     * Affiche dans la console un résumé du dataframe
+     * Affiche un résumé tabulaire des populations dans la console.
+     * Format adapté selon standard ou multi-période.
      */
     public void afficherResume() {
         System.out.println("=== " + getTitle() + " ===");
@@ -445,9 +463,13 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
                     "Espèce", "Période", "Effectif", "Infectés", "Abondance");
             System.out.println("-".repeat(80));
             for (Population pop : populations) {
+                // ✅ getPartieCorps() retourne maintenant une String lisible
                 System.out.printf("%-35s %-12s %-10d %-10d %-10.2f%n",
-                        pop.getEspece(), pop.getPartieCorps(),
-                        pop.getEffectif(), pop.getNbInfectes(), pop.getAbondance());
+                        pop.getEspece(),
+                        pop.getPartieCorps(),
+                        pop.getEffectif(),
+                        pop.getNbInfectes(),
+                        pop.getAbondance());
             }
         } else {
             System.out.printf("%-35s %-10s %-10s %-10s%n",
@@ -455,21 +477,249 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
             System.out.println("-".repeat(70));
             for (Population pop : populations) {
                 System.out.printf("%-35s %-10d %-10d %-10.2f%n",
-                        pop.getEspece(), pop.getEffectif(),
-                        pop.getNbInfectes(), pop.getAbondance());
+                        pop.getEspece(),
+                        pop.getEffectif(),
+                        pop.getNbInfectes(),
+                        pop.getAbondance());
             }
         }
     }
 
     /**
-     * Override de la fonction getTitle
-     * 
-     * @return un string avec Etude de population le format et la taille
+     * Retourne le titre du dataframe.
+     *
+     * @return un String décrivant le type et le nombre de populations
      */
     @Override
     public String getTitle() {
         return "Etude de population"
                 + (formatMultiPeriode ? " multi-période" : "")
                 + " (" + (populations != null ? populations.length : 0) + " populations)";
+    }
+
+    ////////////////////////////// Main — tests ////////////////////////////////
+
+    public static void main(String[] args) {
+        int ok = 0, total = 0;
+                                                                    
+        // ── Format standard ───────────────────────────────────────────────────
+        System.out.println("── Lecture mackerel.97442.csv (format standard) ─────");
+
+        DfPopulation dfMerlu = null;
+        try {               
+            fish.acquisition.lecture.LectureCSV lecteur =
+                    new fish.acquisition.lecture.LectureCSV(",");
+            dfMerlu = lecteur.lireCSV("data/processed_data_anisakis.csv", DfPopulation.class);
+        } catch (Exception e) { System.out.println("Chargement échoué : " + e); }
+
+        // Test 1 : lecture sans exception
+        total++;
+        if (dfMerlu != null) {
+            System.out.println("PASS Test 1 : chargé, " + dfMerlu.getNbLignes() + " lignes");
+            ok++;
+            dfMerlu.afficherPremieresFignes(5);
+        } else {
+            System.out.println("FAIL Test 1 : dfMerlu null");
+        }
+
+        // Test 2 : populations construites
+        total++;
+        if (dfMerlu != null && dfMerlu.getPopulations() != null) {
+            System.out.println("PASS Test 2 : " + dfMerlu.getPopulations().length + " population(s)");
+            ok++;
+        } else {
+            System.out.println("FAIL Test 2 : populations null");
+        }
+
+        // Test 3 : format standard détecté (pas multi-période)
+        total++;
+        if (dfMerlu != null && !dfMerlu.isFormatMultiPeriode()) {
+            System.out.println("PASS Test 3 : format standard détecté");
+            ok++;
+        } else {
+            System.out.println("FAIL Test 3 : multi-période détecté à tort");
+        }
+
+        // ── Format multi-période ──────────────────────────────────────────────
+        System.out.println("\n── Lecture ParasitesPeru2021.csv (multi-période) ────");
+
+        DfPopulation dfPeru = null;
+        try {
+            fish.acquisition.lecture.LectureParasitesPeru lecteurPeru =
+                    new fish.acquisition.lecture.LectureParasitesPeru(",");
+            dfPeru = lecteurPeru.lireCSV("data/ParasitesPeru2021.csv", DfPopulation.class);
+        } catch (Exception e) { System.out.println("Chargement échoué : " + e); }
+
+        // Test 4 : lecture sans exception
+        total++;
+        if (dfPeru != null) {
+            System.out.println("PASS Test 4 : Peru chargé, " + dfPeru.getNbLignes() + " ligne(s)");
+            ok++;
+            dfPeru.afficherResume();
+        } else {
+            System.out.println("FAIL Test 4 : dfPeru null");
+        }
+
+        // Test 5 : format multi-période détecté
+        total++;
+        if (dfPeru != null && dfPeru.isFormatMultiPeriode()) {
+            System.out.println("PASS Test 5 : format multi-période détecté");
+            ok++;
+        } else {
+            System.out.println("FAIL Test 5 : multi-période non détecté");
+        }
+
+        // Test 6 : populations non vides
+        total++;
+        if (dfPeru != null && dfPeru.getPopulations() != null
+                && dfPeru.getPopulations().length > 0) {
+            System.out.println("PASS Test 6 : " + dfPeru.getPopulations().length + " population(s)");
+            ok++;
+        } else {
+            System.out.println("FAIL Test 6 : populations vides ou null");
+        }
+
+        // Test 7 : périodes détectées
+        total++;
+        if (dfPeru != null && dfPeru.getPeriodes() != null
+                && dfPeru.getPeriodes().length > 0) {
+            System.out.println("PASS Test 7 : périodes = "
+                    + java.util.Arrays.toString(dfPeru.getPeriodes()));
+            ok++;
+        } else {
+            System.out.println("FAIL Test 7 : périodes null ou vides");
+        }
+
+        // Test 8 : espèce correctement lue (pas "Inconnue")
+        total++;
+        if (dfPeru != null) {
+            try {
+                Population p0    = dfPeru.getPopulation(0);
+                String     esp   = p0.getEspece();
+                String     prtie = p0.getPartieCorps(); // doit être "Total", "2012", etc.
+                if (!"Inconnue".equals(esp) && !esp.isBlank()
+                        && !"Inconnue".equals(prtie)
+                        && !prtie.startsWith("[L")) {       // plus de [Ljava.lang...
+                    System.out.println("PASS Test 8 : espèce='" + esp
+                            + "', période='" + prtie + "'");
+                    ok++;
+                } else {
+                    System.out.println("FAIL Test 8 : espèce='" + esp
+                            + "', période='" + prtie + "'");
+                }
+            } catch (Exception e) { System.out.println("FAIL Test 8 : " + e); }
+        } else {
+            System.out.println("SKIP Test 8 : dfPeru non disponible"); total--;
+        }
+
+        // Test 9 : getPopulation index invalide → OutOfBoundException
+        total++;
+        try {
+            if (dfMerlu != null) dfMerlu.getPopulation(9999);
+            System.out.println("FAIL Test 9 : exception attendue non levée");
+        } catch (fish.exceptions.OutOfBoundException e) {
+            System.out.println("PASS Test 9 : index invalide → OutOfBoundException");
+            ok++;
+        } catch (Exception e) { System.out.println("FAIL Test 9 : " + e); }
+
+        // Test 10 : getPopulationsParEspece espèce connue
+        total++;
+        if (dfPeru != null) {
+            try {
+                Population       p0    = dfPeru.getPopulation(0);
+                List<Population> liste = dfPeru.getPopulationsParEspece(p0.getEspece());
+                if (!liste.isEmpty()) {
+                    System.out.println("PASS Test 10 : " + liste.size() + " population(s) pour '"
+                            + p0.getEspece() + "'");
+                    ok++;
+                } else {
+                    System.out.println("FAIL Test 10 : liste vide");
+                }
+            } catch (Exception e) { System.out.println("FAIL Test 10 : " + e); }
+        } else {
+            System.out.println("SKIP Test 10 : dfPeru non disponible"); total--;
+        }
+
+        // Test 11 : getPopulationsParEspece espèce inconnue → liste vide
+        total++;
+        if (dfPeru != null) {
+            List<Population> liste = dfPeru.getPopulationsParEspece("EspeceInconnueXYZ");
+            if (liste.isEmpty()) {
+                System.out.println("PASS Test 11 : espèce inconnue → liste vide");
+                ok++;
+            } else {
+                System.out.println("FAIL Test 11 : liste non vide");
+            }
+        } else {
+            System.out.println("SKIP Test 11 : dfPeru non disponible"); total--;
+        }
+
+        // Test 12 : setPopulation met à jour correctement
+        total++;
+        try {
+            Object[][] data = {
+                {"Merlan", 50, 30, "foie",    3.2, 1.5},
+                {"Hareng", 40, 20, "estomac", 2.0, 0.8}
+            };
+            DfPopulation df = new DfPopulation(2,
+                    new String[]{"espece","effectif","infectes","partie","intensite","abondance"},
+                    data);
+            Population nouvelle = new Population(100, "Thon", 60, "muscle", 4.0, 2.4);
+            df.setPopulation(0, nouvelle);
+            Population apres = df.getPopulation(0);
+            if ("Thon".equals(apres.getEspece()) && apres.getEffectif() == 100) {
+                System.out.println("PASS Test 12 : setPopulation → Thon, 100 individus");
+                ok++;
+            } else {
+                System.out.println("FAIL Test 12 : espece=" + apres.getEspece()
+                        + ", eff=" + apres.getEffectif());
+            }
+        } catch (Exception e) { System.out.println("FAIL Test 12 : " + e); }
+
+        // Test 13 : getIndexColonne mot-clé présent
+        total++;
+        try {
+            Object[][] data = {{"Merlan", 50}};
+            DfPopulation df = new DfPopulation(1, new String[]{"espece","effectif"}, data);
+            int idx = df.getIndexColonne("effectif");
+            if (idx == 1) {
+                System.out.println("PASS Test 13 : getIndexColonne('effectif') = 1");
+                ok++;
+            } else {
+                System.out.println("FAIL Test 13 : attendu 1, obtenu " + idx);
+            }
+        } catch (Exception e) { System.out.println("FAIL Test 13 : " + e); }
+
+        // Test 14 : getIndexColonne mot-clé absent → -1
+        total++;
+        try {
+            Object[][] data = {{"Merlan"}};
+            DfPopulation df = new DfPopulation(1, new String[]{"espece"}, data);
+            int idx = df.getIndexColonne("absente");
+            if (idx == -1) {
+                System.out.println("PASS Test 14 : getIndexColonne absent → -1");
+                ok++;
+            } else {
+                System.out.println("FAIL Test 14 : attendu -1, obtenu " + idx);
+            }
+        } catch (Exception e) { System.out.println("FAIL Test 14 : " + e); }
+
+        // Test 15 : getIndexColonne avec accent → normaliser()
+        total++;
+        try {
+            Object[][] data = {{"Merlan", 50}};
+            DfPopulation df = new DfPopulation(1, new String[]{"Espèce","effectif"}, data);
+            int idx = df.getIndexColonne("espece"); // sans accent
+            if (idx == 0) {
+                System.out.println("PASS Test 15 : getIndexColonne avec accent normalisé");
+                ok++;
+            } else {
+                System.out.println("FAIL Test 15 : attendu 0, obtenu " + idx);
+            }
+        } catch (Exception e) { System.out.println("FAIL Test 15 : " + e); }
+
+        System.out.println("\n═══════════════════════════════════════════════════");
+        System.out.println("=== DfPopulation : " + ok + "/" + total + " tests réussis ===");
+        System.out.println("═══════════════════════════════════════════════════");
     }
 }

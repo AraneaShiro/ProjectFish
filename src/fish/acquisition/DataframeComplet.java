@@ -3,7 +3,6 @@
 package fish.acquisition;
 
 import fish.exceptions.NullParameterException;
-// ── Import ───────────────────────────────────────────────────
 import fish.exceptions.OutOfBoundException;
 
 // ── Test : NON ────────────────────────────────────────────────────────────
@@ -274,5 +273,109 @@ public abstract class DataframeComplet extends DataframeStatistiques {
 
         System.out.println("╚══════════════════════════════════════════════════════╝");
     }
+    
+        public static void main(String[] args) {
+        int ok = 0, tot = 0;
+        System.out.println("=== Tests DataframeComplet ===");
 
+        try {
+            // Données avec un mélange de types
+            Object[][] data = {
+                {"Merlan", 30.5, 200.0, 5},
+                {"Hareng", 25.0, 150.0, 0},
+                {"Merlan", 32.0, 210.0, 3},
+                {"Thon", 80.0, null, 12},
+                {null, 35.0, 180.0, null}
+            };
+            DfIndividu df = new DfIndividu(5, new String[]{"espece", "longueur", "poids", "nbvers"}, data);
+            df.setTitre("Test DataframeComplet");
+
+            // ── Test getTitle (avec DfIndividu) ───────────────────────────────────
+            // DfIndividu.getTitle() retourne "Etude d'individu" ou "Etude d'individu : titre"
+            String title = df.getTitle();
+            tot++; if (title != null && title.contains("Etude d'individu")) { 
+                ok++; System.out.println("PASS getTitle() = \"" + title + "\""); 
+            } else { 
+                System.out.println("FAIL getTitle() = \"" + title + "\""); 
+            }
+
+            // Test avec titre personnalisé
+            DfIndividu df2 = new DfIndividu(1, new String[]{"x"}, new Object[][]{{1}}, "Mon titre");
+            String title2 = df2.getTitle();
+            tot++; if (title2 != null && title2.contains("Mon titre")) { 
+                ok++; System.out.println("PASS getTitle() avec titre = \"" + title2 + "\""); 
+            } else { 
+                System.out.println("FAIL getTitle() avec titre = \"" + title2 + "\""); 
+            }
+
+            // ── Test affichage (vérification sans exception) ──────────────────────
+            System.out.println("\n── Test affichage ────────────────────────────────────");
+            try {
+                df.afficherPremieresFignes(3);
+                tot++; ok++; System.out.println("PASS afficherPremieresFignes(3)");
+            } catch (Exception e) { System.out.println("FAIL afficherPremieresFignes : " + e); }
+
+            try {
+                df.afficherPremieresFignes(10); // plus que le nb de lignes
+                tot++; ok++; System.out.println("PASS afficherPremieresFignes(10)");
+            } catch (Exception e) { System.out.println("FAIL afficherPremieresFignes(10) : " + e); }
+
+            try {
+                df.afficherPremieresFignes(0); // ne doit rien afficher
+                tot++; ok++; System.out.println("PASS afficherPremieresFignes(0)");
+            } catch (Exception e) { System.out.println("FAIL afficherPremieresFignes(0) : " + e); }
+
+            try {
+                df.afficherStatistiques();
+                tot++; ok++; System.out.println("PASS afficherStatistiques()");
+            } catch (Exception e) { System.out.println("FAIL afficherStatistiques : " + e); }
+
+            // ── Test avec dataframe vide ──────────────────────────────────────────
+            DfIndividu dfVide = new DfIndividu(0, new String[]{"a", "b"});
+            try {
+                dfVide.afficherPremieresFignes(5);
+                tot++; ok++; System.out.println("PASS afficherPremieresFignes sur df vide");
+            } catch (Exception e) { System.out.println("FAIL afficherPremieresFignes sur df vide"); }
+
+            try {
+                dfVide.afficherStatistiques();
+                tot++; ok++; System.out.println("PASS afficherStatistiques sur df vide");
+            } catch (Exception e) { System.out.println("FAIL afficherStatistiques sur df vide"); }
+
+            // ── Test avec une seule ligne ─────────────────────────────────────────
+            Object[][] data1 = {{"Merlan", 30.5}};
+            DfIndividu df1 = new DfIndividu(1, new String[]{"espece", "longueur"}, data1);
+            try {
+                df1.afficherPremieresFignes(1);
+                tot++; ok++; System.out.println("PASS afficherPremieresFignes sur 1 ligne");
+            } catch (Exception e) { System.out.println("FAIL afficherPremieresFignes sur 1 ligne"); }
+
+            // ── Test avec des valeurs null nombreuses ─────────────────────────────
+            Object[][] dataNull = {{null, null}, {null, null}};
+            DfIndividu dfNull = new DfIndividu(2, new String[]{"a", "b"}, dataNull);
+            try {
+                dfNull.afficherPremieresFignes(2);
+                tot++; ok++; System.out.println("PASS afficherPremieresFignes avec valeurs null");
+            } catch (Exception e) { System.out.println("FAIL afficherPremieresFignes avec null"); }
+
+            // ── Test avec mackerel (fichier réel qui fonctionne) ──────────────────
+            System.out.println("\n── Test avec fichier mackerel.97442.csv ──────────────");
+            try {
+                fish.acquisition.lecture.LectureCSV lecteur = new fish.acquisition.lecture.LectureCSV(";");
+                DfIndividu dfMack = lecteur.lireCSV("data/mackerel.97442.csv", DfIndividu.class);
+                if (dfMack != null) {
+                    dfMack.afficherPremieresFignes(3);
+                    dfMack.afficherStatistiques();
+                    tot++; ok++; System.out.println("PASS lecture mackerel");
+                } else {
+                    System.out.println("FAIL lecture mackerel (df null)");
+                }
+            } catch (Exception e) { System.out.println("FAIL lecture mackerel : " + e); }
+
+        } catch (Exception e) {
+            System.out.println("FAIL général : " + e);
+        }
+
+        System.out.println("\n=== DataframeComplet : " + ok + "/" + tot + " ===");
+    }
 }

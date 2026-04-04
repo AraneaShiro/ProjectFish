@@ -351,4 +351,28 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
     public String getTitle() {
         return TYPE + (titre != null ? " : " + titre : "");
     }
+
+
+    public static void main(String[] args) {
+		/*
+		 * public int getVersContenu(int indice)
+		 * public int getVersTotalContenuType(String type)
+		 * public int getVersContenu(String type)
+		 * public int getVersContenuTotal()
+		 * public boolean MajNBVersPoisson()
+		 * public float calculTauxInfestation()
+		 * public int calculNbVers()
+		 * public Individu(String espece, float taille, float poids, int nbVers,
+		 * ArrayList<Contenu> contenus)
+		 * public Individu(String espece, float taille, float poids, float taux,
+		 * ArrayList<Contenu> contenus)
+		 */
+
+		try {
+
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+
+	}
 }

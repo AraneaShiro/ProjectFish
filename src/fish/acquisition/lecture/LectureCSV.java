@@ -1,6 +1,6 @@
 package fish.acquisition.lecture;
 
-import fish.acquisition.Dataframe;
+import fish.acquisition.DataframeComplet;
 import fish.acquisition.DfIndividu;
 
 import java.io.*;
@@ -190,7 +190,7 @@ public class LectureCSV {
      *         le fichier est introuvable
      * @throws FileEmpty si le fichier est vide ou sans en-têtes
      */
-    public <T extends Dataframe> T lireCSV(String cheminFichier, Class<T> type) throws FileEmpty {
+    public <T extends DataframeComplet> T lireCSV(String cheminFichier, Class<T> type) throws FileEmpty {
 
         List<String[]> lignesBrutes = new ArrayList<>();
 

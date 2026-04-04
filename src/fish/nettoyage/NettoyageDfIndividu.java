@@ -1,60 +1,45 @@
 package fish.nettoyage;
 
 import fish.acquisition.DfIndividu;
-import fish.exceptions.NullParameterException;
-import fish.exceptions.OutOfBoundException;
 
 /**
- * Nettoyage spécifique à un DfIndividu.
- * La colonne Anisakis est "nbvers" ou "taux" selon ce qui est disponible.
+ * Utilitaire de nettoyage spécifique à un DfIndividu.
+ * Toutes les méthodes sont statiques — cette classe ne s'instancie pas.
+ *
+ * La colonne Anisakis est "nbvers" en priorité, puis "taux".
  *
  * @author Jules Grenesche
- * @version 0.1
+ * @version 0.2
  */
-public class NettoyageDfIndividu extends NettoyageDataframe {
+public final class NettoyageDfIndividu {
 
-    private DfIndividu dfIndividu;
+    private NettoyageDfIndividu() {}
 
-    public NettoyageDfIndividu(DfIndividu df) {
-        super(df);
-        this.dfIndividu = df;
+    public static int suppressionInvalid(DfIndividu df) {
+        return NettoyageDataframe.suppressionInvalid(df);
     }
 
-    public NettoyageDfIndividu(DfIndividu df, double seuilNull) {
-        super(df, seuilNull);
-        this.dfIndividu = df;
+    public static int suppressionInvalid(DfIndividu df, double seuilNull) {
+        return NettoyageDataframe.suppressionInvalid(df, seuilNull);
     }
 
-    @Override
-    protected int getIndexColonneAnisakis() {
-        // Priorité : nbvers → taux
-        int col = getIndexColonne("nbvers");
-        if (col < 0)
-            col = getIndexColonne("taux");
-        return col;
+    public static int suppressionColonnesVides(DfIndividu df) {
+        return NettoyageDataframe.suppressionColonnesVides(df);
     }
 
-    @Override
-    protected void reconstruireDataframe(Object[][] nouveauTableau, int nbLignes) {
-        try {
-            this.dfIndividu = new DfIndividu(nbLignes, df.getNomColonnes(), nouveauTableau);
-            this.df = this.dfIndividu;
-        } catch (OutOfBoundException | NullParameterException e) {
-            System.out.println("Erreur reconstruction DfIndividu : " + e.getMessage());
-        }
+    public static int triAnisakis(DfIndividu df) {
+        return NettoyageDataframe.triAnisakis(df, getMotCleAnisakis(df));
     }
 
-    @Override
-    protected void reconstruireDataframeAvecNoms(Object[][] tab, String[] noms, int nbLignes) {
-        try {
-            this.dfIndividu = new DfIndividu(nbLignes, noms, tab);
-            this.df = this.dfIndividu;
-        } catch (OutOfBoundException | NullParameterException e) {
-            System.out.println("Erreur reconstruction DfIndividu : " + e.getMessage());
-        }
+    public static int reconnaissanceAnisakis(DfIndividu df) {
+        return NettoyageDataframe.reconnaissanceAnisakis(df, getMotCleAnisakis(df));
     }
 
-    public DfIndividu getDfIndividu() {
-        return dfIndividu;
+    // ── Utilitaire privé ─────────────────────────────────────────────────────
+
+    /** Priorité : "nbvers" → "taux" */
+    private static String getMotCleAnisakis(DfIndividu df) {
+        if (NettoyageDataframe.getIndexColonne(df, "nbvers") >= 0) return "nbvers";
+        return "taux";
     }
 }

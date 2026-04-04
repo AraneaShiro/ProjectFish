@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-import fish.acquisition.Dataframe;
+import fish.acquisition.DataframeComplet;
 import fish.exceptions.FileEmpty;
 
 /**
@@ -35,7 +35,7 @@ public class LectureHorizontal extends LectureCSV {
      * @return une instance de T construite à partir du fichier
      * @throws FileEmpty si le fichier est vide ou sans en-têtes
      */
-    public <T extends Dataframe> T lireCSV(String cheminFichier, Class<T> type) throws FileEmpty {
+    public <T extends DataframeComplet> T lireCSV(String cheminFichier, Class<T> type) throws FileEmpty {
 
         List<String[]> lignesBrutes = new ArrayList<>();
 

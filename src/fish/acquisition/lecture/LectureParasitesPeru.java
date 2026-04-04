@@ -1,6 +1,6 @@
 package fish.acquisition.lecture;
 
-import fish.acquisition.Dataframe;
+import fish.acquisition.DataframeComplet;
 import fish.exceptions.FileEmpty;
 
 import java.io.File;
@@ -53,7 +53,7 @@ public class LectureParasitesPeru extends LectureCSV {
      * @throws FileEmpty si le fichier est vide
      */
     @Override
-    public <T extends Dataframe> T lireCSV(String cheminFichier, Class<T> type) throws FileEmpty {
+    public <T extends DataframeComplet> T lireCSV(String cheminFichier, Class<T> type) throws FileEmpty {
 
         List<String[]> lignesBrutes = new ArrayList<>();
         String[] headersCSV = null;

@@ -128,10 +128,12 @@ public LectureCSV() {
         String v = valeur.trim();
 
         // ── <LOQ / <LOD → 0.0 ───────────────────────────────────────────────
+        //Cas lorsque appareil de mesure min et max
         if (v.equalsIgnoreCase("<LOQ") || v.equalsIgnoreCase("<LOD"))
             return 0.0;
 
         // ── <X → X/2 (ex: "<12.5" → 6.25) ─────────────────────────────────
+        //Lorsque X est la valeur min mesurable
         if (v.startsWith("<") && v.length() > 1) {
             try {
                 return Double.parseDouble(v.substring(1).trim()) / 2.0;
@@ -246,7 +248,7 @@ public LectureCSV() {
 
         // Instanciation de la classe cible via réflexion
         try {
-            return type.getConstructor(int.class, String[].class, Object[][].class)
+            return type.getConstructor(int.class, String[].class, Object[][].class) //Retrouve un constructeur avec les types en parametre
                     .newInstance(this.nbLignes, this.entetes, tableau);
         } catch (Exception e) {
             System.out.println("Impossible d'instancier "

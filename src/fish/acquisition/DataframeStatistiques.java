@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-// ── TESTE : NON ─────────────────
+// ── TESTE : OUI ─────────────────
 /**
  * Statistiques numériques du dataframe.
  * Calcule moyenne, médiane, écart-type, variance, covariance et corrélation.
  *
  * @author Jules Grenesche
- * @version 0.4
+ * @version 1.0
  */
 public abstract class DataframeStatistiques extends DataframeManipulation {
 

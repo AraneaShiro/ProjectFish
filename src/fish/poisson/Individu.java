@@ -10,7 +10,7 @@ import fish.poisson.Contenu;
  * Representation d'un poisson
  * 
  * @author Jules Grenesche / Arthur Bernard
- * @version 0.1
+ * @version 1
  * @see Contenu
  * 
  */

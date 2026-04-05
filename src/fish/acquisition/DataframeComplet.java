@@ -5,14 +5,14 @@ package fish.acquisition;
 import fish.exceptions.NullParameterException;
 import fish.exceptions.OutOfBoundException;
 
-// ── Test : NON ────────────────────────────────────────────────────────────
+// ── Test : OUI ────────────────────────────────────────────────────────────
 /**
  * Classe abstraite dataframe.
  * Point d'entrée public du dataframe. Hérite de toutes les couches précédentes.
  * Ajouter ici uniquement ce qui concerne la présentation des données.
  *
  * Hiérarchie :
- * DataframeBase -> DataframeColonnes -> DataframeStatistiques -> Dataframe
+ * DataframeBase -> DataframeColonnes -> DataframeStatistiques -> DataframeComplet
  * 
  * @see DataframeStatistiques
  * @author Jules Grenesche

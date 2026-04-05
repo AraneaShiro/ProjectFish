@@ -50,7 +50,6 @@ public abstract class DataframeManipulation extends DataframeBase {
     /**
      * Fusionne deux colonnes complémentaires en une seule.
      * Conditions :
-     * - Les deux colonnes doivent avoir le même type de valeurs
      * - Quand l'une a une valeur, l'autre doit être null (pas de chevauchement)
      *
      * @param col1           l'index de la première colonne

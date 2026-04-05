@@ -109,7 +109,7 @@ public class LectureParasitesPeru extends LectureCSV {
 
         for (String parametre : parametres) {
             for (String annee : anneesLabels) {
-                nouvellesEntetes.add(parametre + "_" + annee);
+                nouvellesEntetes.add(parametre + "_" + annee); // taille_2019
             }
         }
 

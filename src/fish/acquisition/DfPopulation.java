@@ -337,7 +337,7 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
             float  abondance= lireFloat (i, iAbondance, 0f);
 
             try {
-                // ✅ Correction : on passe une String simple au lieu de String[]
+                
                 liste.add(new Population(effectif, espece, infectes, partie, intensite, abondance));
             } catch (Exception e) {
                 System.out.println("Population ligne " + i + " ignorée : " + e.getMessage());
@@ -382,8 +382,7 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
                 float abondance  = lireFloat(i, iAbondance, 0f);
 
                 try {
-                    // ✅ Correction : on passe une String simple au lieu de String[]
-                    // La période joue le rôle de "partie du corps" (ex: "Total", "2012")
+                    
                     liste.add(new Population(effectif, espece, infectes, periode, intensite, abondance));
                 } catch (Exception e) {
                     System.out.println("Population " + espece + " / " + periode
@@ -463,7 +462,7 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
                     "Espèce", "Période", "Effectif", "Infectés", "Abondance");
             System.out.println("-".repeat(80));
             for (Population pop : populations) {
-                // ✅ getPartieCorps() retourne maintenant une String lisible
+                
                 System.out.printf("%-35s %-12s %-10d %-10d %-10.2f%n",
                         pop.getEspece(),
                         pop.getPartieCorps(),

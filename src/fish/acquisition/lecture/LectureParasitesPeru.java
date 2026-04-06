@@ -97,7 +97,7 @@ public class LectureParasitesPeru extends LectureCSV {
 
         // ── Construction des entêtes pivotées ────────────────────────────────
         // "Espèce" + pour chaque paramètre × année : "N_Total", "N_2012", ...
-        List<String> nouvellesEntetes = new ArrayList<>();
+        List<String> nouvellesEntetes = new ArrayList<>(); //Taille_2019
         nouvellesEntetes.add("Espèce");
 
         // On récupère les paramètres depuis la première espèce
@@ -121,7 +121,7 @@ public class LectureParasitesPeru extends LectureCSV {
         Object[][] tableau = new Object[this.nbLignes][this.nbCol];
         int ligneIdx = 0;
 
-        for (Map.Entry<String, List<String[]>> entry : parEspece.entrySet()) {
+        for (Map.Entry<String, List<String[]>> entry : parEspece.entrySet()) { //"cle : valeur"
             String espece = entry.getKey();
             List<String[]> lignes = entry.getValue();
 

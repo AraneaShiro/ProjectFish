@@ -112,7 +112,7 @@ public LectureCSV() {
      * Gère les cas spéciaux suivants :
      * - Vide / null → null
      * - "&lt;LOQ" / "&lt;LOD" → 0.0 (limite de quantification non atteinte)
-     * - "&lt;X" → X/2 (estimation convention Bush et al.)
+     * - "&lt;X" → X/2 (estimation convention Bush et al.) <X
      * - "X ± SD" → X (SD ignoré)
      * - "min-max" → (min+max)/2 (centre de l'intervalle)
      * - Integer / Long / Double / Boolean → type Java correspondant
@@ -129,7 +129,7 @@ public LectureCSV() {
 
         // ── <LOQ / <LOD → 0.0 ───────────────────────────────────────────────
         //Cas lorsque appareil de mesure min et max
-        if (v.equalsIgnoreCase("<LOQ") || v.equalsIgnoreCase("<LOD"))
+        if (v.equalsIgnoreCase("<LOQ") || v.equalsIgnoreCase("<LOD")) //On compare sans les Maj
             return 0.0;
 
         // ── <X → X/2 (ex: "<12.5" → 6.25) ─────────────────────────────────
@@ -153,7 +153,7 @@ public LectureCSV() {
         // ── "min-max" (ex: "55.47-74.05") — centre de l'intervalle ─────────
         // Attention : les négatifs comme "-18.23" ne doivent pas matcher.
         // On ne matche que si les DEUX parties commencent par un chiffre.
-        if (v.matches("\\d[\\d.]*-\\d[\\d.]*")) {
+        if (v.matches("\\d[\\d.]*-\\d[\\d.]*")) { //Trouve un format 55.47-65.2 regex
             String[] parts = v.split("-");
             try {
                 double min = Double.parseDouble(parts[0].trim());

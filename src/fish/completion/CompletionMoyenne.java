@@ -7,7 +7,7 @@ import fish.acquisition.DfIndividu;
 import fish.exceptions.OutOfBoundException;
 import java.util.ArrayList;
 import java.util.List;
-// ── TESTE : NON ───────────────────────────────────────────────────
+// ── TESTE : Oui ───────────────────────────────────────────────────
 /**
  * Complète les valeurs null d'un Dataframe par la moyenne de leur colonne.
  * Seules les colonnes numériques sont complétées.

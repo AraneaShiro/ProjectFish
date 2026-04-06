@@ -356,8 +356,8 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
 
     public  static void main(String[] args) {
         int ok = 0, total = 0;
-/*
-        // Lecture du fichier mackerel.97442.csv (séparateur ;)
+
+        //Lecture du fichier mackerel.97442.csv (séparateur ;)
         fish.acquisition.lecture.LectureCSV lecteur = new fish.acquisition.lecture.LectureCSV(";");
 
         // ── Construction depuis mackerel.97442.csv ────────────────────────────
@@ -411,7 +411,7 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
                 System.out.println("FAIL Test 4 : population null ou effectif 0");
             }
         } catch (Exception e) { System.out.println("FAIL Test 4 : " + e); }
-*/
+
         // ── Construction depuis merlu2018_75164.csv ───────────────────────────
         System.out.println("\n── Lecture merlu2018_75164.csv ──────────────────────");
 

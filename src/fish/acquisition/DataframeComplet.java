@@ -55,6 +55,7 @@ public abstract class DataframeComplet extends DataframeStatistiques {
      * Calcule la largeur maximale de chaque colonne pour un affichage aligné.
      * 
      * @param nbLignes le nombre de ligne du df que l'on veut
+     *  @return le nombre de largeur de chaque colonnes
      */
     private int[] calculerLargeurs(int nbLignes) {
         int[] largeurs = new int[this.nbCol];
@@ -196,7 +197,7 @@ public abstract class DataframeComplet extends DataframeStatistiques {
      *
      * @param n le nombre de lignes à afficher
      */
-    public void afficherPremieresFignes(int n) {
+    public void afficherPremieresFignes(int n) { //Afficher premiereLigne mais avec une faute de frappe
         if (n > 0) {
 
             int nbAfficher = Math.min(n, this.nbLignes);

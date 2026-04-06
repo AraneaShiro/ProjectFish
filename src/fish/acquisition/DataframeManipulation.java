@@ -205,7 +205,7 @@ public abstract class DataframeManipulation extends DataframeBase {
         HashMap<Object, Integer> occurrences = new HashMap<>();
         for (int i = 0; i < this.nbLignes; i++) {
             Object valeur = this.tableau[i][col];
-            occurrences.put(valeur, occurrences.getOrDefault(valeur, 0) + 1);
+            occurrences.put(valeur, occurrences.getOrDefault(valeur, 0) + 1); //Get la valeur et sinon deonne le defaut
         }
         return occurrences;
     }

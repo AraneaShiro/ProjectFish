@@ -3,7 +3,9 @@ package fish.nettoyage;
 import fish.acquisition.*;
 import fish.exceptions.OutOfBoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Classe abstraite de nettoyage d'un Dataframe.
@@ -15,9 +17,10 @@ import java.util.List;
  * - suppressionColonnesVides() : supprime les colonnes entièrement nulles
  * - triAnisakis() : trie par valeur Anisakis décroissante
  * - reconnaissanceAnisakis() : ajoute une colonne booléenne "Anisakis_Present"
+ * - Suppression ligne() 
  *
  * @author Jules Grenesche
- * @version 0.2
+ * @version 0.5
  */
 public abstract class NettoyageDataframe {
 
@@ -276,18 +279,27 @@ public abstract class NettoyageDataframe {
     /**
      * Retourne l'index de la colonne Anisakis pertinente pour ce type de
      * dataframe (nbVers, taux, prévalence selon le contexte).
+     * 
+     * @return l'index de la colonne trouve
      */
     protected abstract int getIndexColonneAnisakis();
 
     /**
      * Reconstruit le dataframe avec un nouveau tableau
      * (mêmes colonnes, nombre de lignes modifié).
+     * @param tab le tableau de donnée
+     * @param nbLignes Le nombre de ligne
      */
     protected abstract void reconstruireDataframe(Object[][] nouveauTableau, int nbLignes);
 
     /**
      * Reconstruit le dataframe avec un nouveau tableau ET de nouveaux noms
      * de colonnes.
+     * 
+     * @param tab le tableau de donnée
+     * @param noms les entetes
+     * @param nbLignes Le nombre de ligne
+     * 
      */
     protected abstract void reconstruireDataframeAvecNoms(Object[][] tab,
             String[] noms, int nbLignes);
@@ -296,6 +308,8 @@ public abstract class NettoyageDataframe {
 
     /**
      * Convertit un Object en double. Retourne 0.0 si non numérique ou null.
+     * @param val l'objet que l'on veut convertir en double
+     * @return Un double de la valeur si l'objet est numerique sinon 0
      */
     protected double toDouble(Object val) {
         if (val instanceof Number)
@@ -306,6 +320,9 @@ public abstract class NettoyageDataframe {
     /**
      * Retourne l'index de la première colonne dont le nom contient motCle
      * (insensible à la casse), ou -1 si non trouvé.
+     * 
+     * @param motCle Le mot cle que l on recherche
+     * @return l'index de la colonne trouvé ou -1 sinon
      */
     protected int getIndexColonne(String motCle) {
         String[] noms = df.getNomColonnes();
@@ -316,7 +333,10 @@ public abstract class NettoyageDataframe {
         return -1;
     }
 
-    /** Copie le tableau courant du dataframe dans un nouveau tableau. */
+    /** Copie le tableau courant du dataframe dans un nouveau tableau. 
+     * 
+     * @return le tableau d'objet copier
+    */
     protected Object[][] copierTableau() {
         int nbLignes = df.getNbLignes();
         int nbCol = df.getNbCol();
@@ -335,6 +355,9 @@ public abstract class NettoyageDataframe {
     /**
      * Retourne un nouveau tableau de noms de colonnes avec nomNouvelle ajouté
      * à la fin.
+     * 
+     * @param nomNouvelle Nouveau nom de la colonne
+     * @return retourne le tableau des entetes avec la nouvelle colonne
      */
     protected String[] ajouterNomColonne(String nomNouvelle) {
         String[] anciens = df.getNomColonnes();
@@ -343,4 +366,252 @@ public abstract class NettoyageDataframe {
         nouveaux[anciens.length] = nomNouvelle;
         return nouveaux;
     }
+
+/**
+ * Supprime les lignes dont la valeur d'une colonne choisie est négative.
+ * Les lignes avec null dans cette colonne sont conservées.
+ *
+ * @param col l'index de la colonne à vérifier
+ * @return le nombre de lignes supprimées, ou -1 si l'index est invalide
+ */
+public int suppressionLignesNegatives(int col) {
+    if (col < 0 || col >= df.getNbCol()) {
+        System.out.println("Index de colonne invalide : " + col);
+        return -1;
+    }
+
+    int nbLignes = df.getNbLignes();
+    int nbCol    = df.getNbCol();
+    List<Integer> lignesValides = new ArrayList<>();
+
+    for (int i = 0; i < nbLignes; i++) {
+        try {
+            Object val = df.getCase(i, col);
+            // On garde la ligne si : null OU valeur >= 0
+            if (val == null || !(val instanceof Number) || ((Number) val).doubleValue() >= 0) {
+                lignesValides.add(i);
+            }
+        } catch (OutOfBoundException e) {
+            lignesValides.add(i); // En cas d'erreur on conserve la ligne
+        }
+    }
+
+    int supprimees = nbLignes - lignesValides.size();
+    if (supprimees == 0) {
+        System.out.println("Aucune valeur négative dans la colonne '"
+                + df.getNomCol(col) + "'.");
+        return 0;
+    }
+
+
+    
+    // Reconstruction du tableau sans les lignes négatives
+    Object[][] nouveauTableau = new Object[lignesValides.size()][nbCol];
+    for (int i = 0; i < lignesValides.size(); i++) {
+        int ligneSource = lignesValides.get(i);
+        for (int j = 0; j < nbCol; j++) {
+            try {
+                nouveauTableau[i][j] = df.getCase(ligneSource, j);
+            } catch (OutOfBoundException e) { /* ignoré */ }
+        }
+    }
+
+    reconstruireDataframe(nouveauTableau, lignesValides.size());
+    System.out.println(supprimees + " ligne(s) supprimée(s) (valeur négative colonne '"
+            + df.getNomCol(col) + "').");
+    return supprimees;
 }
+
+/**
+ * Surcharge par nom de colonne.
+ * Cherche la colonne par mot-clé et appelle suppressionLignesNegatives(int).
+ *
+ * @param nomColonne le mot-clé à chercher dans les noms de colonnes
+ * @return le nombre de lignes supprimées, ou -1 si colonne non trouvée
+ */
+public int suppressionLignesNegatives(String nomColonne) {
+    int col = getIndexColonne(nomColonne);
+    if (col < 0) {
+        System.out.println("Colonne '" + nomColonne + "' introuvable.");
+        return -1;
+    }
+    return suppressionLignesNegatives(col);
+}
+
+
+
+
+ /**
+ * Remplace les éléments négatifs de la colonne ciblé par null
+ *
+ * @param col l'index de la colonne à vérifier
+ * @return le nombre de cases passé a null et -1 si on ne trouve pas la colonne
+ */
+public int remplaceNegativeByNull(int col) {
+    if (col < 0 || col >= df.getNbCol()) { //Si en dehors des dimensions du tableau
+        System.out.println("Index de colonne invalide : " + col);
+        return -1;
+    }
+
+    int nbLignes = df.getNbLignes();
+    int nbCol    = df.getNbCol();
+
+    int supprimees=0;
+    for (int i = 0; i < nbLignes; i++) {
+        try {
+            Object val = df.getCase(i, col);
+            // On garde la ligne si : null OU valeur >= 0
+            if (  ((Number) val).doubleValue() < 0) { //Si négatif on mais null
+                df.setCase(i, col, null);
+                supprimees++;
+            }
+        } catch (OutOfBoundException e) {
+            /*On ne fait rien */
+        }
+    }
+
+    System.out.println(supprimees + " Cases passé a null (valeur négative colonne '"
+            + df.getNomCol(col) + "').");
+    return supprimees;
+}
+
+/**
+ * Surcharge par nom de colonne.
+ * Cherche la colonne par mot-clé et appelle remplaceNegativeByNull(int).
+ *
+ * @param nomColonne le mot-clé à chercher dans les noms de colonnes
+ * @return le nombre de cases passé a null et -1 si on ne trouve pas la colonne
+ */
+public int remplaceNegativeByNull(String nomColonne) {
+    int col = getIndexColonne(nomColonne);
+    if (col < 0) {
+        System.out.println("Colonne '" + nomColonne + "' introuvable.");
+        return -1;
+    }
+    return remplaceNegativeByNull(col);
+}
+
+
+
+ /**
+ * Remplace les éléments négatifs ou zero de la colonne ciblé par null
+ * C est pour les cas comme une masse =0
+ *
+ * @param col l'index de la colonne à vérifier
+ * @return le nombre de cases passé a null et -1 si on ne trouve pas la colonne
+ */
+public int remplaceNegativeOrZeroByNull(int col) {
+    if (col < 0 || col >= df.getNbCol()) { //Si en dehors des dimensions du tableau
+        System.out.println("Index de colonne invalide : " + col);
+        return -1;
+    }
+
+    int nbLignes = df.getNbLignes();
+    int nbCol    = df.getNbCol();
+
+    int supprimees=0;
+    for (int i = 0; i < nbLignes; i++) {
+        try {
+            Object val = df.getCase(i, col);
+            // On garde la ligne si : null OU valeur >= 0
+            if (val!=null && ((Number) val).doubleValue() <= 0 ) { //Si négatif on mais null ou égale a 0
+                df.setCase(i, col, null);
+                supprimees++;
+            }
+        } catch (OutOfBoundException e) {
+            /*On ne fait rien */
+        }
+    }
+
+    System.out.println(supprimees + " Cases passé a null (valeur négative ou 0 colonne '"
+            + df.getNomCol(col) + "').");
+    return supprimees;
+}
+
+
+/**
+ * Surcharge par nom de colonne.
+ * Cherche la colonne par mot-clé et appelle remplaceNegativeByNull(int).
+ *
+ * @param nomColonne le mot-clé à chercher dans les noms de colonnes
+ * @return le nombre de cases passé a null et -1 si on ne trouve pas la colonne
+ */
+public int remplaceNegativeOrZeroByNull(String nomColonne) {
+    int col = getIndexColonne(nomColonne);
+    if (col < 0) {
+        System.out.println("Colonne '" + nomColonne + "' introuvable.");
+        return -1;
+    }
+    return remplaceNegativeOrZeroByNull(col);
+}
+
+/**
+ * Remplace les éléments vide ou null par l'Objet le plus présent de la colonne 90% sauf si null
+ *
+ * @param col l'index de la colonne à vérifier
+ * @param seuil le float ex 0.9 pour 90% du seuil voulue
+ * @return le nombre de cases changés ou -1 sinon
+ */
+public int remplaceByMostCommon(int col, float seuil) {
+    try {
+        HashMap<Object, Integer> unique = df.getUniqueColonneSomme(col);
+        int nbChangé = 0;
+        int nbElement = 0;
+
+        // On trouve le nombre d'éléments non null
+        for (Map.Entry<Object, Integer> entry : unique.entrySet()) {
+            if (entry.getKey() != null) { // On ne compte pas les nulls
+                nbElement += entry.getValue();
+            }
+        }
+
+        for (Map.Entry<Object, Integer> entry : unique.entrySet()) {
+            if (entry.getKey() != null) {
+                // Si l'élément est plus de seuil% des stats
+                if (((float) entry.getValue() / (float) nbElement) > seuil) {
+
+                    int nbLignes = df.getNbLignes();
+                    for (int i = 0; i < nbLignes; i++) {
+                        Object val = df.getCase(i, col);
+
+                        // On garde la ligne si : null OU valeur vide
+                        if (val == null || ((String) val).isEmpty()) {
+                            df.setCase(i, col, entry.getValue()); //On remplace par la valeur principale
+                            nbChangé++;
+                        }
+                    }
+                    return nbChangé;
+                }
+            }
+        }
+
+        return nbChangé;
+
+        } catch (Exception e) {
+            
+            return -1;
+        }
+    }
+}
+
+
+
+    
+
+
+
+
+
+//A faire
+/*
+Kmeans ?
+pllusProcheVoisin
+kmedoid median
+k_nn
+
+
+
+
+
+
+*/

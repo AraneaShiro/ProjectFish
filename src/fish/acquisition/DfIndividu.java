@@ -7,6 +7,7 @@ import fish.poisson.Contenu;
 import fish.poisson.Individu;
 import fish.poisson.Population;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +88,13 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
 
     /**
      * Constructeur sans tableau de données.
+     *
+     * @param nbLignes   le nombre de lignes
+     * @param nomColonne les noms des colonnes
+     */
+    /**
+     * Constructeur sans tableau de données.
+     * Crée un dataframe vide avec le nombre de lignes et les noms de colonnes donnés.
      *
      * @param nbLignes   le nombre de lignes
      * @param nomColonne les noms des colonnes
@@ -354,6 +362,36 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
         return TYPE + (titre != null ? " : " + titre : "");
     }
 
+    /**
+     * Crée une copie profonde (deep copy) du dataframe.
+     * Le tableau de données et les noms de colonnes sont dupliqués indépendamment.
+     *
+     * @return un nouveau {@code DfIndividu} avec les mêmes données
+     * @throws Exception si la construction du duplicata échoue
+     */
+   public DfIndividu copy() throws  Exception{
+    String[] newCols = this.nomColonne.clone();
+
+    Object[][] newTab = new Object[this.nbLignes][this.nbCol];
+    for (int i = 0; i < this.nbLignes; i++) {
+        for (int j = 0; j < this.nbCol; j++) {
+            newTab[i][j] = this.tableau[i][j];
+        }
+    }
+
+    DfIndividu copyDf = new DfIndividu(this.nbLignes, newCols, newTab);
+    copyDf.statistiques = new HashMap<>(this.statistiques);
+
+    return copyDf;
+}
+
+    /**
+     * Tests unitaires du DfIndividu.
+     * Vérifie la construction depuis un tableau, les getters, la construction
+     * de la population et l'indexation des colonnes.
+     *
+     * @param args arguments de la ligne de commande (ignorés)
+     */
     public  static void main(String[] args) {
         int ok = 0, total = 0;
 
@@ -374,7 +412,7 @@ public class DfIndividu extends DataframeComplet implements Utilitaire {
             System.out.println("PASS Test 1 : mackerel chargé, " + dfMackerel.getNbLignes() + " lignes");
             ok++;
             dfMackerel.afficherPremieresFignes(5);
-            dfMackerel.afficherStatistiques();
+            
         } else {
             System.out.println("FAIL Test 1 : dfMackerel est null");
         }

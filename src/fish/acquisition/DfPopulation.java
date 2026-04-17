@@ -86,6 +86,13 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
      * @return la Population à cet index
      * @throws OutOfBoundException si l'index est invalide
      */
+    /**
+     * Retourne la population à l'index donné.
+     *
+     * @param index l'index de la population dans le tableau
+     * @return la {@link Population} correspondante
+     * @throws OutOfBoundException si l'index est hors bornes
+     */
     public Population getPopulation(int index) throws OutOfBoundException {
         if (index < 0 || index >= populations.length) {
             throw new OutOfBoundException(index, populations.length, 1);
@@ -393,6 +400,72 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
         return liste.toArray(new Population[0]);
     }
 
+    ////////////////////////////// Calculs statistiques ////////////////////////
+
+    /**
+     * Calcule la moyenne pondérée d'une colonne numérique par les effectifs.
+     *
+     * La formule est : Σ(effectif_i × valeur_i) / Σ(effectif_i)
+     *
+     * Cette pondération est nécessaire pour que les populations plus grandes
+     * contribuent proportionnellement plus au résultat que les petites.
+     *
+     * @param nomColonne le nom (ou mot-clé) de la colonne à moyenner
+     * @return la moyenne pondérée, ou NaN si aucun effectif valide n'est trouvé
+     */
+    public double calculerMoyennePonderee(String nomColonne) {
+        int iVal = getIndexColonne(nomColonne);
+        if (iVal < 0) {
+            System.out.println("Colonne introuvable : " + nomColonne);
+            return Double.NaN;
+        }
+
+        // Recherche de la colonne effectif
+        int iEff = getIndexColonne("effectif");
+        if (iEff < 0) iEff = getIndexColonne(CLE_N_EXACT);
+
+        double sommeEffectifs = 0;
+        double sommePonderee  = 0;
+
+        for (int i = 0; i < getNbLignes(); i++) {
+            double valeur   = lireFloat(i, iVal, 0f);
+            double effectif = (iEff >= 0) ? lireInt(i, iEff, 0) : 1; // poids = 1 si colonne absente
+
+            if (effectif <= 0) continue; // ignorer les lignes sans individus
+
+            sommePonderee  += effectif * valeur;
+            sommeEffectifs += effectif;
+        }
+
+        if (sommeEffectifs == 0) return Double.NaN;
+        return sommePonderee / sommeEffectifs;
+    }
+
+    /**
+     * Calcule la moyenne pondérée directement depuis le tableau des populations.
+     *
+     * Pratique pour les colonnes déjà extraites (intensité, abondance, prévalence).
+     * Utilise pop.getEffectif() comme poids.
+     *
+     * @param extracteur fonction qui extrait la valeur numérique d'une Population
+     *                   (ex: Population::getAbondance)
+     * @return la moyenne pondérée, ou NaN si aucune population valide
+     */
+    public double calculerMoyennePonderee(java.util.function.ToDoubleFunction<Population> extracteur) {
+        double sommeEffectifs = 0;
+        double sommePonderee  = 0;
+
+        for (Population pop : populations) {
+            if (pop == null || pop.getEffectif() <= 0) continue;
+            double effectif = pop.getEffectif();
+            sommePonderee  += effectif * extracteur.applyAsDouble(pop);
+            sommeEffectifs += effectif;
+        }
+
+        if (sommeEffectifs == 0) return Double.NaN;
+        return sommePonderee / sommeEffectifs;
+    }
+
     ////////////////////////////// Mise à jour /////////////////////////////////
 
     /**
@@ -496,8 +569,13 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
                 + " (" + (populations != null ? populations.length : 0) + " populations)";
     }
 
-    ////////////////////////////// Main — tests ////////////////////////////////
-
+    /**
+     * Tests unitaires du DfPopulation.
+     * Vérifie la lecture et la construction de populations en format standard
+     * et multi-période, ainsi que les calculs de moyennes pondérées.
+     *
+     * @param args arguments de la ligne de commande (ignorés)
+     */
     public static void main(String[] args) {
         int ok = 0, total = 0;
                                                                     

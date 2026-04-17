@@ -1,5 +1,7 @@
 package fish.acquisition.lecture;
 
+import fish.acquisition.*;
+import fish.exceptions.FileEmpty;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -7,21 +9,26 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-import fish.acquisition.*;
-import fish.acquisition.DfIndividu;
-import fish.exceptions.FileEmpty;
-
 /**
- * LectureCSV est la classe qui permet de lire un csv et le convertir dans le
- * dataframe c'est la version par defaut qui lie les fichier avec les entetes
- * dans la 1er colonnes
- * 
+ * Variante de {@link LectureCSV} pour les CSV dont les en-têtes se trouvent
+ * dans la <em>première colonne</em> (format horizontal/transposé).
+ *
+ * <p>Chaque ligne du fichier représente une variable (en-tête en colonne 0),
+ * et chaque colonne supplémentaire représente une observation.
+ * Le tableau est transposé lors de la lecture pour obtenir le format standard
+ * lignes × colonnes attendu par les dataframes.</p>
+ *
  * @author Jules Grenesche
  * @version 0.1
- *          Date : 25/03
+ * @see LectureCSV
  */
 public class LectureHorizontal extends LectureCSV {
 
+    /**
+     * Crée un lecteur horizontal avec le séparateur de champs donné.
+     *
+     * @param separteur le délimiteur de colonnes (ex : ",", ";", "\t")
+     */
     public LectureHorizontal(String separteur) {
         super(separteur);
     }
@@ -93,8 +100,12 @@ public class LectureHorizontal extends LectureCSV {
 
     }
 
+    /**
+     * Tests unitaires de la lecture horizontale (format transposé).
+     *
+     * @param args arguments de la ligne de commande (ignorés)
+     */
     public static void main(String[] args) {
-        int ok = 0, total = 0;
 
         // Le format horizontal place les entêtes en 1ère colonne,
         // les valeurs en colonnes suivantes → transposition.
@@ -104,6 +115,9 @@ public class LectureHorizontal extends LectureCSV {
         // ── Lecture fichier standard (entêtes en ligne) ───────────────────────
         System.out.println("── Lecture merlu2018_75164.csv via LectureHorizontal ─");
 
+        int total=0; 
+        int ok=0;
+        
         LectureHorizontal lh = new LectureHorizontal(";");
         DfIndividu dfMerlu = null;
         try {

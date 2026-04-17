@@ -1,7 +1,10 @@
 package fish.acquisition.lecture;
 
 import fish.acquisition.*;
+import fish.completion.CompletionMoyenne;
+import fish.completion.CompletionRegression;
 import fish.exceptions.*;
+import fish.nettoyage.NettoyageDfIndividu;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -175,7 +178,7 @@ public LectureCSV() {
         } catch (NumberFormatException ignored) {
         }
 
-        // ── Double (virgule → point pour les CSV français) ───────────────────
+        // ── Double (virgule, point pour les CSV français) ───────────────────
         try {
             return Double.parseDouble(v.replace(",", "."));
         } catch (NumberFormatException ignored) {
@@ -186,7 +189,7 @@ public LectureCSV() {
             return Boolean.parseBoolean(v);
         }
 
-        // ── Sinon → String ───────────────────────────────────────────────────
+        // ── Sinon String ───────────────────────────────────────────────────
         return v;
     }
 
@@ -272,8 +275,62 @@ public LectureCSV() {
     }
 
     public static void main(String[] args) {
-        int reussis = 0, total = 0;
 
+       
+        try {
+
+            //------------------pour l'éval ---------------------
+            LectureCSV lecteurEval = new LectureCSV("\t");
+
+            DfIndividu df = lecteurEval.lireCSV("data/Eval/donnees.csv", DfIndividu.class);
+            if (df != null) {
+                System.out.println("\\n AVANT complétion :"
+                        + df.getNbLignes() + " lignes, " + df.getNbCol() + " colonnes");
+                lecteurEval.afficherEntetes();
+
+                //Lecture brute
+                df.afficherPremieresFignes(19);
+                df.afficherStatistiques();
+
+                //Nettoyage par suppression des négatifs mais conservation des nulls
+                NettoyageDfIndividu nt= new NettoyageDfIndividu(df);
+                nt.suppressionLignesNegatives(1);
+                nt.suppressionLignesNegatives(4);
+
+                df=nt.getDfIndividu();
+                DfIndividu dfcopy=df.copy();
+                
+                System.out.println("Apres nettoyage des negatifs");
+                df.afficherPremieresFignes(19);
+                System.out.println("----------------COPY------------");
+                System.out.println("DfCopy :");
+                dfcopy.afficherPremieresFignes(19);
+
+                //Completion par moyenne
+
+                CompletionMoyenne cm = new CompletionMoyenne(dfcopy);
+                int totalCompletes = cm.completerTout();
+                System.out.println("------------------------------------");
+            System.out.println("\n APRÈS complétion par moyenne :");
+            dfcopy.afficherPremieresFignes(19);
+            dfcopy.afficherStatistiques();
+
+            //Completion par regression
+            System.out.println("------------------------------------");
+            CompletionRegression cr = new CompletionRegression(df);
+             int n = cr.completerToutParMeilleurPredicteur();
+             df.afficherPremieresFignes(19);
+    
+            } else {
+                System.out.println("FAIL Test 1 : df est null");
+            }
+        } catch (Exception e) {
+            System.out.println("FAIL Test 1 : " + e);
+        }
+        
+    }
+       // int reussis = 0, total = 0;
+/* 
         // ── Helper : lit silencieusement (supprime les prints internes) ───────
         // Les EmptyStringException et ArithmeticException viennent de
         // construireIndividus() sur des lignes sans espèce — c'est du bruit.
@@ -529,5 +586,5 @@ public LectureCSV() {
         System.out.println("\n═══════════════════════════════════════════════════");
         System.out.println("=== LectureCSV : " + reussis + "/" + total + " tests réussis ===");
         System.out.println("═══════════════════════════════════════════════════");
-    }
+    }*/
 }

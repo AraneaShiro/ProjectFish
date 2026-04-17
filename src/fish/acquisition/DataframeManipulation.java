@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-// ── Test : NON ────────────────────────────────────────────────────────────
+// ── Test : Oui ────────────────────────────────────────────────────────────
 /**
  * Classe héritant de dataframe de base mais qui ajoute les méthodes de
  * manipulation du tableau

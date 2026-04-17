@@ -81,6 +81,10 @@ public class CompletionMoyenne {
 
     // ── Utilitaire ───────────────────────────────────────────────────────────
 
+    /** Retourne la moyenne de la colonne
+     * @param col l'indice de la colonne
+     * @return la moyenne de la colonne
+     */
     private double calculerMoyenneColonne(int col) {
         List<Double> valeurs = new ArrayList<>();
         for (int i = 0; i < df.getNbLignes(); i++) {

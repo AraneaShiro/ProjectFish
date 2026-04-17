@@ -283,6 +283,11 @@ public class ConversionMetrique {
 
     ////////////////////////////// Utilitaire ////////////////////
 
+    /** Retourne l'indice de la colonne ou -1 
+     * @param df le dataframe 
+     * @param motCle l'entete a cherché
+     * @return l'indice ou -1 si non trouvé
+     */
     private static int getIndexColonne(DataframeComplet df, String motCle) {
         String[] noms = df.getNomColonnes();
         for (int j = 0; j < noms.length; j++) {

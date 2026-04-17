@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  * Ex : "N_Total", "N_2012", "Prévalence (%)_2013", etc.
  *
  * @author Jules Grenesche
- * @version 0.1
+ * @version 1.0
  */
 public class LectureParasitesPeru extends LectureCSV {
 
@@ -34,10 +34,18 @@ public class LectureParasitesPeru extends LectureCSV {
      */
     private static final int COL_DEBUT_VALEURS = 2;
 
+    /**
+     * Crée un lecteur spécialisé avec le séparateur donné.
+     *
+     * @param separateur le délimiteur de colonnes (ex : ",", ";")
+     */
     public LectureParasitesPeru(String separateur) {
         super(separateur);
     }
 
+    /**
+     * Crée un lecteur spécialisé avec la virgule comme séparateur par défaut.
+     */
     public LectureParasitesPeru() {
         super(",");
     }
@@ -147,14 +155,19 @@ public class LectureParasitesPeru extends LectureCSV {
         }
     }
 
+    /**
+     * Tests unitaires du lecteur ParasitesPeru.
+     * Vérifie la lecture du CSV, le pivot espèce × période, et la construction du DfPopulation.
+     *
+     * @param args arguments de la ligne de commande (ignorés)
+     */
     public static void main(String[] args) {
-        int ok = 0, total = 0;
-
-        LectureParasitesPeru lecteur = new LectureParasitesPeru(",");
 
         // ── Lecture ParasitesPeru2021.csv ─────────────────────────────────────
         System.out.println("── Lecture ParasitesPeru2021.csv ────────────────────");
-
+        int total=0; 
+        int ok=0;
+        LectureParasitesPeru lecteur= new LectureParasitesPeru();
         DfPopulation dfPeru = null;
         try {
             dfPeru = lecteur.lireCSV("data/ParasitesPeru2021.csv", DfPopulation.class);

@@ -1,5 +1,10 @@
 package fish.exceptions;
 
+/**
+ * Exception lancée quand les coordonnées données sont en dehors du tableau
+ * @author Grenesche Jules
+ * @version 1.0
+ */
 public class OutOfBoundException extends Exception {
 
     public OutOfBoundException(int row, int col, int maxRow, int maxCol) {

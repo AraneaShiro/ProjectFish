@@ -101,7 +101,7 @@ public class InteractionTerminal {
         GestionCSV.EntreeCSV ea = gestion.getEntreeActive();
         if (ea != null)
             System.out.println(CYA_G + "║" + R + " " + VER + "Actif:" + JAU + trunc(ea.nom, 18) + R + " ("
-                    + ea.df.getNbLignes() + "×" + ea.df.getNbCol() + ")        " + CYA_G + "║" + R);
+                    + ea.df.getNbLignes() + "×" + ea.df.getNbCol() + ")        " + CYA_G + "                   ║" + R);
         else
             System.out.println(
                     CYA_G + "║" + R + " " + ROU + "Aucun dataframe chargé.                   " + R + CYA_G + "║" + R);
@@ -1137,7 +1137,8 @@ public class InteractionTerminal {
     /**
      * Sous-menu de manipulation structurelle du dataframe actif.
      * Propose la fusion/suppression de colonnes, la duplication du dataframe,
-     * l'affichage des valeurs uniques et le renommage de colonnes.
+     * l'affichage des valeurs uniques, le renommage de colonnes et le pivot
+     * du format brut (Espèce × Paramètre) vers le format multi-période.
      */
     private void menuManipulation() {
         if (!verDf())
@@ -1154,6 +1155,7 @@ public class InteractionTerminal {
             opt("4", "Valeurs uniques d'une colonne");
             opt("5", "Renommer une colonne");
             opt("6", "Voir dimensions et titre");
+            opt("7", "Pivoter (format brut → multi-période)");
             opt("0", "Retour");
             System.out.print(JAU_G + "► " + R);
             switch (lireChoix()) {
@@ -1166,10 +1168,87 @@ public class InteractionTerminal {
                     System.out.println(CYA_G + "Titre: " + R + df.getTitle());
                     System.out.println(CYA_G + "Dim:   " + R + df.getDimension());
                 }
+                case "7" -> { pivoterDataframe(); df = gestion.getActif(); }
                 case "0" -> run = false;
                 default -> err("Invalide.");
             }
         }
+    }
+
+    /**
+     * Pivote le dataframe actif du format « brut Peru »
+     * (Espèce | Paramètre | Total | 2012 | …) vers le format multi-période
+     * (Espèce | N_Total | N_2012 | Prévalence (%)_Total | …).
+     *
+     * <p>Conditions requises :</p>
+     * <ul>
+     *   <li>Le dataframe actif doit être un {@link DfPopulation}</li>
+     *   <li>Il ne doit pas déjà être en format multi-période</li>
+     *   <li>Il doit posséder des colonnes "Espèce" et "Paramètre"</li>
+     * </ul>
+     *
+     * <p>Le résultat remplace le dataframe actif dans le gestionnaire.
+     * Les populations multi-période sont automatiquement construites.</p>
+     */
+    private void pivoterDataframe() {
+        GestionCSV.EntreeCSV ea = gestion.getEntreeActive();
+        if (ea == null) {
+            err("Aucun dataframe actif.");
+            return;
+        }
+        if (!(ea.df instanceof DfPopulation)) {
+            err("Le pivot nécessite un DfPopulation.");
+            err("Rechargez ce CSV via [1] → Charger → type 'Population'.");
+            return;
+        }
+        DfPopulation dfPop = (DfPopulation) ea.df;
+        if (dfPop.isFormatMultiPeriode()) {
+            err("Ce dataframe est déjà en format multi-période — pivot inutile.");
+            return;
+        }
+
+        // ── Aperçu avant pivot ────────────────────────────────────────────────
+        titre("PIVOT — " + ea.nom);
+        System.out.println(CYA + "Format actif  : " + R + dfPop.getNbLignes()
+                + " lignes × " + dfPop.getNbCol() + " colonnes (brut Espèce×Paramètre)");
+        System.out.println(CYA + "Après pivot   : " + R
+                + "une ligne par espèce, colonnes = Parametre_Periode");
+
+        if (!conf("Confirmer le pivot ?")) {
+            ok("Annulé.");
+            return;
+        }
+
+        // ── Appel pivoter() ──────────────────────────────────────────────────
+        System.out.println(CYA_G + "── Pivot en cours… ──" + R);
+        DfPopulation pivote = dfPop.pivoter();
+
+        if (pivote == null) {
+            err("Pivot impossible : colonnes 'Espèce'/'Paramètre' introuvables "
+                    + "ou aucune période détectée (Total / année à 4 chiffres / Moyenne).");
+            return;
+        }
+
+        // ── Nom du dataframe résultant ────────────────────────────────────────
+        System.out.print("Nom du résultat (Entrée = '" + ea.nom + " (pivoté)') : ");
+        String nom = sc.nextLine().trim();
+        if (nom.isEmpty())
+            nom = ea.nom + " (pivoté)";
+
+        // ── Remplacement du dataframe actif ──────────────────────────────────
+        ea.df  = pivote;
+        ea.nom = nom;
+
+        // ── Résumé ────────────────────────────────────────────────────────────
+        String[] periodes = pivote.getPeriodes();
+        ok("Pivot réussi → '" + nom + "'");
+        System.out.printf(VER + "  Espèces   : %d%n" + R, pivote.getNbLignes());
+        System.out.printf(VER + "  Périodes  : %d %s%n" + R,
+                periodes.length, java.util.Arrays.toString(periodes));
+        System.out.printf(VER + "  Populations : %d (espèces × périodes)%n" + R,
+                pivote.getPopulations().length);
+        System.out.printf(VER + "  Colonnes  : %d%n" + R, pivote.getNbCol());
+        pivote.afficherResume();
     }
 
     /**

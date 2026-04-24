@@ -46,13 +46,13 @@ public class GestionCSV {
 
     /** Entrée du registre */
     public static class EntreeCSV {
-        public final int              id;
-        public final String           nom;
-        public final String           chemin;
-        public final TypeCSV          type;
-        public final DataframeComplet df;
-        public final String           delimiteur;
-        public final String           charset;
+        public  int              id;
+        public  String           nom;
+        public  String           chemin;
+        public  TypeCSV          type;
+        public  DataframeComplet df;
+        public  String           delimiteur;
+        public  String           charset;
 
         EntreeCSV(int id, String nom, String chemin, String delim,
                   String charset, TypeCSV type, DataframeComplet df) {
@@ -254,9 +254,9 @@ public class GestionCSV {
             System.out.println(JAU + "  (aucun CSV chargé)" + R);
             return;
         }
-        System.out.println(CYA_G + "╔══════════════════════════════════════════════════════════════════════════╗" + R);
-        System.out.println(CYA_G + "║" + R + G + "  # │ Nom                  │ Type       │ Charset      │ Dim        │ Actif" + R + CYA_G + "║" + R);
-        System.out.println(CYA_G + "╠══════════════════════════════════════════════════════════════════════════╣" + R);
+        System.out.println(CYA_G + "╔═════════════════════════════════════════════════════════════════════════════╗" + R);
+        System.out.println(CYA_G + "║" + R + G + "  # │ Nom                  │ Type       │ Charset      │ Dim        │ Actif" + R + CYA_G + "  ║" + R);
+        System.out.println(CYA_G + "╠═════════════════════════════════════════════════════════════════════════════╣" + R);
         for (EntreeCSV e : registre) {
             boolean act = e.id == actifId;
             String tCol = e.type == TypeCSV.INDIVIDU ? VER : MAG;
@@ -268,7 +268,7 @@ public class GestionCSV {
                     e.id, trunc(e.nom, 20), e.type, cs,
                     e.df.getNbLignes(), e.df.getNbCol(), actMark);
         }
-        System.out.println(CYA_G + "╚══════════════════════════════════════════════════════════════════════════╝" + R);
+        System.out.println(CYA_G + "╚═════════════════════════════════════════════════════════════════════════════╝" + R);
     }
 
     // ── Menu interactif de sélection ──────────────────────────────────────────

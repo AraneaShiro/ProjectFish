@@ -15,8 +15,13 @@ import java.util.Map;
  * FORMAT STANDARD — une ligne = une population :
  * Colonnes : espece | effectif/N | infectes | partie | intensite | abondance
  *
- * FORMAT MULTI-PERIODE (ex: ParasitesPeru après pivot) — une ligne = une
- * espèce,
+ * FORMAT MULTI-PERIODE — deux variantes :
+ *
+ * a) Format tidy (produit par pivoter()) — une ligne = une espèce × une période :
+ * Espece | Periode | N | Longueur | Poids | Prévalence (%) | Abondance … 
+ * Détecté par la présence des colonnes "Espece" ET "Periode".
+ *
+ * b) Format large (historique) — une ligne = une espèce,
  * les colonnes sont de la forme "Paramètre_Période" :
  * Espèce | N_Total | N_2012 | Prévalence (%)_Total | Abondance moyenne_2013 |
  * ...
@@ -161,13 +166,23 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
      */
     private boolean detecterFormatMultiPeriode() {
         String[] noms = getNomColonnes();
-        Map<String, Integer> compteurPrefixes = new LinkedHashMap<>();
 
+        // ── Format tidy (issu de pivoter()) : colonnes "Espece" + "Periode" ──
+        boolean aEspece  = false;
+        boolean aPeriode = false;
+        for (String nom : noms) {
+            String n = normaliser(nom);
+            if (n.contains("espece"))  aEspece  = true;
+            if (n.contains("periode")) aPeriode = true;
+        }
+        if (aEspece && aPeriode) return true;
+
+        // ── Format large (ancien) : colonnes "Parametre_Periode" ─────────────
+        Map<String, Integer> compteurPrefixes = new LinkedHashMap<>();
         for (String nom : noms) {
             int idx = nom.lastIndexOf('_');
             if (idx > 0) {
                 String suffixe = nom.substring(idx + 1);
-                // Suffixe valide = année (4 chiffres), "Total" ou "Moyenne"
                 if (suffixe.matches("\\d{4}")
                         || suffixe.equalsIgnoreCase("Total")
                         || suffixe.equalsIgnoreCase("Moyenne")) {
@@ -176,9 +191,19 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
                 }
             }
         }
-
         for (int count : compteurPrefixes.values()) {
             if (count >= 2) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Retourne {@code true} si le format tidy (colonne "Periode" explicite)
+     * est utilisé, par opposition au format large (colonnes "Param_Periode").
+     */
+    public boolean isFormatTidy() {
+        for (String nom : getNomColonnes()) {
+            if (normaliser(nom).contains("periode")) return true;
         }
         return false;
     }
@@ -190,8 +215,19 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
      * @return tableau des périodes détectées
      */
     private String[] extrairePeriodes() {
-        String[] noms = getNomColonnes();
+        // ── Format tidy : lire les valeurs uniques de la colonne "Periode" ───
+        int iPeriode = getIndexColonne("periode");
+        if (iPeriode >= 0) {
+            List<String> periodes = new ArrayList<>();
+            for (int i = 0; i < getNbLignes(); i++) {
+                String p = lireString(i, iPeriode);
+                if (!periodes.contains(p)) periodes.add(p);
+            }
+            return periodes.toArray(new String[0]);
+        }
 
+        // ── Format large : extraire les suffixes des colonnes "Param_Periode" ─
+        String[] noms = getNomColonnes();
         Map<String, List<String>> prefixToSuffixes = new LinkedHashMap<>();
         for (String nom : noms) {
             int idx = nom.lastIndexOf('_');
@@ -201,8 +237,6 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
                 prefixToSuffixes.computeIfAbsent(prefixe, k -> new ArrayList<>()).add(suffixe);
             }
         }
-
-        // Prend les suffixes du préfixe le plus fréquent
         String meilleurPrefixe = null;
         int maxCount = 0;
         for (Map.Entry<String, List<String>> e : prefixToSuffixes.entrySet()) {
@@ -364,6 +398,37 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
     public Population[] construirePopulationsMultiPeriode() {
         List<Population> liste = new ArrayList<>();
 
+        // ── Format tidy : une ligne = une (espèce × période) ─────────────────
+        if (isFormatTidy()) {
+            int iEspece    = getIndexColonne(CLE_ESPECE);
+            int iPeriode   = getIndexColonne("periode");
+            int iN         = getIndexColonne(CLE_N_EXACT);
+            int iPrevalence= getIndexColonne(CLE_PREVALENCE);
+            int iIntensite = getIndexColonne(CLE_INTENSITE);
+            int iAbondance = getIndexColonne(CLE_ABONDANCE);
+
+            for (int i = 0; i < getNbLignes(); i++) {
+                String espece    = lireString(i, iEspece);
+                String periode   = lireString(i, iPeriode);
+                int    effectif  = lireInt(i, iN, 0);
+                if (effectif == 0) continue;
+
+                float prevalence = lireFloat(i, iPrevalence, 0f);
+                int   infectes   = Math.round(prevalence / 100f * effectif);
+                float intensite  = lireFloat(i, iIntensite, 0f);
+                float abondance  = lireFloat(i, iAbondance, 0f);
+
+                try {
+                    liste.add(new Population(effectif, espece, infectes, periode, intensite, abondance));
+                } catch (Exception e) {
+                    System.out.println("Population " + espece + "/" + periode
+                            + " ignorée : " + e.getMessage());
+                }
+            }
+            return liste.toArray(new Population[0]);
+        }
+
+        // ── Format large : une ligne = une espèce, colonnes = Param_Periode ──
         int iEspece = getIndexColonne(CLE_ESPECE);
 
         for (int i = 0; i < getNbLignes(); i++) {
@@ -389,7 +454,6 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
                 float abondance  = lireFloat(i, iAbondance, 0f);
 
                 try {
-                    
                     liste.add(new Population(effectif, espece, infectes, periode, intensite, abondance));
                 } catch (Exception e) {
                     System.out.println("Population " + espece + " / " + periode
@@ -519,6 +583,125 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
             if (iAbondance>= 0) setCase(ligne, iAbondance, pop.getAbondance());
         } catch (OutOfBoundException e) {
             System.out.println("Erreur répercussion tableau : " + e.getMessage());
+        }
+    }
+
+    ////////////////////////////// Pivot ////////////////////////////////////////
+
+    /**
+     * Pivote un dataframe au format « brut Peru »
+     *   (Espèce | Paramètre | Total | 2012 | 2013 | …)
+     * vers le format tidy multi-période :
+     *   (Espece | Periode | N | Longueur … | Poids … | Prévalence (%) | …)
+     *
+     * <p>Avant pivot : une ligne = une espèce × un paramètre ;
+     * les colonnes de valeurs sont les périodes.</p>
+     *
+     * <p>Après pivot : une ligne = une espèce × une période.
+     * La colonne {@code Periode} porte l'année (ou "Total", "Moyenne").
+     * Chaque paramètre du CSV source devient une colonne indépendante.</p>
+     *
+     * <p>Ce format tidy est automatiquement reconnu par
+     * {@link #detecterFormatMultiPeriode()} (présence de la colonne "Periode")
+     * et {@link #construirePopulationsMultiPeriode()}.</p>
+     *
+     * @return un nouveau {@link DfPopulation} en format tidy multi-période,
+     *         ou {@code null} si le pivot est impossible (colonnes absentes, etc.)
+     */
+    public DfPopulation pivoter() {
+        String[] noms = getNomColonnes();
+
+        // ── 1. Colonnes structurelles : Espèce et Paramètre ──────────────────
+        int iEspece    = getIndexColonne("espece");
+        int iParametre = getIndexColonne("parametre");
+        if (iEspece < 0 || iParametre < 0) {
+            System.out.println("pivoter() : colonnes 'Espèce' et/ou 'Paramètre' introuvables.");
+            return null;
+        }
+
+        // ── 2. Colonnes de périodes (4 chiffres, "Total" ou "Moyenne") ───────
+        List<String>  periodesCols = new ArrayList<>();
+        List<Integer> periodesIdx  = new ArrayList<>();
+        for (int j = 0; j < noms.length; j++) {
+            if (j == iEspece || j == iParametre) continue;
+            String nom = noms[j].trim();
+            if (nom.matches("\\d{4}")
+                    || nom.equalsIgnoreCase("Total")
+                    || nom.equalsIgnoreCase("Moyenne")) {
+                periodesCols.add(nom);
+                periodesIdx.add(j);
+            }
+        }
+        if (periodesCols.isEmpty()) {
+            System.out.println("pivoter() : aucune colonne de période détectée.");
+            return null;
+        }
+
+        // ── 3. Espèces et paramètres uniques (ordre de première apparition) ──
+        List<String> especesOrdre = new ArrayList<>();
+        List<String> parametres   = new ArrayList<>();
+        for (int i = 0; i < getNbLignes(); i++) {
+            String espece    = lireString(i, iEspece);
+            String parametre = lireString(i, iParametre);
+            if (!especesOrdre.contains(espece))    especesOrdre.add(espece);
+            if (!parametres.contains(parametre))   parametres.add(parametre);
+        }
+
+        // ── 4. Noms des colonnes : Espece | Periode | param1 | param2 | … ───
+        List<String> nouvellesColonnes = new ArrayList<>();
+        nouvellesColonnes.add("Espece");
+        nouvellesColonnes.add("Periode");
+        nouvellesColonnes.addAll(parametres);
+
+        // ── 5. Tableau de données — une ligne par (espece × periode) ─────────
+        // Construction d'un index (espece, parametre) → ligne source
+        Map<String, Map<String, Integer>> index = new LinkedHashMap<>();
+        for (int i = 0; i < getNbLignes(); i++) {
+            String espece    = lireString(i, iEspece);
+            String parametre = lireString(i, iParametre);
+            index.computeIfAbsent(espece, k -> new LinkedHashMap<>()).put(parametre, i);
+        }
+
+        int nbLignes = especesOrdre.size() * periodesCols.size();
+        int nbCols   = nouvellesColonnes.size();
+        Object[][] donnees = new Object[nbLignes][nbCols];
+
+        int ligne = 0;
+        for (String espece : especesOrdre) {
+            for (int p = 0; p < periodesCols.size(); p++) {
+                String periode = periodesCols.get(p);
+                donnees[ligne][0] = espece;
+                donnees[ligne][1] = periode;          // ← l'année dans sa colonne
+
+                // Remplir les colonnes de paramètres
+                Map<String, Integer> paramsEspece = index.getOrDefault(espece, new LinkedHashMap<>());
+                for (int c = 0; c < parametres.size(); c++) {
+                    String param      = parametres.get(c);
+                    Integer ligneSource = paramsEspece.get(param);
+                    if (ligneSource == null) { donnees[ligne][2 + c] = null; continue; }
+                    try {
+                        donnees[ligne][2 + c] = getCase(ligneSource, periodesIdx.get(p));
+                    } catch (OutOfBoundException e) {
+                        donnees[ligne][2 + c] = null;
+                    }
+                }
+                ligne++;
+            }
+        }
+
+        // ── 6. Construction du nouveau DfPopulation ───────────────────────────
+        try {
+            DfPopulation pivote = new DfPopulation(
+                    nbLignes,
+                    nouvellesColonnes.toArray(new String[0]),
+                    donnees);
+            System.out.println("pivoter() : " + especesOrdre.size() + " espèce(s) × "
+                    + periodesCols.size() + " période(s) = " + nbLignes + " lignes, "
+                    + parametres.size() + " paramètre(s) en colonnes.");
+            return pivote;
+        } catch (OutOfBoundException | NullParameterException e) {
+            System.out.println("pivoter() : erreur construction → " + e.getMessage());
+            return null;
         }
     }
 
@@ -687,6 +870,62 @@ public class DfPopulation extends DataframeComplet implements Utilitaire {
             } catch (Exception e) { System.out.println("FAIL Test 8 : " + e); }
         } else {
             System.out.println("SKIP Test 8 : dfPeru non disponible"); total--;
+        }
+
+        // ── Pivot brut Peru → formatMultiPériode ─────────────────────────────
+        System.out.println("\n── Pivot du format brut Peru ────────────────────────");
+
+        // Test 8b : pivoter() renvoie un DfPopulation non-null
+        total++;
+        DfPopulation dfPeruPivote = null;
+        if (dfPeru != null && !dfPeru.isFormatMultiPeriode()) {
+            // dfPeru est encore dans son format brut avant pivot
+            dfPeruPivote = dfPeru.pivoter();
+        } else if (dfPeru != null) {
+            // Si le lecteur a déjà pivoté, on crée un df brut manuellement pour tester
+            Object[][] brutData = {
+                {"Trachurus symmetricus murphyi", "N",                    105, 40, 30, 35},
+                {"Trachurus symmetricus murphyi", "Prevalence (%)",  64.76, 62.5, 70.0, 62.86},
+                {"Merluccius gayi peruanus",      "N",                     85, 28, 32, 25},
+                {"Merluccius gayi peruanus",      "Prevalence (%)",  77.65, 78.57, 75.0, 80.0}
+            };
+            try {
+                DfPopulation dfBrut = new DfPopulation(4,
+                        new String[]{"Espece", "Parametre", "Total", "2012", "2013", "2014"},
+                        brutData);
+                dfPeruPivote = dfBrut.pivoter();
+            } catch (Exception e) {
+                System.out.println("Construction df brut échouée : " + e);
+            }
+        }
+        if (dfPeruPivote != null) {
+            System.out.println("PASS Test 8b : pivot réussi → "
+                    + dfPeruPivote.getNbLignes() + " ligne(s), "
+                    + dfPeruPivote.getNomColonnes().length + " colonne(s)");
+            ok++;
+        } else {
+            System.out.println("FAIL Test 8b : pivoter() a retourné null");
+        }
+
+        // Test 8c : le résultat pivote est reconnu comme formatMultiPeriode
+        total++;
+        if (dfPeruPivote != null && dfPeruPivote.isFormatMultiPeriode()) {
+            System.out.println("PASS Test 8c : format multi-période détecté après pivot");
+            ok++;
+        } else {
+            System.out.println("FAIL Test 8c : format multi-période non détecté après pivot");
+        }
+
+        // Test 8d : les populations pivotées sont non vides
+        total++;
+        if (dfPeruPivote != null && dfPeruPivote.getPopulations() != null
+                && dfPeruPivote.getPopulations().length > 0) {
+            System.out.println("PASS Test 8d : " + dfPeruPivote.getPopulations().length
+                    + " population(s) construite(s) depuis le pivot");
+            ok++;
+            dfPeruPivote.afficherResume();
+        } else {
+            System.out.println("FAIL Test 8d : populations vides après pivot");
         }
 
         // Test 9 : getPopulation index invalide → OutOfBoundException

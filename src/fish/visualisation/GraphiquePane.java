@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Panneau qui affiche deux graphiques :
  * 1. Un nuage de points avec une droite de régression
- * 2. Un histogramme (distribution des valeurs)
+ * 2. Un histogramme
  * 
  * @author Arthur BERNARD
  * @version 0.1
@@ -62,8 +62,8 @@ public class GraphiquePane extends VBox {
      * Construit l'interface avec les deux graphiques.
      */
     private void construireInterface() {
-        this.setSpacing(20);               // Espace entre les graphiques
-        this.setPadding(new Insets(20));   // Marges autour
+        this.setSpacing(20); // Espace entre les graphiques
+        this.setPadding(new Insets(20)); // Marges autour
         this.setAlignment(Pos.TOP_CENTER); // Aligné en haut au centre
         
         // Ajoute les deux graphiques (chacun avec sa légende)
@@ -154,8 +154,8 @@ public class GraphiquePane extends VBox {
                     // Calcule les sommes pour la régression
                     sommeX += x;
                     sommeY += y;
-                    sommeXY += x * y;
-                    sommeX2 += x * x; 
+                    sommeXY += x*y;
+                    sommeX2 += x*x; 
                     // Garde trace des valeurs min et max de X
                     if (x < xMin){
                         xMin = x; 
@@ -180,8 +180,8 @@ public class GraphiquePane extends VBox {
         // Série 2 : La droite de régression (ROUGE)
         if (nombrePoints >= 2) {
             // Calcule la pente (a) et l'ordonnée à l'origine (b)
-            double a = (nombrePoints * sommeXY - sommeX * sommeY) / (nombrePoints * sommeX2 - sommeX * sommeX);
-            double b = (sommeY - a * sommeX) / nombrePoints;
+            double a = (nombrePoints*sommeXY - sommeX*sommeY)/(nombrePoints*sommeX2 - sommeX*sommeX);
+            double b = (sommeY - a*sommeX)/nombrePoints;
 
             // Affiche la formule dans le label superposé
             String signe = b >= 0 ? " + " : " - ";
@@ -257,12 +257,12 @@ public class GraphiquePane extends VBox {
     }
     
     /**
-     * Crée l'histogramme (distribution des valeurs en tranches).
+     * Crée l'histogramme
      */
     private BarChart<String, Number> creerHistogramme() {
         String nomValeur = df.getNomCol(colHistogramme);
         
-        // ===== 1. Récupère toutes les valeurs numériques =====
+        // ===== Récupère toutes les valeurs numériques =====
         List<Double> valeurs = new ArrayList<>();
         for (int i = 0; i < df.getNbLignes(); i++) {
             try {
@@ -324,7 +324,7 @@ public class GraphiquePane extends VBox {
         BarChart<String, Number> graphique = new BarChart<>(axeX, axeY);
         graphique.setTitle("Histogramme de " + nomValeur);
         graphique.setPrefHeight(350);
-        graphique.setLegendVisible(false);  // On cache la légende par défaut
+        graphique.setLegendVisible(false); // On cache la légende par défaut
         // Crée la série de barres
         XYChart.Series<String, Number> serie = new XYChart.Series<>();
         serie.setName("Effectifs");

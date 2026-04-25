@@ -110,9 +110,8 @@ public class ProjectFishApplication extends Application {
     }
     
     /**
-     * Cette méthode est appelée AUTOMATIQUEMENT quand un fichier est chargé avec succès.
+     * Cette méthode est appelée automatiquement quand un fichier est chargé avec succès.
      * C'est ici qu'on crée les panneaux de nettoyage et de visualisation.
-     * 
      * @param df Le dataframe qui vient d'être chargé
      */
     private void onFichierCharge(DataframeComplet df) {

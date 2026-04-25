@@ -1,9 +1,5 @@
 package fish.visualisation;
 
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-
 import fish.acquisition.DataframeComplet;
 import fish.exceptions.OutOfBoundException;
 
@@ -17,10 +13,7 @@ import javafx.scene.text.FontWeight;
 
 /**
  * Panneau pour afficher toutes les lignes d'un dataframe dans un tableau.
- * Permet de naviguer page par page.
- * 
- * Version OPTIMISÉE : les colonnes sont créées une seule fois pour éviter le clignotement.
- * 
+ * Permet de naviguer page par page. 
  * @author Arthur BERNARD
  * @version 0.2
  */
@@ -54,7 +47,7 @@ public class DataframeViewerPane extends VBox {
     public DataframeViewerPane(DataframeComplet df) {
         this.df = df;
         buildUI(); // Crée les boutons
-        initialiserColonnes(); // Crée les colonnes du tableau (UNE SEULE FOIS)
+        initialiserColonnes(); // Crée les colonnes du tableau
         chargerDonnees();// Charge les premières données
     }
     
@@ -179,7 +172,7 @@ public class DataframeViewerPane extends VBox {
             colonne.setCellValueFactory(donneesCellule -> {
                 Object val = donneesCellule.getValue()[indexColonne];
                 return new javafx.beans.property.SimpleStringProperty(
-                    val != null ? val.toString() : ""  // null → chaîne vide
+                    val != null ? val.toString() : "" // null -> chaîne vide
                 );
             });
             
@@ -217,7 +210,7 @@ public class DataframeViewerPane extends VBox {
         if (df == null) return;
         
         lblTotalLignes.setText("Total: " + df.getNbLignes() + " lignes");
-        
+        //Math.ceil arrondit au supérieur
         totalPages = (int) Math.ceil((double) df.getNbLignes() / nbLignesParPage);
         if (totalPages == 0) totalPages = 1;
         
@@ -233,7 +226,7 @@ public class DataframeViewerPane extends VBox {
      * On vide les anciennes données et on met les nouvelles
      */
     private void mettreAJourAffichageLignes() {
-        tableView.getItems().clear();  // On vide les anciennes lignes
+        tableView.getItems().clear(); // On vide les anciennes lignes
         
         if (df == null || df.getNbLignes() == 0) return;
         
@@ -251,7 +244,7 @@ public class DataframeViewerPane extends VBox {
                     ligne[j] = null;
                 }
             }
-            tableView.getItems().add(ligne);  // On ajoute la ligne
+            tableView.getItems().add(ligne); // On ajoute la ligne
         }
         
         lblStatut.setText("✓ Lignes " + (debut + 1) + " à " + fin + " sur " + df.getNbLignes());

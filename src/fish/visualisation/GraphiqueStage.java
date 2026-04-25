@@ -18,10 +18,10 @@ import javafx.stage.Stage;
  * Fenêtre secondaire affichant les graphiques d'un DataframeComplet.
  * Permet à l'utilisateur de choisir :
  *   - les colonnes X et Y pour le nuage de points + régression
- *   - la colonne numérique pour l'histogramme (distribution)
+ *   - la colonne numérique pour l'histogramme
  * 
  * @author Arthur BERNARD
- * @version 0.3 (ajout de la méthode mettreAJourDataframe pour rafraîchir les graphiques)
+ * @version 0.3
  */
 public class GraphiqueStage extends Stage {
 
@@ -46,7 +46,7 @@ public class GraphiqueStage extends Stage {
         buildUI(); // On construit l'interface
         addListeners();// On ajoute les écouteurs d'événements
         
-        // NOUVEAU : quand la fenêtre s'affiche, on génère les graphiques automatiquement
+        // quand la fenêtre s'affiche, on génère les graphiques automatiquement
         this.setOnShown(e -> genererGraphiques());
         
         Scene scene = new Scene(root, 900, 850);
@@ -57,7 +57,6 @@ public class GraphiqueStage extends Stage {
     /**
      * Cette méthode permet de rafraîchir les graphiques avec les nouvelles données
      * sans avoir à fermer et rouvrir la fenêtre.
-     * 
      * @param nouveauDf le nouveau dataframe (après nettoyage/complétion)
      */
     public void mettreAJourDataframe(DataframeComplet nouveauDf) {
@@ -220,7 +219,7 @@ public class GraphiqueStage extends Stage {
 
     /**
      * Retourne l'index d'un nom de colonne dans le tableau des noms.
-     * @param noms   le tableau des noms de colonnes
+     * @param noms le tableau des noms de colonnes
      * @param valeur le nom recherché
      * @return l'index, ou 0 si non trouvé
      */

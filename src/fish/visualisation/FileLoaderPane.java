@@ -18,7 +18,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.util.function.Consumer;  // Permet de passer une fonction en paramètre (callback)
+import java.util.function.Consumer; // Permet de passer une fonction en paramètre (callback)
 
 /**
  * Panneau pour charger un fichier CSV.
@@ -70,7 +70,7 @@ public class FileLoaderPane extends VBox {
             // Succès : on met à jour l'affichage
             labelStatut.setText(
                 "✓ Données mises à jour — " + 
-                nouveauDf.getNbLignes() + " lignes × " + nouveauDf.getNbCol() + " colonnes"
+                nouveauDf.getNbLignes() + " lignes x " + nouveauDf.getNbCol() + " colonnes"
             );
             labelStatut.setStyle("-fx-text-fill: #4CAF50;");  // Texte vert
             btnGraphiques.setDisable(false);  // On active le bouton graphiques
@@ -98,7 +98,7 @@ public class FileLoaderPane extends VBox {
         this.setPadding(new Insets(15));
         this.setStyle("-fx-background-color: #f0f0f0; -fx-border-color: #ccc; -fx-border-radius: 5px;");
 
-        // ----- LIGNE 1 : TYPE DE DONNÉES -----
+        // ----- Type de données -----
         HBox ligneType = new HBox(10);
         ligneType.setAlignment(Pos.CENTER_LEFT);
         
@@ -112,7 +112,7 @@ public class FileLoaderPane extends VBox {
         comboType.setValue("Individus (poissons individuels)");
         ligneType.getChildren().addAll(labelType, comboType);
 
-        // ----- LIGNE 2 : SÉPARATEUR CSV -----
+        // ----- Séparateur -----
         HBox ligneSep = new HBox(10);
         ligneSep.setAlignment(Pos.CENTER_LEFT);
 
@@ -126,7 +126,7 @@ public class FileLoaderPane extends VBox {
 
         ligneSep.getChildren().addAll(labelSep, txtSeparateur, labelSepAide);
 
-        // LIGNE 3 : BOUTONS 
+        // ----- Boutons -----
         HBox ligneBoutons = new HBox(10);
         ligneBoutons.setAlignment(Pos.CENTER_LEFT);
         
@@ -136,11 +136,11 @@ public class FileLoaderPane extends VBox {
         
         ligneBoutons.getChildren().addAll(btnCharger, btnGraphiques);
 
-        // STATUT
+        // ----- Statut -----
         labelStatut = new Label("Aucun fichier chargé.");
         labelStatut.setStyle("-fx-text-fill: #666;");
 
-        // ASSEMBLAGE
+        // ----- Assemblage -----
         this.getChildren().addAll(ligneType, ligneSep, ligneBoutons, labelStatut);
     }
 
@@ -162,7 +162,7 @@ public class FileLoaderPane extends VBox {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choisir un fichier CSV");
         fileChooser.getExtensionFilters().add(
-            new FileChooser.ExtensionFilter("Fichiers CSV", "*.csv")
+            new FileChooser.ExtensionFilter("Fichiers CSV", "*.csv") // filtre pour les fichiers csv
         );
         
         File fichier = fileChooser.showOpenDialog(stage);

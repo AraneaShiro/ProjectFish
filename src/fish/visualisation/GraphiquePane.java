@@ -53,7 +53,7 @@ public class GraphiquePane extends VBox {
         this.colX = colX;
         this.colY = colY;
         this.colHistogramme = colHistogramme;
-        construireInterface();
+        buildUI();
     }
 
     // ========== CONSTRUCTION DE L'INTERFACE ==========
@@ -61,7 +61,7 @@ public class GraphiquePane extends VBox {
     /**
      * Construit l'interface avec les deux graphiques.
      */
-    private void construireInterface() {
+    private void buildUI() {
         this.setSpacing(20); // Espace entre les graphiques
         this.setPadding(new Insets(20)); // Marges autour
         this.setAlignment(Pos.TOP_CENTER); // Aligné en haut au centre

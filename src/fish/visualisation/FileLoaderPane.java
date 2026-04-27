@@ -48,7 +48,7 @@ public class FileLoaderPane extends VBox {
     
     public FileLoaderPane(Stage stage) {
         this.stage = stage;
-        construireInterface(); // On crée les boutons
+        buildUI(); // On crée les boutons
         ajouterEcouteurs(); // On dit quoi faire quand on clique
     }
 
@@ -92,7 +92,7 @@ public class FileLoaderPane extends VBox {
 
     // ========== CONSTRUCTION DE L'INTERFACE ==========
     
-    private void construireInterface() {
+    private void buildUI() {
         // Style du panneau
         this.setSpacing(10);
         this.setPadding(new Insets(15));

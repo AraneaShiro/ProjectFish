@@ -68,7 +68,7 @@ public class NettoyageCompletionPane extends VBox {
         this.df = df;
         this.onRefresh = onRefresh;
         this.isIndividu = (df instanceof DfIndividu); // Vérifie le type
-        construireInterface();
+        buildUI();
         mettreAJourInfos();
     }
     
@@ -95,7 +95,7 @@ public class NettoyageCompletionPane extends VBox {
     /**
      * Crée tous les éléments graphiques du panneau.
      */
-    private void construireInterface() {
+    private void buildUI() {
         this.setSpacing(10);
         this.setPadding(new Insets(15));
         this.setStyle("-fx-background-color: #f0f0f0; -fx-border-color: #ccc; -fx-border-radius: 5px;");
@@ -208,12 +208,7 @@ public class NettoyageCompletionPane extends VBox {
         Button btnCompletionRegression = new Button("Compléter par régression linéaire");
         btnCompletionRegression.setOnAction(e -> completerParRegression());
         
-        // Tout compléter en une fois
-        Button btnCompleterTout = new Button("TOUT COMPLÉTER (moyenne + KNN + régression)");
-        btnCompleterTout.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;");
-        btnCompleterTout.setOnAction(e -> completerTout());
-        
-        completionContenu.getChildren().addAll(ligneComp1, ligneComp2, btnCompletionRegression, btnCompleterTout);
+        completionContenu.getChildren().addAll(ligneComp1, ligneComp2, btnCompletionRegression);
         completionPane.setContent(completionContenu);
         
         // ========== BOUTONS ACTIONS ==========
@@ -652,42 +647,6 @@ public class NettoyageCompletionPane extends VBox {
             setStatut("Erreur: " + e.getMessage(), false);
             e.printStackTrace();
         }
-    }
-    
-    /**
-     * Applique TOUTES les méthodes de complétion en une fois.
-     */
-    private void completerTout() {
-        if (df == null) {
-            setStatut("Aucun dataframe chargé", false);
-            return;
-        }
-        
-        int total = 0;
-        
-        try {
-            CompletionMoyenne cm = new CompletionMoyenne(df);
-            total += cm.completerTout();
-        } catch (Exception e) {
-            setStatut("Erreur moyenne: " + e.getMessage(), false);
-        }
-        
-        try {
-            CompletionKNN knn = new CompletionKNN(df, getK());
-            total += knn.completerTout();
-        } catch (Exception e) {
-            setStatut("Erreur KNN: " + e.getMessage(), false);
-        }
-        
-        try {
-            CompletionRegression cr = new CompletionRegression(df);
-            total += cr.completerToutParMeilleurPredicteur();
-        } catch (Exception e) {
-            setStatut("Erreur régression: " + e.getMessage(), false);
-        }
-        
-        setStatut(total + " valeur(s) complétée(s) au total", true);
-        if (onRefresh != null) onRefresh.run();
     }
     
     /**

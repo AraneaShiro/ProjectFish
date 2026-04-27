@@ -461,7 +461,7 @@ public int remplaceNegativeByNull(int col) {
         try {
             Object val = df.getCase(i, col);
             // On garde la ligne si : null OU valeur >= 0
-            if (  ((Number) val).doubleValue() < 0) { //Si négatif on mais null
+            if (val!=null &&  ((Number) val).doubleValue() < 0) { //Si négatif on mais null
                 df.setCase(i, col, null);
                 supprimees++;
             }

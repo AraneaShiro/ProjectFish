@@ -1,11 +1,11 @@
 <mxfile host="65bd71144e">
     <diagram id="wtsiK282B2xLD5HAB_0s" name="Page-1">
-        <mxGraphModel dx="6180" dy="4436" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="5471" dy="4587" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
                 <mxCell id="220" value="ProjetFish" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;recursiveResize=0;container=1;collapsible=0;width=160;fillColor=#FFFFFF;strokeColor=default;" parent="1" vertex="1">
-                    <mxGeometry x="-2700" y="-2760" width="4620" height="4860" as="geometry"/>
+                    <mxGeometry x="-2320" y="-2670" width="4620" height="4860" as="geometry"/>
                 </mxCell>
                 <mxCell id="239" value="Bernard Arthur" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="220" vertex="1">
                     <mxGeometry x="150" width="70" height="50" as="geometry"/>
@@ -1111,7 +1111,7 @@
                     <mxGeometry y="576" width="230" height="26" as="geometry"/>
                 </mxCell>
                 <mxCell id="1140" value="Graphique&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;recursiveResize=0;container=1;collapsible=0;width=160;fillColor=#FFFFFF;" parent="220" vertex="1">
-                    <mxGeometry x="15" y="1370" width="840" height="1754" as="geometry"/>
+                    <mxGeometry x="30" y="1370" width="825" height="1170" as="geometry"/>
                 </mxCell>
                 <mxCell id="996" value="BarChart" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#dae8fc;strokeColor=#0050ef;fontColor=#000000;" parent="1140" vertex="1">
                     <mxGeometry x="20" y="60" width="230" height="602" as="geometry"/>
@@ -1189,7 +1189,7 @@
                     <mxGeometry y="576" width="230" height="26" as="geometry"/>
                 </mxCell>
                 <mxCell id="1019" value="PieChart" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#dae8fc;strokeColor=#0050ef;fontColor=#000000;" parent="1140" vertex="1">
-                    <mxGeometry x="600" y="90" width="230" height="186" as="geometry"/>
+                    <mxGeometry x="580" y="90" width="230" height="186" as="geometry"/>
                 </mxCell>
                 <mxCell id="2325" value="" style="line;strokeColor=#000000;fillColor=none;" parent="1019" vertex="1">
                     <mxGeometry y="26" width="230" height="2" as="geometry"/>
@@ -1935,7 +1935,409 @@
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="51" value="visualisation" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;recursiveResize=0;container=1;collapsible=0;width=160;fillColor=#FFFFFF;" parent="220" vertex="1">
-                    <mxGeometry x="240" y="3270" width="4200" height="1350" as="geometry"/>
+                    <mxGeometry x="240" y="3270" width="4200" height="1510" as="geometry"/>
+                </mxCell>
+                <mxCell id="2618" value="FileLoaderPane" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000;" parent="51" vertex="1">
+                    <mxGeometry x="370" y="50" width="360" height="390" as="geometry"/>
+                </mxCell>
+                <mxCell id="2619" value="" style="line;strokeColor=#000000;fillColor=none;" parent="2618" vertex="1">
+                    <mxGeometry y="26" width="360" height="2" as="geometry"/>
+                </mxCell>
+                <mxCell id="2620" value="- dataframeCharge : DataframeComplet" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2618" vertex="1">
+                    <mxGeometry y="28" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2621" value="- comboType : ComboBox&lt;String&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2618" vertex="1">
+                    <mxGeometry y="54" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2622" value="- txtSeparateur : TextField" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2618" vertex="1">
+                    <mxGeometry y="76" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2623" value="- btnCharger : AppButton" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2618" vertex="1">
+                    <mxGeometry x="1" y="102" width="249" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2624" value="- btnGraphiques : AppButton" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2618" vertex="1">
+                    <mxGeometry y="127" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2625" value="- labelStatut : Label" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2618" vertex="1">
+                    <mxGeometry y="151" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2626" value="- onFichierCharge : Consumer&lt;DataframeComplet&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2618" vertex="1">
+                    <mxGeometry y="179" width="310" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2628" value="" style="line;strokeColor=#000000;fillColor=none;" parent="2618" vertex="1">
+                    <mxGeometry x="1" y="26" width="359" height="372" as="geometry"/>
+                </mxCell>
+                <mxCell id="2629" value="+ getDataframeCharge() : DataframeComplet" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2618" vertex="1">
+                    <mxGeometry y="220" width="320" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2630" value="+ setDataframeCharge(DataframeComplet nouveauDf)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2618" vertex="1">
+                    <mxGeometry y="240" width="319" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2631" value="+ setOnFichierCharge(Consumer&lt;DataframeComplet&gt; callback)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2618" vertex="1">
+                    <mxGeometry x="1" y="260" width="360" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2632" value="- buildUI()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2618" vertex="1">
+                    <mxGeometry y="280" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2633" value="- ajouterEcouteurs()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2618" vertex="1">
+                    <mxGeometry x="1" y="300" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2634" value="- ouvrirGraphiques()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2618" vertex="1">
+                    <mxGeometry x="1" y="320" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2635" value="- chargerFichier()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2618" vertex="1">
+                    <mxGeometry y="340" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2641" value="- getSeparateurChoisi() : String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2618" vertex="1">
+                    <mxGeometry x="1" y="360" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2644" value="GraphiquePane" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000;" parent="51" vertex="1">
+                    <mxGeometry x="1250" y="50" width="360" height="290" as="geometry"/>
+                </mxCell>
+                <mxCell id="2645" value="" style="line;strokeColor=#000000;fillColor=none;" parent="2644" vertex="1">
+                    <mxGeometry y="26" width="360" height="2" as="geometry"/>
+                </mxCell>
+                <mxCell id="2646" value="- df : DataframeComplet" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2644" vertex="1">
+                    <mxGeometry y="28" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2647" value="- colX : int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2644" vertex="1">
+                    <mxGeometry y="54" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2648" value="- colY : int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2644" vertex="1">
+                    <mxGeometry y="76" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2649" value="- colHistogramme : int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2644" vertex="1">
+                    <mxGeometry x="1" y="100" width="249" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2653" value="" style="line;strokeColor=#000000;fillColor=none;" parent="2644" vertex="1">
+                    <mxGeometry y="-52" width="359" height="372" as="geometry"/>
+                </mxCell>
+                <mxCell id="2654" value="- construireNuagePoints() : VBox" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2644" vertex="1">
+                    <mxGeometry x="-1" y="160" width="320" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2655" value="- creerNuagePoints(Label lblFormule)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2644" vertex="1">
+                    <mxGeometry x="-1" y="180" width="319" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2656" value="- creerLegendeNuagePoints() : HBox" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2644" vertex="1">
+                    <mxGeometry x="-1" y="200" width="360" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2657" value="- buildUI()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2644" vertex="1">
+                    <mxGeometry x="1" y="140" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2658" value="- construireHistogramme() : VBox" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2644" vertex="1">
+                    <mxGeometry x="1" y="220" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2659" value="- creerHistogramme() : BarChart&lt;String, Number&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2644" vertex="1">
+                    <mxGeometry x="1" y="240" width="279" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2660" value="- creerLegendeHistogramme() : HBox" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2644" vertex="1">
+                    <mxGeometry y="260" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2529" value="AppButton" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000;" parent="51" vertex="1">
+                    <mxGeometry x="1150" y="950" width="230" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="2530" value="" style="line;strokeColor=#000000;fillColor=none;" parent="2529" vertex="1">
+                    <mxGeometry y="26" width="230" height="2" as="geometry"/>
+                </mxCell>
+                <mxCell id="2539" value="" style="line;strokeColor=#000000;fillColor=none;" parent="2529" vertex="1">
+                    <mxGeometry y="39" width="230" height="2" as="geometry"/>
+                </mxCell>
+                <mxCell id="2664" value="GraphiqueStage" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000;" parent="51" vertex="1">
+                    <mxGeometry x="830" y="40" width="380" height="398" as="geometry"/>
+                </mxCell>
+                <mxCell id="2665" value="" style="line;strokeColor=#000000;fillColor=none;" parent="2664" vertex="1">
+                    <mxGeometry y="26" width="380" height="2" as="geometry"/>
+                </mxCell>
+                <mxCell id="2666" value="- df : DataframeComplet" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2664" vertex="1">
+                    <mxGeometry y="28" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2667" value="- comboColX : ComboBox&lt;String&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2664" vertex="1">
+                    <mxGeometry y="54" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2668" value="- comboColY : ComboBox&lt;String&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2664" vertex="1">
+                    <mxGeometry y="76" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2669" value="- comboColHistogramme : ComboBox&lt;String&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2664" vertex="1">
+                    <mxGeometry x="1" y="102" width="289" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2670" value="- btnGenerer : AppButton" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2664" vertex="1">
+                    <mxGeometry y="127" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2671" value="- scrollZoneGraphiques : ScrollPane" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2664" vertex="1">
+                    <mxGeometry y="151" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2672" value="- root : VBox" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2664" vertex="1">
+                    <mxGeometry y="179" width="310" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2673" value="" style="line;strokeColor=#000000;fillColor=none;" parent="2664" vertex="1">
+                    <mxGeometry x="1" y="26" width="379" height="372" as="geometry"/>
+                </mxCell>
+                <mxCell id="2674" value="+ mettreAJourDataframe(DataframeComplet nouveauDf)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2664" vertex="1">
+                    <mxGeometry y="220" width="320" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2675" value="- buildUI()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2664" vertex="1">
+                    <mxGeometry y="240" width="319" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2676" value="- addListeners()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2664" vertex="1">
+                    <mxGeometry x="1" y="260" width="360" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2677" value="- genererGraphiques()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2664" vertex="1">
+                    <mxGeometry y="280" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2678" value="- trouverIndex(String[] noms, String valeur) : int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2664" vertex="1">
+                    <mxGeometry x="1" y="300" width="369" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2682" value="TitlePane" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000;" parent="51" vertex="1">
+                    <mxGeometry x="370" y="490" width="360" height="690" as="geometry"/>
+                </mxCell>
+                <mxCell id="2683" value="" style="line;strokeColor=#000000;fillColor=none;" parent="2682" vertex="1">
+                    <mxGeometry y="26" width="360" height="2" as="geometry"/>
+                </mxCell>
+                <mxCell id="2684" value="- scene : Scene" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2682" vertex="1">
+                    <mxGeometry y="28" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2685" value="- titleLabel : AppLabel" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2682" vertex="1">
+                    <mxGeometry y="54" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2691" value="" style="line;strokeColor=#000000;fillColor=none;" parent="2682" vertex="1">
+                    <mxGeometry x="2" y="-106" width="359" height="372" as="geometry"/>
+                </mxCell>
+                <mxCell id="2566" value="DataframeViewerPane" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000;" parent="2682" vertex="1">
+                    <mxGeometry x="10" y="160" width="320" height="530" as="geometry"/>
+                </mxCell>
+                <mxCell id="2567" value="" style="line;strokeColor=#000000;fillColor=none;" parent="2566" vertex="1">
+                    <mxGeometry y="26" width="320" height="2" as="geometry"/>
+                </mxCell>
+                <mxCell id="2568" value="- df: DataframeComplet" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry y="28" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2569" value="- tableView : TableView&lt;Object[]&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry y="54" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2570" value="- lblPageInfo : Label" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry y="76" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2571" value="- comboNbLignesPage : ComboBox&lt;Integer&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry x="1" y="102" width="269" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2572" value="- btnPremier : Button" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry y="127" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2573" value="- btnPrecedent : Button" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry y="151" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2574" value="- btnSuivant : Button" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry y="179" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2575" value="- btnDernier : Button " style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry y="205" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2576" value="" style="line;strokeColor=#000000;fillColor=none;" parent="2566" vertex="1">
+                    <mxGeometry y="148" width="320" height="372" as="geometry"/>
+                </mxCell>
+                <mxCell id="2577" value="+ MettreAJourDataframe(DataframeComplet nouveauDf) " style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry y="340" width="320" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2578" value="- buildUI()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry x="1" y="360" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2579" value="- initialiserColonnes()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry y="377" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2580" value="+ getDataframe() : DataframeComplet" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry y="398" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2581" value="- chargerDonnees()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry x="1" y="420" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2582" value="- rechargerDonnees()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry x="1" y="440" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2583" value="- mettreAJourAffichageLignes()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry y="460" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2584" value="- lblStatut : Label" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry x="1" y="227" width="230" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="2611" value="- lblTotalLignes : Label" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry y="250" width="230" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="2612" value="- pageCourante : int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry x="1" y="270" width="230" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="2613" value="- nbLignesParPage : int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry x="1" y="290" width="230" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="2614" value="- totalPages : int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry x="1" y="310" width="230" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="2616" value="- allerPage(int page)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry y="500" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2615" value="- mettreAJourBoutonsPagination()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2566" vertex="1">
+                    <mxGeometry y="480" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2700" value="ProjectFishApplication" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000;" parent="51" vertex="1">
+                    <mxGeometry x="830" y="470" width="380" height="398" as="geometry"/>
+                </mxCell>
+                <mxCell id="2701" value="" style="line;strokeColor=#000000;fillColor=none;" parent="2700" vertex="1">
+                    <mxGeometry y="26" width="380" height="2" as="geometry"/>
+                </mxCell>
+                <mxCell id="2702" value="- scene : Scene" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2700" vertex="1">
+                    <mxGeometry y="28" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2703" value="- root : AnchorPane" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2700" vertex="1">
+                    <mxGeometry y="54" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2704" value="- appTitle : TitlePane" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2700" vertex="1">
+                    <mxGeometry y="76" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2705" value="- fileLoaderPane : FileLoaderPane" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2700" vertex="1">
+                    <mxGeometry x="1" y="102" width="289" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2706" value="- nettoyagePane : NettoyageCompletionPane" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2700" vertex="1">
+                    <mxGeometry y="127" width="280" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2707" value="- viewerPane : DataframeViewerPane" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2700" vertex="1">
+                    <mxGeometry y="151" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2708" value="- tabPane : TabPane" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2700" vertex="1">
+                    <mxGeometry y="179" width="310" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2709" value="" style="line;strokeColor=#000000;fillColor=none;" parent="2700" vertex="1">
+                    <mxGeometry y="40" width="379" height="372" as="geometry"/>
+                </mxCell>
+                <mxCell id="2710" value="+ start(Stage stage)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2700" vertex="1">
+                    <mxGeometry x="1" y="240" width="320" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2711" value="- rafraichir()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2700" vertex="1">
+                    <mxGeometry x="2" y="320" width="319" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2712" value="+ main(String[] args)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2700" vertex="1">
+                    <mxGeometry x="1" y="260" width="360" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2713" value="- buildUI(Stage stage)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2700" vertex="1">
+                    <mxGeometry y="280" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2714" value="- onFichierCharge(DataframeComplet df)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2700" vertex="1">
+                    <mxGeometry x="1" y="300" width="369" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2715" value="- graphiqueStage : GraphiqueStage" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2700" vertex="1">
+                    <mxGeometry x="1" y="200" width="310" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2716" value="NettoyageCompletionPane" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000;" parent="51" vertex="1">
+                    <mxGeometry x="1440" y="380" width="320" height="740" as="geometry"/>
+                </mxCell>
+                <mxCell id="2717" value="" style="line;strokeColor=#000000;fillColor=none;" parent="2716" vertex="1">
+                    <mxGeometry y="26" width="320" height="2" as="geometry"/>
+                </mxCell>
+                <mxCell id="2718" value="- df: DataframeComplet" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry y="28" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2719" value="- onRefresh : Runnable" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry y="54" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2720" value="- comboColonnes : ComboBox&lt;String&gt; " style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry y="76" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2721" value="- txtSeuilNull : TextField" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry x="1" y="102" width="269" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2722" value="- txtKNN : TextField" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry y="127" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2723" value="- txtSeuilBas : TextField" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry y="151" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2724" value="- txtSeuilHaut : TextField" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry y="179" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2725" value="- lblStatut : Label" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry y="205" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2726" value="" style="line;strokeColor=#000000;fillColor=none;" parent="2716" vertex="1">
+                    <mxGeometry y="134" width="320" height="372" as="geometry"/>
+                </mxCell>
+                <mxCell id="2727" value="+ getDataframe() : DataframeComplet" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry y="340" width="320" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2728" value="- buildUI()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry x="1" y="360" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2729" value="+ mettreAJourDataframe(DataframeComplet nouveauDf)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry y="377" width="320" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2730" value="- remplirComboColonnes()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry y="398" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2731" value="- mettreAJourInfos()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry x="1" y="420" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2732" value="- getColonneIndex()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry x="1" y="440" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2733" value="- getSeuilNull() : double" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry y="460" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2734" value="- lblNbLignes : Label" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry x="1" y="227" width="230" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="2735" value="- lblNbColonnes : Label" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry y="250" width="230" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="2736" value="- lblType : Label" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry x="1" y="270" width="230" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="2737" value="- isIndividu : boolean" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry x="1" y="290" width="230" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="2739" value="- setStatut(String message, boolean succes)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry y="500" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2740" value="- getK() : int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry y="480" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2741" value="- supprimerLignesInvalid()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry y="520" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2742" value="- supprimerColonnesVides()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry x="1" y="540" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2743" value="- supprimerLignesNegatives() " style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry x="1" y="560" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2744" value="- remplacerNegatifsParNull() " style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry x="1" y="580" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2745" value="- gererOutliers()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry x="1" y="600" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2746" value="- appliquerSeuilsPersonnalises()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry x="1" y="620" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2777" value="- completerParMoyenne()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry x="1" y="640" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2778" value="- completerColonneParMoyenne()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry y="660" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2779" value="- completerParKNN()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry y="680" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2780" value="- completerParRegression()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry x="1" y="697" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2781" value="- afficherStatistiques()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;" parent="2716" vertex="1">
+                    <mxGeometry y="714" width="230" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="2548" value="AppLabel" style="swimlane;fontStyle=1;align=center;startSize=26;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#000000;" parent="51" vertex="1">
+                    <mxGeometry x="850" y="950" width="230" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="2549" value="" style="line;strokeColor=#000000;fillColor=none;" parent="2548" vertex="1">
+                    <mxGeometry y="26" width="230" height="2" as="geometry"/>
+                </mxCell>
+                <mxCell id="2558" value="" style="line;strokeColor=#000000;fillColor=none;" parent="2548" vertex="1">
+                    <mxGeometry y="40" width="230" height="2" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

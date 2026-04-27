@@ -1,0 +1,15 @@
+module:ProjetFish
+fish
+fish.acquisition
+fish.acquisition.lecture
+fish.analyse
+fish.calcul
+fish.completion
+fish.conversion
+fish.exceptions
+fish.graphiques
+fish.interaction
+fish.nettoyage
+fish.poisson
+fish.tests
+fish.visualisation

@@ -1021,6 +1021,8 @@ public class BoiteAMoustache {
             // Données : [1..9] + outlier 100
             Object[][] data = {{1.0},{2.0},{3.0},{4.0},{5.0},
                                {6.0},{7.0},{8.0},{9.0},{100.0}};
+                               Object[][] data2 = {{1.0},{2.0},{3.0},{4.0},{5.0},
+                               {6.0},{7.0},{8.0},{9.0},{100.0}};
             fish.acquisition.DfIndividu df =
                 new fish.acquisition.DfIndividu(10, new String[]{"valeur"}, data);
 
@@ -1072,7 +1074,7 @@ public class BoiteAMoustache {
             // Test 7 : supprimerHorsSeuil
             tot++;
             fish.acquisition.DfIndividu df2 =
-                new fish.acquisition.DfIndividu(10, new String[]{"valeur"}, data);
+                new fish.acquisition.DfIndividu(10, new String[]{"valeur"}, data2);
             BoiteAMoustache bam2 = new BoiteAMoustache(df2, 0);
             bam2.setSeuils(2.0, 8.0);
             int suppr = bam2.supprimerHorsSeuil();
